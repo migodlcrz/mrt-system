@@ -31,14 +31,17 @@ const StationLanding: React.FC<StationLandingProps> = () => {
 
     const station = { uid, name, long, lat };
 
-    const postResponse = await fetch("/api/stations", {
-      method: "POST",
-      body: JSON.stringify(station),
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${user.jwt}`,
-      },
-    });
+    const postResponse = await fetch(
+      "https://mrt-server-shg0.onrender.com/api/stations",
+      {
+        method: "POST",
+        body: JSON.stringify(station),
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user.jwt}`,
+        },
+      }
+    );
 
     const json = await postResponse.json();
 
@@ -63,13 +66,16 @@ const StationLanding: React.FC<StationLandingProps> = () => {
     const isConfirmed = window.confirm("Are you sure you want to delete this?");
 
     if (isConfirmed) {
-      const deleteResponse = await fetch("/api/stations/" + station, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${user.jwt}`,
-        },
-      });
+      const deleteResponse = await fetch(
+        "https://mrt-server-shg0.onrender.com/api/stations/" + station,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${user.jwt}`,
+          },
+        }
+      );
 
       if (!deleteResponse.ok) {
         setError("ERROR");
@@ -88,11 +94,14 @@ const StationLanding: React.FC<StationLandingProps> = () => {
   };
 
   const fetchStations = async () => {
-    const response = await fetch("/api/stations", {
-      headers: {
-        Authorization: `Bearer ${user.jwt}`,
-      },
-    });
+    const response = await fetch(
+      "https://mrt-server-shg0.onrender.com/api/stations",
+      {
+        headers: {
+          Authorization: `Bearer ${user.jwt}`,
+        },
+      }
+    );
     const json = await response.json();
 
     if (response.ok) {

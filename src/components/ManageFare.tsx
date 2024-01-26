@@ -36,11 +36,14 @@ const ManageFare: React.FC<ManageFareProps> = () => {
     const fetchFareData = async () => {
       try {
         const fareId = "65a146cff1b7fd49a47868c4";
-        const response = await fetch(`/api/fare/${fareId}`, {
-          headers: {
-            Authorization: `Bearer ${user.jwt}`,
-          },
-        });
+        const response = await fetch(
+          `https://mrt-server-shg0.onrender.com/api/fare/${fareId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${user.jwt}`,
+            },
+          }
+        );
 
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
@@ -73,14 +76,17 @@ const ManageFare: React.FC<ManageFareProps> = () => {
 
     try {
       const fareId = "65a146cff1b7fd49a47868c4";
-      const response = await fetch(`/api/fare/${fareId}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${user.jwt}`,
-        },
-        body: JSON.stringify(formData),
-      });
+      const response = await fetch(
+        `https://mrt-server-shg0.onrender.com/api/fare/${fareId}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${user.jwt}`,
+          },
+          body: JSON.stringify(formData),
+        }
+      );
 
       const json = await response.json();
 

@@ -31,36 +31,6 @@ const CardModel: React.FC<ManageCardModelProps> = ({ card, update }) => {
     setError(null);
   };
 
-  // const fetchCardData = async () => {
-  //   try {
-  //     const response = await fetch(`/api/cards/${card._id}`, {
-  //       headers: {
-  //         Authorization: `Bearer ${user.jwt}`,
-  //       },
-  //     });
-
-  //     if (!response.ok) {
-  //       throw new Error(`HTTP error! Status: ${response.status}`);
-  //     }
-
-  //     const responseData = await response.json();
-
-  //     console.log("BALANCE", formData.balance);
-
-  //     setFormData({
-  //       _id: responseData._id,
-  //       uid: responseData.uid,
-  //       balance: 0,
-  //     });
-  //   } catch (error) {
-  //     console.error("Error fetching fare data:", error);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   fetchCardData();
-  // }, []);
-
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
 
@@ -86,14 +56,17 @@ const CardModel: React.FC<ManageCardModelProps> = ({ card, update }) => {
     }
 
     try {
-      const response = await fetch(`/api/cards/${card._id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${user.jwt}`,
-        },
-        body: JSON.stringify(formData),
-      });
+      const response = await fetch(
+        `https://mrt-server-shg0.onrender.com/api/cards/${card._id}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${user.jwt}`,
+          },
+          body: JSON.stringify(formData),
+        }
+      );
 
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
