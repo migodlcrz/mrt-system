@@ -4,8 +4,9 @@ import DashboardCard from "../../../components/DashboardCard";
 import { useLogout } from "../../../hooks/useLogout";
 import { useNavigate } from "react-router-dom";
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
-import { BarChart } from "@mui/x-charts/BarChart";
 import { useAuthContext } from "../../../hooks/useAuthContext";
+import { FaCreditCard } from "react-icons/fa";
+import { FaTrainSubway } from "react-icons/fa6";
 
 interface Stations {
   _id: string;
@@ -15,12 +16,37 @@ interface Stations {
   long: number;
 }
 
+interface Fare {
+  _id: string;
+  minimumAmount: number;
+  perKM: number;
+}
+
 const Dashboard = () => {
   const { user } = useAuthContext();
   const [cardCount, setCardCount] = useState(0);
   const [stations, setStations] = useState<Stations[] | null>(null);
+  const [fare, setFare] = useState<Fare[] | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
   const { logout } = useLogout();
   const navigate = useNavigate();
+  // const [value, setValue] = useState(0);
+  const style = { "--value": 100 } as React.CSSProperties;
+
+  const fetchFare = async () => {
+    const getResponse = await fetch(
+      "https://mrt-server-shg0.onrender.com/api/fare",
+      {
+        headers: {
+          Authorization: `Bearer ${user.jwt}`,
+        },
+      }
+    );
+    const json = await getResponse.json();
+    if (getResponse.ok) {
+      setFare(json);
+    }
+  };
 
   const fetchCards = async () => {
     const getResponse = await fetch(
@@ -32,7 +58,10 @@ const Dashboard = () => {
       }
     );
     const json = await getResponse.json();
-    setCardCount(json.length);
+
+    if (getResponse.ok) {
+      setCardCount(json.length);
+    }
   };
 
   const fetchStations = async () => {
@@ -51,97 +80,160 @@ const Dashboard = () => {
     }
   };
 
-  console.log("STATION", stations);
-
   const handleClick = () => {
     logout();
     navigate("/admin");
   };
-
-  const chartSetting = {
-    xAxis: [
-      {
-        label: "Cards",
-      },
-    ],
-    width: 350,
-    height: 150,
-  };
-
-  const cardDataset = [
-    {
-      cards: cardCount,
-      count: "Cards",
-    },
-  ];
 
   const valueFormatter = (value: number) => `${value} cards`;
 
   useEffect(() => {
     fetchCards();
     fetchStations();
+    fetchFare();
   }, []);
-
-  // if (stations) {
-  //   console.log(stations[1].lat);
-  // }
 
   return (
     <div className="h-screen w-full bg-gray-800">
       <div className="text-white min-h-screen bg-gray-800">
         {/* upper right panel */}
-        <div className="flex flex-col lg:flex-row items-center min-h-full justify-center space-y-2 lg:space-y-0 pt-28 pb-6">
-          <div className="flex justify-center w-full h-full">
-            <div className="flex flex-col w-full h-full space-y-2">
+        <div className="flex flex-col lg:flex-row min-h-full justify-center items-start space-y-2 lg:space-y-0 pt-28 pb-4">
+          <div className="flex justify-start w-full h-full">
+            <div className="flex flex-col w-full h-full space-y-4">
               <div className="flex h-full items-center justify-center bg-gray-700 mr-2 mx-2 rounded-lg">
                 <div className="text-2xl font-bold py-4">
                   Admin:<span className="text-green-400"> migo@gmail.com</span>
                 </div>
               </div>
-              <div className="flex flex-col lg:flex-row space-y-2">
-                <div className="flex flex-row lg:flex-col h-full lg:w-1/4 items-start justify-between bg-gray-700 mr-2 mx-2 rounded-lg p-4 space-y-4 font-bold pb-20">
-                  <div>
-                    <div className="text-green-400 text-2xl">Quick Info</div>
+              <div className="flex flex-col lg:flex-row space-y-2 lg:space-y-0">
+                <div className="flex flex-row lg:flex-col h- lg:w-1/3 items-start justify-between bg-gray-700 mr-2 mx-2 rounded-lg p-4 lg:space-y-4 font-bold py-6">
+                  <div className="flex items-center">
+                    <div className="text-green-400 text-md lg:text-2xl bg-gray-900 h-full p-2 text-center rounded-lg ">
+                      Quick Info:
+                    </div>
                   </div>
-                  <div className="">
-                    Cards: <span className="text-green-400">{cardCount}</span>
+                  <div className="flex flex-col lg:flex-row items-center text-green-400 justify-between w-full">
+                    <div className="hidden lg:block text-white">
+                      Beep Cards:{" "}
+                    </div>
+                    <div className="lg:hidden">
+                      <FaCreditCard />-{" "}
+                    </div>
+                    <span className="text-green-400">{cardCount}</span>
                   </div>
-                  <div className="">
-                    Stations: <span className="text-green-400">10</span>
+                  <div className="flex flex-col lg:flex-row items-center text-green-400 justify-between w-full">
+                    <div className="hidden lg:block text-white">Stations: </div>
+                    <div className="lg:hidden">
+                      <FaTrainSubway />-{" "}
+                    </div>
+                    <span className="text-green-400"> {stations?.length}</span>
                   </div>
-                  <div className="">
-                    Fare: <span className="text-green-400">10</span>
+                  <div className="flex flex-col lg:flex-row items-center text-white justify-between w-full">
+                    Fare/KM: <span className="lg:hidden">-</span>
+                    <span className="text-green-400">
+                      {fare && fare[0].perKM}
+                    </span>
                   </div>
-                  <div className="">
-                    Minimum: <span className="text-green-400">10</span>
+                  <div className="flex flex-col lg:flex-row items-center text-white justify-between w-full">
+                    Minimum: <span className="lg:hidden">-</span>
+                    <span className="text-green-400">
+                      {fare && fare[0].minimumAmount}
+                    </span>
                   </div>
                 </div>
-                <div className="flex flex-row h-full bg-gray-700 mx-2 rounded-lg w-auto lg:w-full py-2">
-                  <div className="flex flex-row w-1/2 justify-center items-center">
-                    <BarChart
-                      dataset={cardDataset}
-                      yAxis={[{ scaleType: "band", dataKey: "count" }]}
-                      series={[
-                        {
-                          dataKey: "cards",
-                          label: "Cards",
-                          valueFormatter,
-                        },
-                      ]}
-                      layout="horizontal"
-                      {...chartSetting}
-                    />
+                <div className="flex flex-col lg:flex-row h-full bg-gray-700 mx-2 rounded-lg w-auto lg:w-2/3 py-2 items-center">
+                  <div className="flex flex-row lg:flex-col w-2/5 justify-center items-center space-x-10 lg:space-y-6 lg:space-x-0">
+                    <div className="flex flex-col text-center">
+                      {" "}
+                      <span className="font-bold">Cards In</span>
+                      <div
+                        className="radial-progress text-green-400"
+                        style={style}
+                        role="progressbar"
+                      >
+                        {cardCount}%
+                      </div>
+                    </div>
+                    <div className="flex flex-col text-center">
+                      <span className="font-bold">Cards Out</span>
+                      <div
+                        className="radial-progress text-green-400"
+                        style={style}
+                        role="progressbar"
+                      >
+                        {cardCount}%
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex w-1/2 text-green-400 font-bold">
-                    STATION LIST
+
+                  <div className="flex w-full items-center justify-center lg:w-3/5 text-green-400 font-bold h-80">
+                    <div className="p-3 my-2 w-full rounded-md ">
+                      <div className="mx-4">Search:</div>
+                      <input
+                        type="text"
+                        className="w-full rounded-lg text-black font-normal my-2"
+                        value={searchTerm}
+                        onChange={(e) => {
+                          setSearchTerm(e.target.value);
+                        }}
+                      />
+                      <div className="table-container w-auto">
+                        <div
+                          style={{
+                            maxHeight: "190px",
+                            overflowY: "auto",
+                            scrollbarColor: "dark",
+                          }}
+                        >
+                          <table className=" w-full bg-gray-500">
+                            <thead className="bg-gray-800 sticky top-0 w-full">
+                              <tr className="w-full">
+                                <th className="py-2 px-4 sticky top-0 text-green-400 w-full">
+                                  Station Name
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody className="w-20">
+                              {stations &&
+                                stations
+                                  .filter((station: Stations) =>
+                                    station.name
+                                      .toLowerCase()
+                                      .includes(searchTerm.toLowerCase())
+                                  )
+                                  .map((station: Stations, index) => {
+                                    return (
+                                      <tr
+                                        key={station._id}
+                                        className={
+                                          index % 2 === 0
+                                            ? "bg-gray-400"
+                                            : "bg-gray-300"
+                                        }
+                                      >
+                                        <td className="font-bold text-center text-black">
+                                          {station.name}
+                                        </td>
+                                      </tr>
+                                    );
+                                  })}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          <div className="flex flex-col w-full h-full">
-            <div className="flex h-96 items-center justify-center bg-gray-700 mr-2 p-2 rounded-lg">
-              <div className=""></div>
+          <div className="flex flex-col w-full min-h-full z-0 space-y-2 lg:space-y-4">
+            <div className="flex h-full items-center justify-center bg-gray-700 mr-2 mx-2 rounded-lg">
+              <div className="text-2xl font-bold py-4 text-green-400">
+                Station Map
+              </div>
+            </div>
+            <div className="flex h-80 items-center justify-center bg-gray-700 p-2 rounded-lg mx-2">
               <MapContainer
                 center={[14.65216, 121.03225]}
                 zoom={12}

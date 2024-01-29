@@ -22,10 +22,17 @@ const StationLanding: React.FC<StationLandingProps> = () => {
   const [long, setLong] = useState<string>("");
   const [lat, setLat] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
+  const [clickedPosition, setClickedPosition] = useState(null);
+  const [location, setLocation] = useState<[Number, Number] | null>(null);
   // const [emptyFields, setEmptyFields] = useState<string[]>([]);
   const { user } = useAuthContext();
 
   const [openModal, setOpenModal] = useState(false);
+
+  // const handleMapClick = (e) => {
+  //   const { lat, lng } = e.latlng;
+  //   setClickedPosition([lat, lng]);
+  // };
 
   const handleCreate = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -223,13 +230,13 @@ const StationLanding: React.FC<StationLandingProps> = () => {
                               index % 2 === 0 ? "bg-gray-400" : "bg-gray-300"
                             }
                           >
-                            <td className="font-bold text-center">
+                            <td className="font-bold text-center text-black">
                               {station.uid}
                             </td>
-                            <td className="font-bold text-center">
+                            <td className="font-bold text-center text-black">
                               {station.name} Station
                             </td>
-                            <td className="font-bold text-center">
+                            <td className="font-bold text-center text-black">
                               {station.lat}
                             </td>
                             <td className="font-bold text-center w-15">

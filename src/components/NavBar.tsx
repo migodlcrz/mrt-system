@@ -5,6 +5,7 @@ import ManageFare from "./ManageFare";
 import { useLogout } from "../hooks/useLogout";
 import { useAuthContext } from "../hooks/useAuthContext";
 import MrtLogo from "./MrtLogo";
+import { Modal } from "flowbite-react";
 
 const Navbar = () => {
   const { logout } = useLogout();
@@ -73,53 +74,59 @@ const Navbar = () => {
             id="navbar-sticky"
           >
             <div className="flex flex-col justify-end space-y-2 lg:space-y-0 p-4 lg:p-0 mt-4 font-medium rounded-lg lg:space-x-20 lg:flex-row lg:mt-0 lg:border-0 bg-gray-900">
-              {!isEditModalOpen && (
-                <NavLink
-                  to="/admin/dashboard/card"
-                  className="text-green-400 rounded  md:hover:text-green-700 w-full md:w-36"
-                  onClick={toggleMenu}
-                >
-                  <div className="text-green-400 bg-gray-800 hover:bg-gray-700 focus:ring-4 font-medium rounded-lg text-sm px-4 py-2 text-center ">
-                    Manage Card
-                  </div>
-                </NavLink>
-              )}
+              <NavLink
+                to="/admin/dashboard/card"
+                className="text-green-400 rounded  md:hover:text-green-700 w-full md:w-36"
+                onClick={toggleMenu}
+              >
+                <div className="text-green-400 bg-gray-800 hover:bg-gray-700 focus:ring-4 font-medium rounded-lg text-sm px-4 py-2 text-center ">
+                  Manage Card
+                </div>
+              </NavLink>
 
-              {!isEditModalOpen && (
-                <NavLink
-                  to="/admin/dashboard/station"
-                  className="text-green-400 rounded md:hover:text-green-700 w-full md:w-36 text-center"
-                  onClick={toggleMenu}
-                >
-                  <div className="bg-gray-800 rounded-lg px-4 py-2 hover:bg-gray-700 text-sm">
-                    Manage Stations
-                  </div>
-                </NavLink>
-              )}
+              <NavLink
+                to="/admin/dashboard/station"
+                className="text-green-400 rounded md:hover:text-green-700 w-full md:w-36 text-center"
+                onClick={toggleMenu}
+              >
+                <div className="bg-gray-800 rounded-lg px-4 py-2 hover:bg-gray-700 text-sm">
+                  Manage Stations
+                </div>
+              </NavLink>
 
               <div className="flex flex-row">
                 <button
                   onClick={handleEditModal}
                   className="bg-gray-800 rounded-lg px-4 py-2 hover:bg-gray-700 text-green-400 w-full md:w-36 text-sm"
                 >
-                  {isEditModalOpen ? <div>Close</div> : <div>Manage Fare</div>}
+                  Manage Fare
                 </button>
-                {isEditModalOpen && <ManageFare />}
               </div>
-              {!isEditModalOpen && (
-                <div className="px-2 text-green-400 mt- pt-1 text-sm lg:text-md">
-                  Admin: {user_}
-                </div>
-              )}
-              {!isEditModalOpen && (
-                <button
-                  onClick={handleClick}
-                  type="button"
-                  className="text-green-400 bg-gray-800 hover:bg-gray-700 focus:ring-4 font-medium rounded-lg text-sm px-4 py-2 text-center "
-                >
-                  Logout
-                </button>
-              )}
+              <Modal
+                show={isEditModalOpen}
+                onClose={() => {
+                  setEditModalOpen(false);
+                }}
+              >
+                <Modal.Header className="bg-gray-800">
+                  <div className="text-green-400">Edit Fare</div>
+                </Modal.Header>
+                <Modal.Body className="bg-gray-800">
+                  <ManageFare />
+                </Modal.Body>
+              </Modal>
+
+              <div className="px-2 text-green-400 mt- pt-1 text-sm lg:text-md">
+                Admin: {user_}
+              </div>
+
+              <button
+                onClick={handleClick}
+                type="button"
+                className="text-green-400 bg-gray-800 hover:bg-gray-700 focus:ring-4 font-medium rounded-lg text-sm px-4 py-2 text-center "
+              >
+                Logout
+              </button>
             </div>
           </div>
         )}

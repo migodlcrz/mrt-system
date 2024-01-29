@@ -50,7 +50,7 @@ const ManageFare: React.FC<ManageFareProps> = () => {
         }
 
         const responseData = await response.json();
-        // Update the formData state with the fetched data
+
         setFormData({
           minimumAmount: responseData.minimumAmount,
           perKM: responseData.perKM,
@@ -94,9 +94,6 @@ const ManageFare: React.FC<ManageFareProps> = () => {
         setError(json.error);
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
-
-      const responseData = await response.json();
-      console.log(responseData);
     } catch (error) {
       console.error("Error updating fare:", error);
     }
@@ -107,31 +104,39 @@ const ManageFare: React.FC<ManageFareProps> = () => {
       <div className="modal-overlay">
         <div className="modal-content">
           <form onSubmit={handleSubmit}>
-            <div className="flex flex-row space-x-2 mx-2">
-              <div className="flex flex-col">
-                <label className="text-green-400">Starting Fare:</label>
-                <input
-                  type="number"
-                  name="minimumAmount"
-                  value={formData.minimumAmount}
-                  onChange={handleChange}
-                  className="h-6 w-16 rounded-lg p-1 ml-3"
-                />
-              </div>
-              <div className="flex flex-col">
-                <label className="text-green-400">Rate per/KM:</label>
-                <input
-                  type="number"
-                  name="perKM"
-                  value={formData.perKM}
-                  onChange={handleChange}
-                  className="h-6 w-16 rounded-lg p-1 ml-3"
-                />
+            <div className="flex flex-row space-x-2 mx-2 w-full items-center justify-center">
+              <div className="flex flex-row w-1/2 justify-between">
+                <div className="flex flex-col space-y-2">
+                  <label className="text-green-400 font-bold">
+                    Starting Fare:
+                  </label>
+                  <input
+                    type="number"
+                    name="minimumAmount"
+                    value={formData.minimumAmount}
+                    onChange={handleChange}
+                    className="h-6 w-16 rounded-lg p-1 ml-3"
+                  />
+                </div>
+                <div className="flex flex-col space-y-2">
+                  <label className="text-green-400 font-bold">
+                    Rate per/KM:
+                  </label>
+                  <input
+                    type="number"
+                    name="perKM"
+                    value={formData.perKM}
+                    onChange={handleChange}
+                    className="h-6 w-16 rounded-lg p-1 ml-3"
+                  />
+                </div>
               </div>
               <button
                 type="submit"
                 className="text-green-400 bg-gray-700 rounded-lg px-2 h-6 mt-3"
-                onClick={handleFareSubmit}
+                onClick={() => {
+                  handleFareSubmit();
+                }}
               >
                 <FaCheck />
               </button>

@@ -209,10 +209,10 @@ const CardLanding: React.FC<CardLandingProps> = () => {
                               index % 2 === 0 ? "bg-gray-400" : "bg-gray-300"
                             }
                           >
-                            <td className="py-2 px-4 font-bold text-center">
+                            <td className="py-2 px-4 font-bold text-center text-black">
                               {card.uid}
                             </td>
-                            <td className="py-2 px-4 font-bold text-center">
+                            <td className="py-2 px-4 font-bold text-center text-black">
                               {card.balance}
                             </td>
                             <td className="py-2 px-4 font-normal text-center">
