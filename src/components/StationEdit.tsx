@@ -38,11 +38,14 @@ const StationModel: React.FC<ManageStationModelProps> = ({
   useEffect(() => {
     const fetchStationData = async () => {
       try {
-        const response = await fetch(`/api/stations/${stationID}`, {
-          headers: {
-            Authorization: `Bearer ${user.jwt}`,
-          },
-        });
+        const response = await fetch(
+          `https://mrt-server-shg0.onrender.com/api/stations/${stationID}`,
+          {
+            headers: {
+              Authorization: `Bearer ${user.jwt}`,
+            },
+          }
+        );
 
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
@@ -62,6 +65,7 @@ const StationModel: React.FC<ManageStationModelProps> = ({
     };
 
     fetchStationData();
+    console.log(formData);
   }, [stationID]);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {

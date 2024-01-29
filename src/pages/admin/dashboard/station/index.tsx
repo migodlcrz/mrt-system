@@ -3,6 +3,7 @@ import React, { ChangeEvent, useEffect, useState } from "react";
 import StationModel from "../../../../components/StationEdit";
 import { MdDelete } from "react-icons/md";
 import { useAuthContext } from "../../../../hooks/useAuthContext";
+import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 
 interface Station {
   _id: string;
@@ -115,8 +116,8 @@ const StationLanding: React.FC<StationLandingProps> = () => {
 
   return (
     <div className="CardLanding bg-gray-800 h-screen">
-      <div className="flex flex-col">
-        <div>
+      <div className="flex flex-col lg:flex-row">
+        <div className="w-full lg:w-1/2">
           <div className="flex max-w-full mx-5 mb-5 mt-28 p-4 justify-center bg-gray-600 rounded-lg">
             <Button
               className="bg-gray-800 text-green-400 font-bold hover:text-green-500"
@@ -256,6 +257,33 @@ const StationLanding: React.FC<StationLandingProps> = () => {
                 </table>
               </div>
             </div>
+          </div>
+        </div>
+        <div className="flex flex-col w-full lg:w-1/2 h-full lg:mt-28 z-10">
+          <div className="flex h-96 items-center justify-center bg-gray-700 mr-2 p-2 rounded-lg">
+            <div className=""></div>
+            <MapContainer
+              center={[14.65216, 121.03225]}
+              zoom={12}
+              zoomControl={false}
+              style={{ height: "100%", width: "100%" }}
+            >
+              <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              />
+              {stations &&
+                stations.map((station: Station) => {
+                  return (
+                    <Marker
+                      key={station._id}
+                      position={[station.lat, station.long]}
+                    >
+                      <Popup>{station.name}</Popup>
+                    </Marker>
+                  );
+                })}
+            </MapContainer>
           </div>
         </div>
       </div>

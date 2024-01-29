@@ -117,6 +117,10 @@ const CardLanding: React.FC<CardLandingProps> = () => {
     }
   }, [user, update]);
 
+  if (cards) {
+    console.log("CARDS", cards[1]._id);
+  }
+
   return (
     <div className="CardLanding bg-gray-800 h-screen">
       <div className="flex flex-col">
