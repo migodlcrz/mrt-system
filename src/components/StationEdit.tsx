@@ -30,6 +30,7 @@ const StationModel: React.FC<ManageStationModelProps> = ({
   const [isOpen, setIsOpen] = useState(false);
 
   const { user } = useAuthContext();
+  const api = process.env.REACT_APP_API_KEY;
 
   const handleButton = () => {
     isOpen ? setIsOpen(false) : setIsOpen(true);
@@ -38,14 +39,11 @@ const StationModel: React.FC<ManageStationModelProps> = ({
   useEffect(() => {
     const fetchStationData = async () => {
       try {
-        const response = await fetch(
-          `https://mrt-server-shg0.onrender.com/api/stations/${stationID}`,
-          {
-            headers: {
-              Authorization: `Bearer ${user.jwt}`,
-            },
-          }
-        );
+        const response = await fetch(`${api}/api/stations/${stationID}`, {
+          headers: {
+            Authorization: `Bearer ${user.jwt}`,
+          },
+        });
 
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
@@ -81,17 +79,14 @@ const StationModel: React.FC<ManageStationModelProps> = ({
     e.preventDefault();
 
     try {
-      const response = await fetch(
-        `https://mrt-server-shg0.onrender.com/api/stations/${stationID}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${user.jwt}`,
-          },
-          body: JSON.stringify(formData),
-        }
-      );
+      const response = await fetch(`${api}/api/stations/${stationID}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user.jwt}`,
+        },
+        body: JSON.stringify(formData),
+      });
 
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);

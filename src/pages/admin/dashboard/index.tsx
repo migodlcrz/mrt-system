@@ -32,16 +32,14 @@ const Dashboard = () => {
   const navigate = useNavigate();
   // const [value, setValue] = useState(0);
   const style = { "--value": 100 } as React.CSSProperties;
+  const api = process.env.REACT_APP_API_KEY;
 
   const fetchFare = async () => {
-    const getResponse = await fetch(
-      "https://mrt-server-shg0.onrender.com/api/fare",
-      {
-        headers: {
-          Authorization: `Bearer ${user.jwt}`,
-        },
-      }
-    );
+    const getResponse = await fetch(`${api}/api/fare`, {
+      headers: {
+        Authorization: `Bearer ${user.jwt}`,
+      },
+    });
     const json = await getResponse.json();
     if (getResponse.ok) {
       setFare(json);
@@ -49,14 +47,11 @@ const Dashboard = () => {
   };
 
   const fetchCards = async () => {
-    const getResponse = await fetch(
-      "https://mrt-server-shg0.onrender.com/api/cards",
-      {
-        headers: {
-          Authorization: `Bearer ${user.jwt}`,
-        },
-      }
-    );
+    const getResponse = await fetch(`${api}/api/cards`, {
+      headers: {
+        Authorization: `Bearer ${user.jwt}`,
+      },
+    });
     const json = await getResponse.json();
 
     if (getResponse.ok) {
@@ -65,14 +60,11 @@ const Dashboard = () => {
   };
 
   const fetchStations = async () => {
-    const getResponse = await fetch(
-      "https://mrt-server-shg0.onrender.com/api/stations",
-      {
-        headers: {
-          Authorization: `Bearer ${user.jwt}`,
-        },
-      }
-    );
+    const getResponse = await fetch(`${api}/api/stations`, {
+      headers: {
+        Authorization: `Bearer ${user.jwt}`,
+      },
+    });
     const json = await getResponse.json();
 
     if (getResponse.ok) {

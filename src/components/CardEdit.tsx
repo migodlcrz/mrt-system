@@ -16,6 +16,7 @@ interface ManageCardModelProps {
 
 const CardModel: React.FC<ManageCardModelProps> = ({ card, update }) => {
   const { user } = useAuthContext();
+  const api = process.env.REACT_APP_API_KEY;
 
   const [formData, setFormData] = useState<Card>({
     _id: "0",
@@ -56,17 +57,14 @@ const CardModel: React.FC<ManageCardModelProps> = ({ card, update }) => {
     }
 
     try {
-      const response = await fetch(
-        `https://mrt-server-shg0.onrender.com/api/cards/${card._id}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${user.jwt}`,
-          },
-          body: JSON.stringify(formData),
-        }
-      );
+      const response = await fetch(`${api}/api/cards/${card._id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user.jwt}`,
+        },
+        body: JSON.stringify(formData),
+      });
 
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);

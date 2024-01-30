@@ -28,10 +28,11 @@ const CardScan: React.FC<CardScanProps> = ({ stationName, stationStatus }) => {
 
   const [station, setStation] = useState<Station | null>(null);
   const [loading, setLoading] = useState(true);
+  const api = process.env.REACT_APP_API_KEY;
 
   const fetchStation = async () => {
     const response = await fetch(
-      "https://mrt-server-shg0.onrender.com/api/stations/tap/65b1292412353bda9d57770f"
+      `${api}/api/stations/tap/65b1292412353bda9d57770f`
     );
     const json = await response.json();
 

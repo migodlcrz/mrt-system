@@ -19,6 +19,7 @@
     "axios": "^1.6.5",
     "chart.js": "^4.4.1",
     "cors": "^2.8.5",
+    "dotenv": "^16.4.1",
     "flowbite-react": "^0.7.2",
     "helmet": "^7.1.0",
     "jsonwebtoken": "^9.0.2",
@@ -60,6 +61,7 @@
     ]
   },
   "devDependencies": {
+    "@types/dotenv": "^8.2.0",
     "@types/helmet": "^4.0.0",
     "@types/leaflet": "^1.9.8",
     "daisyui": "^4.6.1",

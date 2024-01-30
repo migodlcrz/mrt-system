@@ -26,6 +26,8 @@ const CardLanding: React.FC<CardLandingProps> = () => {
 
   const { user } = useAuthContext();
 
+  const api = process.env.REACT_APP_API_KEY;
+
   const handleCreate = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const card = { uid, balance };
@@ -34,17 +36,14 @@ const CardLanding: React.FC<CardLandingProps> = () => {
       return setError("Input cannot be negative.");
     }
 
-    const postResponse = await fetch(
-      "https://mrt-server-shg0.onrender.com/api/cards",
-      {
-        method: "POST",
-        body: JSON.stringify(card),
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${user.jwt}`,
-        },
-      }
-    );
+    const postResponse = await fetch(`${api}/api/cards`, {
+      method: "POST",
+      body: JSON.stringify(card),
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${user.jwt}`,
+      },
+    });
 
     const json = await postResponse.json();
 
@@ -69,16 +68,13 @@ const CardLanding: React.FC<CardLandingProps> = () => {
       );
 
       if (isConfirmed) {
-        const deleteResponse = await fetch(
-          "https://mrt-server-shg0.onrender.com/api/cards/" + card_id,
-          {
-            method: "DELETE",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${user.jwt}`,
-            },
-          }
-        );
+        const deleteResponse = await fetch(`${api}/api/cards/` + card_id, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${user.jwt}`,
+          },
+        });
 
         if (!deleteResponse.ok) {
           setError("Error!");
@@ -96,14 +92,11 @@ const CardLanding: React.FC<CardLandingProps> = () => {
   };
 
   const fetchCards = async () => {
-    const response = await fetch(
-      "https://mrt-server-shg0.onrender.com/api/cards",
-      {
-        headers: {
-          Authorization: `Bearer ${user.jwt}`,
-        },
-      }
-    );
+    const response = await fetch(`${api}/api/cards`, {
+      headers: {
+        Authorization: `Bearer ${user.jwt}`,
+      },
+    });
     const json = await response.json();
 
     if (response.ok) {
@@ -116,10 +109,6 @@ const CardLanding: React.FC<CardLandingProps> = () => {
       fetchCards();
     }
   }, [user, update]);
-
-  if (cards) {
-    console.log("CARDS", cards[1]._id);
-  }
 
   return (
     <div className="CardLanding bg-gray-800 h-screen">
