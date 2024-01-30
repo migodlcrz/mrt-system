@@ -79,14 +79,17 @@ const StationModel: React.FC<ManageStationModelProps> = ({
     e.preventDefault();
 
     try {
-      const response = await fetch(`${api}/api/stations/${stationID}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${user.jwt}`,
-        },
-        body: JSON.stringify(formData),
-      });
+      const response = await fetch(
+        `https://mrt-server-shg0.onrender.com/api/stations/${stationID}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${user.jwt}`,
+          },
+          body: JSON.stringify(formData),
+        }
+      );
 
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);

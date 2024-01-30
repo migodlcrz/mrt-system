@@ -1,44 +1,54 @@
-import { Button, Label, Modal, TextInput } from "flowbite-react";
+// import { Button, Dropdown, Label, Modal, TextInput } from "flowbite-react";
 import React, { ChangeEvent, useEffect, useState } from "react";
 import StationModel from "../../../../components/StationEdit";
 import { MdDelete } from "react-icons/md";
 import { useAuthContext } from "../../../../hooks/useAuthContext";
-import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
+import { MapContainer, Marker, Polyline, TileLayer } from "react-leaflet";
+import MapComponent from "../../../../components/MapComponent";
+import { Icon } from "leaflet";
+import { FaRegEdit } from "react-icons/fa";
+// import { stat } from "fs";
 
 interface Station {
   _id: string;
-  uid: number;
   name: string;
   long: number;
   lat: number;
+  connection: [string];
 }
 
 interface StationLandingProps {}
 
 const StationLanding: React.FC<StationLandingProps> = () => {
   const [stations, setStations] = useState<Station[] | null>(null);
-  const [uid, setUID] = useState<string>("");
-  const [name, setName] = useState<string>("");
-  const [long, setLong] = useState<string>("");
-  const [lat, setLat] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
-  const [clickedPosition, setClickedPosition] = useState(null);
-  const [location, setLocation] = useState<[Number, Number] | null>(null);
-  const api = process.env.REACT_APP_API_KEY;
-  // const [emptyFields, setEmptyFields] = useState<string[]>([]);
+
   const { user } = useAuthContext();
+  const api = process.env.REACT_APP_API_KEY;
 
-  const [openModal, setOpenModal] = useState(false);
+  const [latClick, setLatClick] = useState<number>(0);
+  const [lngClick, setLngClick] = useState<number>(0);
+  const [stationName, setStationName] = useState<string>("");
+  const [connections, setConnections] = useState<string[]>([]);
 
-  // const handleMapClick = (e) => {
-  //   const { lat, lng } = e.latlng;
-  //   setClickedPosition([lat, lng]);
-  // };
+  const [searchTerm, setSearchTerm] = useState<string>("");
+
+  const customIcon = new Icon({
+    iconUrl: require("./logo.png"),
+    iconSize: [30, 30],
+    iconAnchor: [15, 15],
+    popupAnchor: [0, -15],
+  });
 
   const handleCreate = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const station = { uid, name, long, lat };
+    const station = {
+      name: stationName,
+      long: lngClick,
+      lat: latClick,
+      connection: connections,
+    };
 
     const postResponse = await fetch(`${api}/api/stations`, {
       method: "POST",
@@ -49,23 +59,50 @@ const StationLanding: React.FC<StationLandingProps> = () => {
       },
     });
 
-    const json = await postResponse.json();
-
     if (!postResponse.ok) {
-      setError(json.error);
-      // setEmptyFields(json.emptyFields);
+      setError("ERROR");
     }
 
-    if (postResponse.ok) {
-      // setEmptyFields([]);
-      setError(null);
-      setUID("");
-      setName("");
-      setLat("");
-      setLong("");
-      fetchStations();
-      setOpenModal(false);
+    setStationName("");
+    setLngClick(0);
+    setLatClick(0);
+    setConnections([]);
+    fetchStations();
+  };
+
+  const handleConnectionClick = (station: Station) => {
+    const index = connections.indexOf(station._id);
+    if (index === -1) {
+      setConnections([...connections, station._id]);
+    } else {
+      const newConnections = [...connections];
+      newConnections.splice(index, 1);
+      setConnections(newConnections);
     }
+  };
+
+  const clearSearch = () => {
+    setSearchTerm("");
+    setStationName("");
+    setLngClick(0);
+    setLatClick(0);
+    setConnections([]);
+  };
+
+  const handleEdit = async (station: Station) => {
+    setStationName(station.name);
+    setLatClick(station.lat);
+    setLngClick(station.long);
+    setConnections(station.connection);
+
+    const response = fetch(`${api}/api/stations/` + station._id, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${user.jwt}`,
+      },
+      // body: JSON.stringify();
+    });
   };
 
   const handleDelete = async (station: String): Promise<void> => {
@@ -81,16 +118,16 @@ const StationLanding: React.FC<StationLandingProps> = () => {
       });
 
       if (!deleteResponse.ok) {
-        setError("ERROR");
+        // setError("ERROR");
       }
 
       if (deleteResponse.ok) {
         // setEmptyFields([]);
-        setError(null);
-        setUID("");
-        setName("");
-        setLong("");
-        setLat("");
+        // setError(null);
+        // setUID("");
+        // setName("");
+        // setLong("");
+        // setLat("");
         fetchStations();
       }
     }
@@ -117,79 +154,31 @@ const StationLanding: React.FC<StationLandingProps> = () => {
     <div className="CardLanding bg-gray-800 h-screen">
       <div className="flex flex-col lg:flex-row">
         <div className="w-full lg:w-1/2">
-          <div className="flex max-w-full mx-5 mb-5 mt-28 p-4 justify-center bg-gray-600 rounded-lg">
-            <Button
-              className="bg-gray-800 text-green-400 font-bold hover:text-green-500"
-              onClick={() => {
-                setOpenModal(true);
+          <div className="flex max-w-full mx-5 mb-5 mt-24 p-4 justify-center bg-gray-600 rounded-lg">
+            <div className="flex bg-green-400 text-gray-700 font-bold rounded-l-lg w-auto h-10 px-2 items-center">
+              Search
+            </div>
+            <input
+              type=""
+              className="bg-white w-full h-10"
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
               }}
+            />
+            <button
+              className="flex bg-green-400 text-gray-700 font-bold  rounded-r-lg w-auto h-10 px-2 items-center"
+              onClick={clearSearch}
             >
-              CREATE STATION
-            </Button>
-            <Modal
-              show={openModal}
-              onClose={() => {
-                setOpenModal(false);
-                setError(null);
-              }}
-            >
-              <Modal.Header className="bg-gray-900">
-                <div className="text-green-400 font-bold">CREATE STATION</div>
-              </Modal.Header>
-              <Modal.Body className="bg-gray-800">
-                <form className="create" onSubmit={handleCreate}>
-                  <Label className="text-green-400">Station ID:</Label>
-                  <TextInput
-                    type="number"
-                    onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                      setUID(e.target.value)
-                    }
-                    value={uid}
-                  />
-                  <Label className="text-green-400">Station Name:</Label>
-                  <TextInput
-                    type="text"
-                    onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                      setName(e.target.value)
-                    }
-                    value={name}
-                  />
-                  <Label className="text-green-400">Latitude:</Label>
-                  <TextInput
-                    type="text"
-                    onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                      setLat(e.target.value)
-                    }
-                    value={lat}
-                  />
-                  <Label className="text-green-400">Longitude:</Label>
-                  <TextInput
-                    type="number"
-                    onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                      setLong(e.target.value)
-                    }
-                    value={long}
-                  />
-
-                  <button>
-                    <Button className="mt-5 bg-gray-700 hover:bg-gray-900">
-                      <div className="text-green-400">Add Station</div>
-                    </Button>
-                  </button>
-                  {error && (
-                    <div className="text-red-500 font-bold m-2">{error}</div>
-                  )}
-                </form>
-              </Modal.Body>
-              <Modal.Footer className="bg-gray-900" />
-            </Modal>
+              Clear
+            </button>
           </div>
 
           <div className="bg-gray-600 p-3 rounded-md shadow-md mx-5">
             <div className="table-container max-h-screen">
               <div
                 style={{
-                  maxHeight: "460px",
+                  maxHeight: "502px",
                   overflowY: "auto",
                   scrollbarColor: "dark",
                 }}
@@ -197,7 +186,6 @@ const StationLanding: React.FC<StationLandingProps> = () => {
                 <table className=" w-full bg-gray-500">
                   <thead className="bg-gray-800 sticky top-0">
                     <tr>
-                      <th className=" px-4 sticky top-0 text-green-400">UID</th>
                       <th className="py-2 px-4 sticky top-0 text-green-400">
                         Station Name
                       </th>
@@ -207,6 +195,9 @@ const StationLanding: React.FC<StationLandingProps> = () => {
                       <th className="py-2 px-4 sticky top-0 text-green-400">
                         Longitude
                       </th>
+                      <th className=" px-4 sticky top-0 text-green-400">
+                        connections
+                      </th>
                       <th className="py-2 px-4 sticky top-0 text-green-400">
                         Actions
                       </th>
@@ -214,56 +205,71 @@ const StationLanding: React.FC<StationLandingProps> = () => {
                   </thead>
                   <tbody>
                     {stations &&
-                      stations.map((station: Station, index) => {
-                        return (
-                          <tr
-                            key={station._id}
-                            className={
-                              index % 2 === 0 ? "bg-gray-400" : "bg-gray-300"
-                            }
-                          >
-                            <td className="font-bold text-center text-black">
-                              {station.uid}
-                            </td>
-                            <td className="font-bold text-center text-black">
-                              {station.name} Station
-                            </td>
-                            <td className="font-bold text-center text-black">
-                              {station.lat}
-                            </td>
-                            <td className="font-bold text-center w-15">
-                              {station.long}
-                            </td>
-                            <td className="py-2 px-4 font-normal text-center w-10">
-                              <div className="flex flex-row justify-center items-center space-x-2">
-                                <StationModel
-                                  stationID={station._id}
-                                  fetchStations={fetchStations}
-                                />
+                      stations
+                        .filter((station: Station) =>
+                          station.name
+                            .toLowerCase()
+                            .includes(searchTerm.toLowerCase())
+                        )
+                        .map((station: Station, index) => {
+                          return (
+                            <tr
+                              key={station._id}
+                              className={
+                                index % 2 === 0 ? "bg-gray-400" : "bg-gray-300"
+                              }
+                            >
+                              <td className="font-bold text-center text-black">
+                                {station.name} Station
+                              </td>
+                              <td className="font-bold text-center text-black">
+                                {station.lat}
+                              </td>
+                              <td className="font-bold text-center w-15 text-black">
+                                {station.long}
+                              </td>
+                              <td className="font-bold text-center w-15 text-black">
+                                dropdown
+                              </td>
+                              <td className="py-2 px-4 font-normal text-center w-10">
+                                <div className="flex flex-row justify-center items-center space-x-2">
+                                  <button
+                                    className="bg-gray-800 text-green-400 px-2 py-1 rounded-lg"
+                                    onClick={() => handleEdit(station)}
+                                  >
+                                    <FaRegEdit />
+                                  </button>
+                                  {/* 
+                                  <StationModel
+                                    stationID={station._id}
+                                    fetchStations={fetchStations}
+                                  /> */}
 
-                                <button
-                                  className="bg-gray-800 w-15 rounded-lg text-red-500 text-sm py-1 px-2 font-semibold"
-                                  onClick={(e) => handleDelete(station._id)}
-                                >
-                                  <MdDelete />
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        );
-                      })}
+                                  <button
+                                    className="bg-gray-800 w-15 rounded-lg text-red-500 text-sm py-1 px-2 font-semibold"
+                                    onClick={(e) => handleDelete(station._id)}
+                                  >
+                                    <MdDelete />
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          );
+                        })}
                   </tbody>
                 </table>
               </div>
             </div>
           </div>
         </div>
-        <div className="flex flex-col w-full lg:w-1/2 h-full lg:mt-28 z-10">
-          <div className="flex h-96 items-center justify-center bg-gray-700 mr-2 p-2 rounded-lg">
+
+        {/* FOR EDIT, ADD */}
+        <div className="flex flex-col w-full lg:w-1/2 h-full z-10">
+          <div className="flex h-80 items-center justify-center bg-gray-700 mr-2 p-2 rounded-lg lg:mt-24 ">
             <div className=""></div>
             <MapContainer
               center={[14.65216, 121.03225]}
-              zoom={12}
+              zoom={13}
               zoomControl={false}
               style={{ height: "100%", width: "100%" }}
             >
@@ -271,18 +277,134 @@ const StationLanding: React.FC<StationLandingProps> = () => {
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               />
+              <MapComponent
+                setLatClicked={setLatClick}
+                setLngClicked={setLngClick}
+              />
+
+              <Marker position={[latClick, lngClick]} />
+
+              {/* Event handler */}
               {stations &&
-                stations.map((station: Station) => {
-                  return (
+                stations.map((station: Station) => (
+                  <div key={station._id}>
                     <Marker
-                      key={station._id}
                       position={[station.lat, station.long]}
-                    >
-                      <Popup>{station.name}</Popup>
-                    </Marker>
-                  );
-                })}
+                      // icon={customIcon}
+                    />
+                    {station.connection.map((connectedId: string) => {
+                      const connectedStation = stations.find(
+                        (s) => s._id === connectedId
+                      );
+                      if (connectedStation) {
+                        return (
+                          <Polyline
+                            key={`${station._id}-${connectedId}`}
+                            positions={[
+                              [station.lat, station.long],
+                              [connectedStation.lat, connectedStation.long],
+                            ]}
+                          />
+                        );
+                      }
+                      return null;
+                    })}
+                  </div>
+                ))}
             </MapContainer>
+          </div>
+          <div className="flex justify-center items-center w-auto h-1/2 z-10 bg-gray-700 m-2 ml-0 rounded-lg">
+            <div className="flex flex-row bg-gray-900 m-2 h-full w-full rounded-lg">
+              <div className="flex flex-col w-1/2 m-2">
+                <div className="flex flex=row justify-between">
+                  <div className="text-xl font-bold text-green-400">
+                    Add Station
+                  </div>
+                  <button
+                    className="bg-green-400 text-black p-2 rounded-lg font-bold"
+                    onClick={clearSearch}
+                  >
+                    Clear Marker
+                  </button>
+                </div>
+                <div className="">
+                  <form
+                    action=""
+                    className="flex flex-col w-full justify-between space-y-4"
+                    onSubmit={handleCreate}
+                  >
+                    <label>Station Name:</label>
+                    <input
+                      type="text"
+                      className="rounded-lg text-black"
+                      value={stationName}
+                      onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                        setStationName(e.target.value);
+                      }}
+                      required
+                    />
+                    <div className="flex flex-row w-auto">
+                      <div className="flex flex-col w-1/2">
+                        <label>Latitude:</label>
+                        <input
+                          type="text"
+                          className="w-20 rounded-lg text-black"
+                          value={latClick}
+                          readOnly
+                          required
+                        />
+                      </div>
+                      <div className="flex flex-col">
+                        <label>Longitude:</label>
+                        <input
+                          type="text"
+                          className="w-20 rounded-lg text-black"
+                          value={lngClick}
+                          readOnly
+                          required
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <button className="bg-green-400 text-black p-2 rounded-lg font-bold">
+                        Done
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+              <div className="flex flex-col justify-between w-1/2 m-2">
+                <label className="mb-2 text-xl font-bold text-green-400">
+                  Station Connection:
+                </label>
+                <div className="w-full h-56 bg-gray-800 rounded-lg">
+                  <div
+                    style={{
+                      maxHeight: "220px",
+                      overflowY: "auto",
+                      scrollbarColor: "dark",
+                    }}
+                  >
+                    <div className="m-2">
+                      {stations?.map((station: Station, index) => (
+                        <div key={index}>
+                          <button
+                            onClick={() => handleConnectionClick(station)}
+                            className={`px-2 py-1 my-1 font-bold w-full ${
+                              connections.includes(station._id)
+                                ? "bg-green-400 text-black"
+                                : "bg-gray-700 text-white"
+                            }`}
+                          >
+                            {station.name}
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
