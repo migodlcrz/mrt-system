@@ -3,17 +3,23 @@ import { NavLink } from "react-router-dom";
 import DashboardCard from "../../../components/DashboardCard";
 import { useLogout } from "../../../hooks/useLogout";
 import { useNavigate } from "react-router-dom";
-import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
+import {
+  MapContainer,
+  Marker,
+  Polyline,
+  Popup,
+  TileLayer,
+} from "react-leaflet";
 import { useAuthContext } from "../../../hooks/useAuthContext";
 import { FaCreditCard } from "react-icons/fa";
 import { FaTrainSubway } from "react-icons/fa6";
 
 interface Stations {
   _id: string;
-  uid: number;
   name: string;
   lat: number;
   long: number;
+  connection: string[];
 }
 
 interface Fare {
@@ -134,33 +140,9 @@ const Dashboard = () => {
                   </div>
                 </div>
                 <div className="flex flex-col lg:flex-row h-full bg-gray-700 mx-2 rounded-lg w-auto lg:w-2/3 py-2 items-center">
-                  <div className="flex flex-row lg:flex-col w-2/5 justify-center items-center space-x-10 lg:space-y-6 lg:space-x-0">
-                    <div className="flex flex-col text-center">
-                      {" "}
-                      <span className="font-bold">Cards In</span>
-                      <div
-                        className="radial-progress text-green-400"
-                        style={style}
-                        role="progressbar"
-                      >
-                        {cardCount}%
-                      </div>
-                    </div>
-                    <div className="flex flex-col text-center">
-                      <span className="font-bold">Cards Out</span>
-                      <div
-                        className="radial-progress text-green-400"
-                        style={style}
-                        role="progressbar"
-                      >
-                        {cardCount}%
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex w-full items-center justify-center lg:w-3/5 text-green-400 font-bold h-80">
-                    <div className="p-3 my-2 w-full rounded-md ">
-                      <div className="mx-4">Search:</div>
+                  <div className="flex w-full items-start justify-start lg:w-3/5 text-green-400 font-bold h-80">
+                    <div className="px-2 w-full rounded-md">
+                      <div className="">Search:</div>
                       <input
                         type="text"
                         className="w-full rounded-lg text-black font-normal my-2"
@@ -172,7 +154,7 @@ const Dashboard = () => {
                       <div className="table-container w-auto">
                         <div
                           style={{
-                            maxHeight: "190px",
+                            maxHeight: "235px",
                             overflowY: "auto",
                             scrollbarColor: "dark",
                           }}
@@ -215,6 +197,62 @@ const Dashboard = () => {
                       </div>
                     </div>
                   </div>
+
+                  <div className="flex w-full items-start justify-start lg:w-2/5 text-green-400 font-bold h-80">
+                    <div className="px-2 w-full rounded-md">
+                      <div className="my-2 lg:my-0">Cards Info:</div>
+                      <div className="flex flex-row lg:flex-col w-full justify-center items-center space-x-10 lg:space-y-6 lg:space-x-0 bg-gray-800 rounded-lg mr-2 mt-2 py-4">
+                        <div className="flex flex-col text-center">
+                          {" "}
+                          <span className="font-bold">On deck</span>
+                          <div
+                            className="radial-progress text-green-400"
+                            style={style}
+                            role="progressbar"
+                          >
+                            {cardCount}%
+                          </div>
+                        </div>
+                        <div className="flex flex-col text-center">
+                          <span className="font-bold">Off deck</span>
+                          <div
+                            className="radial-progress text-green-400"
+                            style={style}
+                            role="progressbar"
+                          >
+                            {cardCount}%
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* <div className="flex flex-col w-2/5 mr-2 justify-start items-start">
+                    <div>Card Data:</div>
+                    <div className="flex flex-row lg:flex-col w-full justify-center items-center space-x-10 lg:space-y-6 lg:space-x-0 bg-gray-800 rounded-lg mr-2 py-4">
+                      <div className="flex flex-col text-center">
+                        {" "}
+                        <span className="font-bold">Cards In</span>
+                        <div
+                          className="radial-progress text-green-400"
+                          style={style}
+                          role="progressbar"
+                        >
+                          {cardCount}%
+                        </div>
+                      </div>
+                      <div className="flex flex-col text-center">
+                        <span className="font-bold">Cards Out</span>
+                        <div
+                          className="radial-progress text-green-400"
+                          style={style}
+                          role="progressbar"
+                        >
+                          {cardCount}%
+                        </div>
+                      </div>
+                    </div>
+                  </div> */}
                 </div>
               </div>
             </div>
@@ -237,16 +275,34 @@ const Dashboard = () => {
                   url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
                 {stations &&
-                  stations.map((station: Stations) => {
-                    return (
+                  stations.map((station: Stations) => (
+                    <div key={station._id}>
                       <Marker
-                        key={station._id}
                         position={[station.lat, station.long]}
+                        // icon={customIcon}
                       >
                         <Popup>{station.name}</Popup>
                       </Marker>
-                    );
-                  })}
+
+                      {station.connection.map((connectedId: string) => {
+                        const connectedStation = stations.find(
+                          (s) => s._id === connectedId
+                        );
+                        if (connectedStation) {
+                          return (
+                            <Polyline
+                              key={`${station._id}-${connectedId}`}
+                              positions={[
+                                [station.lat, station.long],
+                                [connectedStation.lat, connectedStation.long],
+                              ]}
+                            />
+                          );
+                        }
+                        return null;
+                      })}
+                    </div>
+                  ))}
               </MapContainer>
             </div>
           </div>
