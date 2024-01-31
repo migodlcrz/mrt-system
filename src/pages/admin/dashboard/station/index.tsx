@@ -48,6 +48,8 @@ const StationLanding: React.FC<StationLandingProps> = () => {
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [editStruct, setEditStruct] = useState<Station | null>(null);
 
+  const [stationCount, setStationCount] = useState<number>(0);
+
   const handleCreate = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -140,8 +142,6 @@ const StationLanding: React.FC<StationLandingProps> = () => {
 
   const handleEdit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault(); // Prevent default form submission
-
-    console.log("Edit STructure", editStruct);
 
     // Patch the station with updated information
     const response = await fetch(`${api}/api/stations/` + editStruct?._id, {
@@ -242,6 +242,7 @@ const StationLanding: React.FC<StationLandingProps> = () => {
     const json = await response.json();
 
     if (response.ok) {
+      setStationCount(json.length);
       setStations(json);
     }
   };
@@ -250,6 +251,7 @@ const StationLanding: React.FC<StationLandingProps> = () => {
     fetchStations();
   }, []);
 
+  console.log("EDIT", isEdit);
   return (
     <div className="CardLanding bg-gray-800 h-screen">
       <div className="flex flex-col lg:flex-row h-screen">
@@ -295,6 +297,11 @@ const StationLanding: React.FC<StationLandingProps> = () => {
                     </tr>
                   </thead>
                   <tbody>
+                    {/* {stationCount === 0 && (
+                      <div className="flex text-white w-full h-full">
+                        <div className="flex justify-center items-center">No Station</div>
+                      </div>
+                    )} */}
                     {stations &&
                       stations
                         .filter((station: Station) =>
@@ -306,27 +313,25 @@ const StationLanding: React.FC<StationLandingProps> = () => {
                           return (
                             <tr
                               key={station._id}
-                              className={
+                              className={`hover:bg-gray-500 ${
                                 index % 2 === 0 ? "bg-gray-400" : "bg-gray-300"
-                              }
+                              }`}
+                              onClick={() => {
+                                handleClickEdit(station);
+                              }}
+                              style={{ cursor: "pointer" }}
                             >
                               <td className="font-bold text-center text-black">
                                 {station.name}
                               </td>
                               <td className="py-2 px-4 font-normal text-center w-10">
                                 <div className="flex flex-row justify-center items-center space-x-2">
-                                  <button
+                                  {/* <button
                                     className="bg-gray-800 text-green-400 px-2 py-1 rounded-lg"
                                     onClick={() => handleClickEdit(station)}
                                   >
                                     <FaRegEdit />
-                                  </button>
-                                  {/* 
-                                  <StationModel
-                                    stationID={station._id}
-                                    fetchStations={fetchStations}
-                                  /> */}
-
+                                  </button> */}
                                   <button
                                     className="bg-gray-800 w-15 rounded-lg text-red-500 text-sm py-1 px-2 font-semibold"
                                     onClick={(e) => handleDelete(station._id)}
@@ -346,8 +351,8 @@ const StationLanding: React.FC<StationLandingProps> = () => {
         </div>
 
         {/* FOR EDIT, ADD */}
-        <div className="flex flex-col w-full lg:w-1/2 h-full z-10">
-          <div className="flex h-80 items-center justify-center bg-gray-700 mx-5 my-2 lg:mr-2 p-2 rounded-lg lg:mt-24 ">
+        <div className="flex flex-col w-full lg:w-1/2 h-full z-0">
+          <div className="flex h-96 items-center justify-center bg-gray-700 mx-5 my-2 lg:mr-2 p-2 rounded-lg lg:mt-24">
             <MapContainer
               center={[14.65216, 121.03225]}
               zoom={13}
@@ -411,7 +416,11 @@ const StationLanding: React.FC<StationLandingProps> = () => {
                   </div>
                   {!isEdit && (
                     <button
-                      className="bg-green-400 text-black p-2 rounded-lg font-bold"
+                      className={`flex ${
+                        latClick === 0 && lngClick === 0
+                          ? `bg-gray-400`
+                          : `bg-green-400`
+                      } text-gray-700 font-bold rounded-lg w-auto h-10 px-2 items-center`}
                       onClick={clearSearch}
                     >
                       Clear
@@ -490,19 +499,29 @@ const StationLanding: React.FC<StationLandingProps> = () => {
                   Station Connection:
                 </label>
                 <div className="flex flex-row">
-                  <div className="flex bg-green-400 text-gray-700 font-bold rounded-l-lg w-auto h-10 px-2 items-center">
+                  <div
+                    className={`flex ${
+                      latClick === 0 && lngClick === 0
+                        ? `bg-gray-400`
+                        : `bg-green-400`
+                    } text-gray-700 font-bold  rounded-l-lg w-auto h-10 px-2 items-center`}
+                  >
                     Search
                   </div>
                   <input
                     type=""
                     className="bg-gray-200 w-full h-10 text-black"
-                    value={searchTerm}
+                    value={searchConnectedTerm}
                     onChange={(e) => {
                       setSearchConnectedTerm(e.target.value);
                     }}
                   />
                   <button
-                    className="flex bg-green-400 text-gray-700 font-bold  rounded-r-lg w-auto h-10 px-2 items-center"
+                    className={`flex ${
+                      latClick === 0 && lngClick === 0
+                        ? `bg-gray-400`
+                        : `bg-green-400`
+                    } text-gray-700 font-bold  rounded-r-lg w-auto h-10 px-2 items-center`}
                     onClick={clearSearch}
                   >
                     Clear
@@ -518,7 +537,34 @@ const StationLanding: React.FC<StationLandingProps> = () => {
                       }}
                     >
                       <div className="m-2">
-                        {stations?.map((station: Station, index) => (
+                        {stations &&
+                          stations
+                            .filter((station: Station) =>
+                              station.name
+                                .toLowerCase()
+                                .includes(searchConnectedTerm.toLowerCase())
+                            )
+                            .map((station: Station, index) => {
+                              return (
+                                <div key={station._id}>
+                                  {station.name !== stationName && ( // Check if it's not the current station's name
+                                    <button
+                                      onClick={() =>
+                                        handleConnectionClick(station)
+                                      }
+                                      className={`px-2 py-1 my-1 font-bold w-full rounded-lg ${
+                                        connections.includes(station._id)
+                                          ? "bg-green-400 text-black"
+                                          : "bg-gray-700 text-white"
+                                      }`}
+                                    >
+                                      {station.name}
+                                    </button>
+                                  )}
+                                </div>
+                              );
+                            })}
+                        {/* {stations?.map((station: Station, index) => (
                           <div key={index}>
                             {station.name !== editStruct?.name && ( // Check if it's not the current station's name
                               <button
@@ -533,7 +579,7 @@ const StationLanding: React.FC<StationLandingProps> = () => {
                               </button>
                             )}
                           </div>
-                        ))}
+                        ))} */}
                       </div>
                     </div>
                   )}
