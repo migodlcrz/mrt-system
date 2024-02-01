@@ -32,7 +32,7 @@ const Login: FC<LoginProps> = () => {
   };
 
   return (
-    <div className="flex flex-col bg-gray-800 h-screen mx-auto">
+    <div className="flex flex-col bg-gray-800 h-screen mx-auto animate__animated animate__fadeIn">
       <div className="flex flex-row w-screen h-20 items-center bg-gray-900">
         <img src="/logo.png" className="h-12 m-4 ml-4" alt="Flowbite Logo" />
         <div className="text-2xl font-black text-green-500">

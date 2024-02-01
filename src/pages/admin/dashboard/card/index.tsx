@@ -111,7 +111,7 @@ const CardLanding: React.FC<CardLandingProps> = () => {
   }, [user, update]);
 
   return (
-    <div className="CardLanding bg-gray-800 h-screen">
+    <div className="CardLanding bg-gray-800 h-screen animate__animated animate__fadeIn">
       <div className="flex flex-col">
         <div>
           <div className="flex max-w-full mx-5 mb-5 mt-28 p-4 justify-center bg-gray-600 rounded-lg space-x-2">

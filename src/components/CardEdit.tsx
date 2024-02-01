@@ -92,7 +92,7 @@ const CardModel: React.FC<ManageCardModelProps> = ({ card, update }) => {
             {/* FIX */}
             <form onSubmit={handleSubmit}>
               <div className="flex flex-col">
-                <label className="font-semibold w-full text-left text-xs md:text-lg">
+                <label className="font-semibold w-full text-black text-left text-xs md:text-lg">
                   Balance:{" "}
                   {error && (
                     <span className="text-red-800 font-bold text-sm">
@@ -104,7 +104,17 @@ const CardModel: React.FC<ManageCardModelProps> = ({ card, update }) => {
                   type="number"
                   name="balance"
                   // value={formData.balance}
-                  className="rounded-lg h-8 w-20 md:h-10 md:w-48"
+                  // PANTANGAL TO NG SOBRA
+                  onKeyPress={(e) => {
+                    if (e.key === "e" || e.key === "E") {
+                      e.preventDefault();
+                    } else if (
+                      (e.target as HTMLInputElement).value.length >= 5
+                    ) {
+                      e.preventDefault();
+                    }
+                  }}
+                  className="rounded-lg h-8 w-20 md:h-10 md:w-48 text-black"
                   onChange={handleChange}
                   required
                 />

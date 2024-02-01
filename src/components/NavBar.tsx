@@ -104,6 +104,7 @@ const Navbar = () => {
               </div>
               <Modal
                 show={isEditModalOpen}
+                className="show:dark:bg-opacity-0 animate__animated animate__backInDown"
                 onClose={() => {
                   setEditModalOpen(false);
                 }}

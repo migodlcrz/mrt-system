@@ -92,7 +92,7 @@ const Dashboard = () => {
   }, []);
 
   return (
-    <div className="h-screen w-full bg-gray-800">
+    <div className="h-screen w-full bg-gray-800 animate__animated animate__fadeIn">
       <div className="text-white min-h-screen bg-gray-800">
         {/* upper right panel */}
         <div className="flex flex-col lg:flex-row min-h-full justify-center items-start space-y-2 lg:space-y-0 pt-28 pb-4">

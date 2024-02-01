@@ -1,6 +1,4 @@
-// import { Button, Dropdown, Label, Modal, TextInput } from "flowbite-react";
 import React, { ChangeEvent, useEffect, useState } from "react";
-import { MdDelete } from "react-icons/md";
 import { useAuthContext } from "../../../../hooks/useAuthContext";
 import {
   MapContainer,
@@ -8,11 +6,14 @@ import {
   Polyline,
   Popup,
   TileLayer,
+  Tooltip,
 } from "react-leaflet";
 import MapComponent from "../../../../components/MapComponent";
 // import { Icon, LatLng, LatLngExpression, latLng } from "leaflet";
-import { FaRegEdit } from "react-icons/fa";
 import { IoMdCloseCircle } from "react-icons/io";
+import { FaSearch } from "react-icons/fa";
+import "animate.css";
+import { Icon } from "leaflet";
 
 // import { stat } from "fs";
 
@@ -49,6 +50,14 @@ const StationLanding: React.FC<StationLandingProps> = () => {
   const [editStruct, setEditStruct] = useState<Station | null>(null);
 
   const [stationCount, setStationCount] = useState<number>(0);
+
+  const customIcon = new Icon({
+    iconUrl: require("../station/marker.png"),
+    iconSize: [40, 40],
+    iconAnchor: [20, 36],
+    popupAnchor: [0, -35],
+    className: "animate__animated animate__fadeIn",
+  });
 
   const handleCreate = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -93,7 +102,7 @@ const StationLanding: React.FC<StationLandingProps> = () => {
           setConnections([]);
           fetchStations();
 
-          console.log("under 500", distance);
+          console.log("DISTANCE", distance);
           return;
         }
       }
@@ -114,7 +123,6 @@ const StationLanding: React.FC<StationLandingProps> = () => {
       return;
     }
 
-    // Clear input fields
     setStationName("");
     setLngClick(0);
     setLatClick(0);
@@ -170,10 +178,12 @@ const StationLanding: React.FC<StationLandingProps> = () => {
             setError(null);
           }, 3000);
 
+          setEditStruct(null);
           setStationName("");
           setLngClick(0);
           setLatClick(0);
           setConnections([]);
+          setIsEdit(false);
           fetchStations();
 
           console.log("under 500", distance);
@@ -235,14 +245,8 @@ const StationLanding: React.FC<StationLandingProps> = () => {
     setEditStruct(station);
   };
 
-  // const handleClickView = (station: Station) => {
-  //   setStationName(station.name);
-  //   setLatClick(station.lat);
-  //   setLngClick(station.long);
-  //   setConnections(station.connection);
-  // };
-
   const handleDelete = async (station: String): Promise<void> => {
+    console.log("BEFORE DELETE", editStruct);
     const isConfirmed = window.confirm("Are you sure you want to delete this?");
 
     if (isConfirmed) {
@@ -263,8 +267,10 @@ const StationLanding: React.FC<StationLandingProps> = () => {
         setStationName("");
         setLngClick(0);
         setLatClick(0);
+        setIsEdit(false);
         setConnections([]);
         fetchStations();
+        setEditStruct(null);
       }
     }
   };
@@ -289,12 +295,84 @@ const StationLanding: React.FC<StationLandingProps> = () => {
 
   console.log("EDIT", isEdit);
   return (
-    <div className="CardLanding bg-gray-800 h-screen">
+    <div className="CardLanding bg-gray-800 h-screen animate__animated animate__fadeIn">
       <div className="flex flex-col lg:flex-row h-screen">
-        <div className="w-full lg:w-1/2">
-          <div className="flex max-w-full mx-5 mb-5 mt-24 p-2 justify-center bg-gray-700 rounded-lg">
+        {/* eLEFT PANEL */}
+        <div className="w-full lg:w-1/2 z-0 mt-24 lg:mt-0">
+          {/* eMAP */}
+          <div className="flex h-96 lg:h-custom-height items-center justify-center bg-gray-700 mx-5 my-2 lg:mr-1 p-2 rounded-lg lg:mt-24">
+            <MapContainer
+              className="animate__animated animate__fadeIn"
+              center={[14.648028524991535, 121.05955123901369]}
+              zoom={13}
+              zoomControl={false}
+              style={{ height: "100%", width: "100%" }}
+            >
+              <div>
+                <label className="z-40"></label>
+                <h3 className="z-40">hello</h3>
+              </div>
+              <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              />
+
+              <MapComponent
+                setLatClicked={setLatClick}
+                setLngClicked={setLngClick}
+              />
+
+              <Marker position={[latClick, lngClick]} icon={customIcon} />
+
+              {stations &&
+                stations.map((station: Station) => (
+                  <div key={station._id}>
+                    <Marker
+                      position={[station.lat, station.long]}
+                      icon={customIcon}
+                      eventHandlers={{
+                        click: () => handleClickEdit(station),
+                      }}
+                    >
+                      <Tooltip direction="top" offset={[0, -35]}>
+                        <div className="font-bold text-green-400">STATION:</div>
+                        <span className="text-sm font-bold">
+                          {station.name}
+                        </span>
+                      </Tooltip>
+                    </Marker>
+
+                    {station.connection.map((connectedId: string) => {
+                      const connectedStation = stations.find(
+                        (s) => s._id === connectedId
+                      );
+                      if (connectedStation) {
+                        return (
+                          <Polyline
+                            key={`${station._id}-${connectedId}`}
+                            className=""
+                            positions={[
+                              [station.lat, station.long],
+                              [connectedStation.lat, connectedStation.long],
+                            ]}
+                            color="green"
+                          />
+                        );
+                      }
+                      return null;
+                    })}
+                  </div>
+                ))}
+            </MapContainer>
+          </div>
+        </div>
+
+        {/* eRIGHT PANEL */}
+        <div className="flex flex-col w-full lg:w-1/2 h-full z-0">
+          {/* eSEARCH BAR */}
+          <div className="flex max-w-full mx-5 mb-5 lg:mb-2 lg:mt-24 p-2 justify-center bg-gray-700 rounded-lg">
             <div className="flex bg-green-400 text-gray-700 font-bold rounded-l-lg w-auto h-10 px-2 items-center">
-              Search
+              <FaSearch />
             </div>
             <input
               type=""
@@ -311,12 +389,13 @@ const StationLanding: React.FC<StationLandingProps> = () => {
               Clear
             </button>
           </div>
-
+          {/* eTABLE */}
           <div className="bg-gray-700 p-2 rounded-md shadow-md mx-5">
-            <div className="table-container max-h-screen">
+            <div className="table-container h-custom-max-height">
               <div
+                className="h-96 overflow-y-auto"
                 style={{
-                  maxHeight: "502px",
+                  maxHeight: "195px",
                   overflowY: "auto",
                   scrollbarColor: "dark",
                 }}
@@ -327,9 +406,6 @@ const StationLanding: React.FC<StationLandingProps> = () => {
                       <th className="py-2 px-4 sticky top-0 text-green-400">
                         Station Name
                       </th>
-                      {/* <th className="py-2 px-4 sticky top-0 text-green-400">
-                        Actions
-                      </th> */}
                     </tr>
                   </thead>
                   <tbody>
@@ -344,7 +420,7 @@ const StationLanding: React.FC<StationLandingProps> = () => {
                           return (
                             <tr
                               key={station._id}
-                              className={`hover:bg-gray-500 ${
+                              className={`hover:bg-gray-500 animate__animated animate__fadeIn ${
                                 index % 2 === 0 ? "bg-gray-400" : "bg-gray-300"
                               }`}
                               onClick={() => {
@@ -355,16 +431,6 @@ const StationLanding: React.FC<StationLandingProps> = () => {
                               <td className="font-bold text-center text-black">
                                 {station.name}
                               </td>
-                              {/* <td className="py-2 px-4 font-normal text-center w-10">
-                                <div className="flex flex-row justify-center items-center space-x-2">
-                                  <button
-                                    className="bg-gray-800 w-15 rounded-lg text-red-500 text-sm py-1 px-2 font-semibold"
-                                    onClick={(e) => handleDelete(station._id)}
-                                  >
-                                    <MdDelete />
-                                  </button>
-                                </div>
-                              </td> */}
                             </tr>
                           );
                         })}
@@ -373,78 +439,8 @@ const StationLanding: React.FC<StationLandingProps> = () => {
               </div>
             </div>
           </div>
-        </div>
-
-        {/* FOR EDIT, ADD */}
-        <div className="flex flex-col w-full lg:w-1/2 h-full z-0">
-          <div className="flex h-96 items-center justify-center bg-gray-700 mx-5 my-2 lg:mr-2 p-2 rounded-lg lg:mt-24">
-            <MapContainer
-              center={[14.65216, 121.03225]}
-              zoom={13}
-              zoomControl={false}
-              style={{ height: "100%", width: "100%" }}
-            >
-              <TileLayer
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              />
-              <MapComponent
-                setLatClicked={setLatClick}
-                setLngClicked={setLngClick}
-              />
-
-              <Marker position={[latClick, lngClick]} />
-
-              {/* Event handler */}
-              {stations &&
-                stations.map((station: Station) => (
-                  <div key={station._id}>
-                    <Marker position={[station.lat, station.long]}>
-                      <Popup>
-                        <div className="flex flex-col w-full h-full">
-                          <div className="text-black font-bold">
-                            {station.name}
-                          </div>
-                          <div className="flex flex-row w-full justify-center space-x-3">
-                            <button
-                              className="bg-green-600 p-1 rounded-lg text-white font-bold mt-2"
-                              onClick={() => handleClickEdit(station)}
-                            >
-                              <FaRegEdit />
-                            </button>
-                            <button
-                              className="bg-red-600 p-1 rounded-lg text-white font-bold mt-2"
-                              onClick={() => handleDelete(station._id)}
-                            >
-                              <MdDelete />
-                            </button>
-                          </div>
-                        </div>
-                      </Popup>
-                    </Marker>
-
-                    {station.connection.map((connectedId: string) => {
-                      const connectedStation = stations.find(
-                        (s) => s._id === connectedId
-                      );
-                      if (connectedStation) {
-                        return (
-                          <Polyline
-                            key={`${station._id}-${connectedId}`}
-                            positions={[
-                              [station.lat, station.long],
-                              [connectedStation.lat, connectedStation.long],
-                            ]}
-                          />
-                        );
-                      }
-                      return null;
-                    })}
-                  </div>
-                ))}
-            </MapContainer>
-          </div>
-          <div className="flex justify-center items-center w-auto h-1/2 z-10 bg-gray-700 mx-5 mt-2 lg:mx-2 lg:ml-5 rounded-lg py-2 mb-2">
+          {/* eSTATION FORM */}
+          <div className="flex justify-center items-center w-auto h-1/2 z-10 bg-gray-700 mx-5 mt-2 lg:mr-5 rounded-lg py-2 mb-2">
             <div className="flex flex-row bg-gray-900 m-2 h-full w-full rounded-lg">
               <div className="flex flex-col w-1/2 m-2">
                 <div className="flex flex=row justify-between">
@@ -462,11 +458,15 @@ const StationLanding: React.FC<StationLandingProps> = () => {
                 </div>
                 <div className="">
                   <form
-                    action=""
                     className="flex flex-col w-full justify-between space-y-4"
                     onSubmit={isEdit ? handleEdit : handleCreate}
                   >
-                    <label>Station Name:</label>
+                    <div>
+                      <label>Station Name: </label>
+                      <span className="text-green-400 font-bold">
+                        {editStruct?.name}
+                      </span>
+                    </div>
                     <input
                       type="text"
                       className="rounded-lg text-black"
@@ -477,37 +477,49 @@ const StationLanding: React.FC<StationLandingProps> = () => {
                       readOnly={latClick === 0 && lngClick === 0}
                       required
                     />
-                    <div className="flex flex-row w-auto">
+                    <div className="flex flex-col lg:flex-row w-auto lg:space-x-10">
                       <div className="flex flex-col w-1/2">
                         <label>Latitude:</label>
                         <input
                           type="text"
-                          className="w-20 rounded-lg text-black"
+                          className="w-full rounded-lg text-black"
                           value={latClick}
                           readOnly
                           required
                         />
                       </div>
-                      <div className="flex flex-col">
+                      <div className="flex flex-col w-1/2">
                         <label>Longitude:</label>
                         <input
                           type="text"
-                          className="w-20 rounded-lg text-black"
+                          className="w-full rounded-lg text-black"
                           value={lngClick}
                           readOnly
                           required
                         />
                       </div>
                     </div>
-                    <div>
+                    <div className="">
                       {latClick !== 0 && lngClick !== 0 && (
-                        <button className="bg-green-400 text-black p-2 rounded-lg font-bold">
+                        <button className="bg-green-400 text-black p-2 rounded-lg font-bold w-16 hover:bg-green-600">
                           {isEdit ? "Edit" : "Add"}
                         </button>
                       )}
                       {error && <div className="text-red-600">{error}</div>}
                     </div>
                   </form>
+                  <div className="w-1/2">
+                    {isEdit && (
+                      <button
+                        className="bg-red-600 text-black p-2 rounded-lg font-bold mt-2 hover"
+                        onClick={() => {
+                          handleDelete(String(editStruct?._id));
+                        }}
+                      >
+                        Delete
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
               <div className="flex flex-col justify-between w-1/2 m-2">
@@ -525,8 +537,8 @@ const StationLanding: React.FC<StationLandingProps> = () => {
                     <button
                       className={`flex ${
                         latClick === 0 && lngClick === 0
-                          ? `bg-gray-400`
-                          : `bg-green-400`
+                          ? `bg-gray-400 text-gray-700 hover:bg-gray-600`
+                          : `bg-green-400 text-black hover:bg-green-600`
                       } text-gray-700 font-bold rounded-lg w-auto h-10 px-2 items-center`}
                       onClick={clearSearch}
                     >
@@ -535,10 +547,11 @@ const StationLanding: React.FC<StationLandingProps> = () => {
                   )}
                   {isEdit && (
                     <button
-                      className="bg-gray-900 text-green-400 p-2 rounded-lg font-bold"
+                      className="bg-gray-900 text-green-400 p-2 rounded-lg font-bold hover:text-green-600"
                       onClick={(e) => {
                         clearSearch();
                         setIsEdit(false);
+                        setEditStruct(null);
                       }}
                     >
                       <IoMdCloseCircle />
@@ -550,32 +563,38 @@ const StationLanding: React.FC<StationLandingProps> = () => {
                   <div
                     className={`flex ${
                       latClick === 0 && lngClick === 0
-                        ? `bg-gray-400`
-                        : `bg-green-400`
-                    } text-gray-700 font-bold  rounded-l-lg w-auto h-10 px-2 items-center`}
+                        ? `bg-gray-400 text-gray-700`
+                        : `bg-green-400 text-black`
+                    }  font-bold  rounded-l-lg w-auto h-10 px-2 items-center`}
                   >
-                    Search
+                    <FaSearch />
                   </div>
                   <input
                     type=""
-                    className="bg-gray-200 w-full h-10 text-black"
+                    className="bg-gray-200 w-full h-10 text-black rounded-r-lg lg:rounded-none"
                     value={searchConnectedTerm}
                     onChange={(e) => {
                       setSearchConnectedTerm(e.target.value);
                     }}
+                    readOnly={!isEdit}
                   />
                   <button
                     className={`flex ${
                       latClick === 0 && lngClick === 0
-                        ? `bg-gray-400`
-                        : `bg-green-400`
-                    } text-gray-700 font-bold  rounded-r-lg w-auto h-10 px-2 items-center`}
+                        ? `bg-gray-400 text-gray-700 hover:bg-gray-600`
+                        : `bg-green-400 text-black hover:bg-green-600`
+                    }  font-bold rounded-r-lg w-auto h-10 px-2 items-center hidden lg:block`}
                     onClick={clearSearch}
                   >
                     Clear
                   </button>
                 </div>
                 <div className="w-full h-56 bg-gray-800 rounded-lg">
+                  {latClick === 0 && lngClick === 0 && (
+                    <div className="text-center mt-20 font-bold px-3">
+                      Press on map or edit station to see connections.
+                    </div>
+                  )}
                   {latClick !== 0 && lngClick !== 0 && (
                     <div
                       style={{
@@ -595,15 +614,15 @@ const StationLanding: React.FC<StationLandingProps> = () => {
                             .map((station: Station, index) => {
                               return (
                                 <div key={station._id}>
-                                  {station.name !== stationName && ( // Check if it's not the current station's name
+                                  {station.name !== stationName && (
                                     <button
                                       onClick={() =>
                                         handleConnectionClick(station)
                                       }
                                       className={`px-2 py-1 my-1 font-bold w-full rounded-lg ${
                                         connections.includes(station._id)
-                                          ? "bg-green-400 text-black"
-                                          : "bg-gray-700 text-white"
+                                          ? "bg-green-400 text-black hover:bg-green-600"
+                                          : "bg-gray-700 text-white hover:bg-gray-900"
                                       }`}
                                     >
                                       {station.name}
@@ -612,22 +631,6 @@ const StationLanding: React.FC<StationLandingProps> = () => {
                                 </div>
                               );
                             })}
-                        {/* {stations?.map((station: Station, index) => (
-                          <div key={index}>
-                            {station.name !== editStruct?.name && ( // Check if it's not the current station's name
-                              <button
-                                onClick={() => handleConnectionClick(station)}
-                                className={`px-2 py-1 my-1 font-bold w-full ${
-                                  connections.includes(station._id)
-                                    ? "bg-green-400 text-black"
-                                    : "bg-gray-700 text-white"
-                                }`}
-                              >
-                                {station.name}
-                              </button>
-                            )}
-                          </div>
-                        ))} */}
                       </div>
                     </div>
                   )}

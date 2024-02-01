@@ -1,3 +1,13 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@layer utilities {
+  .h-custom-height {
+    height: 86vh;
+  }
+}
+@layer utilities {
+  .h-custom-max-height {
+    height: 25vh;
+  }
+}
