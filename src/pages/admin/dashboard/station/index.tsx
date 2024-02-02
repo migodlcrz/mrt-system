@@ -4,18 +4,14 @@ import {
   MapContainer,
   Marker,
   Polyline,
-  Popup,
   TileLayer,
   Tooltip,
 } from "react-leaflet";
 import MapComponent from "../../../../components/MapComponent";
-// import { Icon, LatLng, LatLngExpression, latLng } from "leaflet";
 import { IoMdCloseCircle } from "react-icons/io";
 import { FaSearch } from "react-icons/fa";
 import "animate.css";
 import { Icon } from "leaflet";
-
-// import { stat } from "fs";
 
 interface Station {
   _id: string;
@@ -53,8 +49,8 @@ const StationLanding: React.FC<StationLandingProps> = () => {
 
   const customIcon = new Icon({
     iconUrl: require("../station/marker.png"),
-    iconSize: [40, 40],
-    iconAnchor: [20, 36],
+    iconSize: [30, 30],
+    iconAnchor: [15, 29],
     popupAnchor: [0, -35],
     className: "animate__animated animate__fadeIn",
   });
@@ -547,7 +543,7 @@ const StationLanding: React.FC<StationLandingProps> = () => {
                   )}
                   {isEdit && (
                     <button
-                      className="bg-gray-900 text-green-400 p-2 rounded-lg font-bold hover:text-green-600"
+                      className="bg-gray-900 text-2xl text-green-400 p-2 rounded-lg font-bold hover:text-green-600"
                       onClick={(e) => {
                         clearSearch();
                         setIsEdit(false);

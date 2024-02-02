@@ -69,26 +69,7 @@ const App = () => {
               />
             }
           />
-          <Route
-            path={"/station/northave/in"}
-            element={<CardScan stationName="North Avenue" stationStatus="IN" />}
-          />
-          <Route
-            path={"/station/northave/out"}
-            element={
-              <CardScan stationName="North Avenue" stationStatus="OUT" />
-            }
-          />
-          <Route
-            path={"/station/quezonave/in"}
-            element={<CardScan stationName="Ayala Avenue" stationStatus="IN" />}
-          />
-          <Route
-            path={"/station/quezonave/out"}
-            element={
-              <CardScan stationName="Ayala Avenue" stationStatus="OUT" />
-            }
-          />
+          <Route path={"/station/:stn/:status"} element={<CardScan />} />
         </Routes>
       </div>
     </BrowserRouter>

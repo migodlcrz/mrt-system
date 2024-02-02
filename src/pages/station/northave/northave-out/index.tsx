@@ -1,13 +1,8 @@
-import React from 'react'
-import CardScan from '../../../../components/CardScan';
+import React from "react";
+import CardScan from "../../../../components/CardScan";
 
 function NorthaveOut() {
-  return (
-    <CardScan 
-      stationName="North Avenue"
-      stationStatus="OUT"
-    />
-  )
+  return <div>hello</div>;
 }
 
 export default NorthaveOut;

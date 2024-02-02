@@ -1,56 +1,139 @@
 import React, { useEffect, useState } from "react";
 // import Leaflet from "leaflet";
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
-interface CardScanProps {
-  stationName: string;
-  stationStatus: string;
-  // station_id: number;
-}
+import { useNavigate, useParams } from "react-router-dom";
+import NotLogin from "./NotLogin";
 
 interface Station {
-  uid: number;
+  _id: string;
   name: string;
-  long: number;
   lat: number;
+  long: number;
+  connection: string[];
 }
 
-// const polylineCoordinates = [
-//   [Leaflet.latLng(14.65216, 121.03225), Leaflet.latLng(14.64226, 121.03879)],
-// ];
-
-const CardScan: React.FC<CardScanProps> = ({ stationName, stationStatus }) => {
-  const fontColor =
-    stationStatus === "IN"
-      ? "text-green-500"
-      : stationStatus === "OUT"
-      ? "text-red-500"
-      : "text-gray-300";
-
-  const [station, setStation] = useState<Station | null>(null);
-  const [loading, setLoading] = useState(true);
+const CardScan = () => {
+  const [station, setStation] = useState<Station[] | null>(null);
+  const { stn, status } = useParams();
   const api = process.env.REACT_APP_API_KEY;
 
-  const fetchStation = async () => {
-    const response = await fetch(
-      `${api}/api/stations/tap/65b1292412353bda9d57770f`
-    );
-    const json = await response.json();
+  // function addConnection(station: Station, connectedStationId: string): void {
+  //   station.connection.push(connectedStationId);
+  // }
 
-    if (response.ok) {
-      setStation(json);
+  function calculateDistance(
+    lat1: number,
+    lon1: number,
+    lat2: number,
+    lon2: number
+  ): number {
+    const R = 6371e3; // Earth radius in meters
+    const φ1 = (lat1 * Math.PI) / 180; // φ, λ in radians
+    const φ2 = (lat2 * Math.PI) / 180;
+    const Δφ = ((lat2 - lat1) * Math.PI) / 180;
+    const Δλ = ((lon2 - lon1) * Math.PI) / 180;
+
+    const a =
+      Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+      Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    return R * c; // Distance in meters
+  }
+
+  function findPath(
+    start: Station,
+    end: Station,
+    stations: Station[]
+  ): { stations: Station[]; distance: number } | null {
+    const visited: Set<string> = new Set();
+    const queue: { station: Station; path: Station[] }[] = [
+      { station: start, path: [] },
+    ];
+
+    while (queue.length > 0) {
+      const { station, path } = queue.shift()!;
+      visited.add(station._id);
+
+      if (station._id === end._id) {
+        return {
+          stations: path.concat(station),
+          distance: calculatePathDistance(path.concat(station)),
+        };
+      }
+
+      for (const connectionId of station.connection) {
+        const connection = stations.find((s) => s._id === connectionId);
+        if (connection && !visited.has(connection._id)) {
+          queue.push({ station: connection, path: path.concat(station) });
+        }
+      }
     }
 
-    if (!response.ok) {
-      throw new Error("Failed to load data from API");
+    return null; // No path found
+  }
+
+  function calculatePathDistance(path: Station[]): number {
+    let totalDistance = 0;
+    for (let i = 0; i < path.length - 1; i++) {
+      const { lat: lat1, long: lon1 } = path[i];
+      const { lat: lat2, long: lon2 } = path[i + 1];
+      totalDistance += calculateDistance(lat1, lon1, lat2, lon2);
+    }
+    return totalDistance;
+  }
+
+  const fetchData = async () => {
+    const response = await fetch(`${api}/api/stations`, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+    });
+    if (response.ok) {
+      const data = await response.json();
+      setStation(data);
+    } else {
+      throw new Error("Failed to fetch data");
     }
   };
 
+  const fetchOneStation = async () => {};
+
   useEffect(() => {
-    fetchStation();
+    fetchData();
   }, []);
 
-  console.log("LAT", station?.lat);
-  console.log("LONG", station?.long);
+  const navigate = useNavigate();
+
+  if (station) {
+    for (let i = 0; i < station.length; i++) {
+      if (stn === station[i].name) {
+        console.log("Station found", station[i]);
+      } else {
+        console.log("Station not found");
+      }
+    }
+    for (let i = 0; i < station.length; i++) {
+      console.log(station[i]);
+    }
+    const startStation = station[1];
+    const endStation = station[6];
+
+    const result = findPath(startStation, endStation, station);
+    if (result) {
+      console.log("Path found:");
+      result.stations.forEach((station) => console.log(station.name));
+      console.log("Total distance:", result.distance.toFixed(2), "meters");
+    } else {
+      console.log("No path found between the stations.");
+    }
+  }
+
+  const fontColor =
+    status === "IN"
+      ? "text-green-500"
+      : status === "OUT"
+      ? "text-red-500"
+      : "text-gray-300";
 
   return (
     <div className="h-screen flex flex-col lg:flex-row">
@@ -65,7 +148,7 @@ const CardScan: React.FC<CardScanProps> = ({ stationName, stationStatus }) => {
           <label
             className={`block text-1xl font-bold lg:text-4xl lg:font-black ${fontColor} ml-2`}
           >
-            {stationStatus}
+            {status}
           </label>
         </div>
         <input
@@ -77,15 +160,15 @@ const CardScan: React.FC<CardScanProps> = ({ stationName, stationStatus }) => {
           htmlFor="station-label"
           className={`block text-2xl font-bold lg:text-4xl lg:font-black text-blue-400 mt-2 lg:mr-0`}
         >
-          {stationName}
+          {stn}
         </label>
       </div>
 
       {/* right half - Map */}
       <MapContainer
         className="h-1/2 w-full lg:w-1/2 lg:h-full"
-        // center={[14.6004, 121.0357]}
-        center={[Number(station?.long), Number(station?.lat)]}
+        center={[14.6004, 121.0357]}
+        // center={[Number(station?.long), Number(station?.lat)]}
         zoom={15}
         zoomControl={false}
         dragging={false}
@@ -99,13 +182,6 @@ const CardScan: React.FC<CardScanProps> = ({ stationName, stationStatus }) => {
         <Marker position={[14.65216, 121.03225]}>
           <Popup>NORTH AVENUE STATION</Popup>
         </Marker>
-        {/* <Marker position={[14.64226, 121.03879]}>
-          <Popup>QUEZON AVENUE STATION</Popup>
-        </Marker> */}
-        {/* <Polyline
-          pathOptions={{ color: "red" }}
-          positions={polylineCoordinates}
-        /> */}
       </MapContainer>
     </div>
   );

@@ -13,6 +13,8 @@ import {
 import { useAuthContext } from "../../../hooks/useAuthContext";
 import { FaCreditCard } from "react-icons/fa";
 import { FaTrainSubway } from "react-icons/fa6";
+import { FaMoneyBill } from "react-icons/fa";
+import { FaCoins } from "react-icons/fa";
 
 interface Stations {
   _id: string;
@@ -98,19 +100,19 @@ const Dashboard = () => {
         <div className="flex flex-col lg:flex-row min-h-full justify-center items-start space-y-2 lg:space-y-0 pt-28 pb-4">
           <div className="flex justify-start w-full h-full">
             <div className="flex flex-col w-full h-full space-y-4">
-              <div className="flex h-full items-center justify-center bg-gray-700 mr-2 mx-2 rounded-lg">
+              <div className="flex h-full items-center justify-center bg-gray-700 mr-2 mx-2 rounded-lg animate__animated animate__backInLeft">
                 <div className="text-2xl font-bold py-4">
                   Admin:<span className="text-green-400"> migo@gmail.com</span>
                 </div>
               </div>
               <div className="flex flex-col lg:flex-row space-y-2 lg:space-y-0">
-                <div className="flex flex-row lg:flex-col h- lg:w-1/3 items-start justify-between bg-gray-700 mr-2 mx-2 rounded-lg p-4 lg:space-y-4 font-bold py-6">
+                <div className="flex flex-row lg:flex-col h- lg:w-1/3 items-start  bg-gray-700 mr-2 mx-2 rounded-lg p-4 lg:space-y-4 font-bold py-6 animate__animated animate__backInLeft">
                   <div className="flex items-center">
                     <div className="text-green-400 text-md lg:text-2xl bg-gray-900 h-full p-2 text-center rounded-lg ">
                       Quick Info:
                     </div>
                   </div>
-                  <div className="flex flex-col lg:flex-row items-center text-green-400 justify-between w-full">
+                  <div className="flex flex-col lg:flex-row items-center text-green-400 justify-between w-full border-b-2 border-b-white">
                     <div className="hidden lg:block text-white">
                       Beep Cards:{" "}
                     </div>
@@ -119,27 +121,35 @@ const Dashboard = () => {
                     </div>
                     <span className="text-green-400">{cardCount}</span>
                   </div>
-                  <div className="flex flex-col lg:flex-row items-center text-green-400 justify-between w-full">
+                  <div className="flex flex-col lg:flex-row items-center text-green-400 justify-between w-full border-b-2 border-b-white">
                     <div className="hidden lg:block text-white">Stations: </div>
                     <div className="lg:hidden">
                       <FaTrainSubway />-{" "}
                     </div>
                     <span className="text-green-400"> {stations?.length}</span>
                   </div>
-                  <div className="flex flex-col lg:flex-row items-center text-white justify-between w-full">
-                    Fare/KM: <span className="lg:hidden">-</span>
+                  <div className="flex flex-col lg:flex-row items-center text-green-400 justify-between w-full border-b-2 border-b-white">
+                    <div className="hidden lg:block text-white">
+                      Minimum Fare:{" "}
+                    </div>
+                    <div className="lg:hidden">
+                      <FaCoins />-{" "}
+                    </div>
                     <span className="text-green-400">
-                      {fare && fare[0].perKM}
+                      ₱{fare && fare[0].minimumAmount}
                     </span>
                   </div>
-                  <div className="flex flex-col lg:flex-row items-center text-white justify-between w-full">
-                    Minimum: <span className="lg:hidden">-</span>
+                  <div className="flex flex-col lg:flex-row items-center text-green-400 justify-between w-full border-b-2 border-b-white">
+                    <div className="hidden lg:block text-white">Fare/KM: </div>
+                    <div className="lg:hidden">
+                      <FaMoneyBill />-{" "}
+                    </div>
                     <span className="text-green-400">
-                      {fare && fare[0].minimumAmount}
+                      ₱{fare && fare[0].perKM}/km
                     </span>
                   </div>
                 </div>
-                <div className="flex flex-col lg:flex-row h-full bg-gray-700 mx-2 rounded-lg w-auto lg:w-2/3 py-2 items-center">
+                <div className="flex flex-col lg:flex-row h-full bg-gray-700 mx-2 rounded-lg w-auto lg:w-2/3 py-2 items-center  animate__animated animate__backInLeft">
                   <div className="flex w-full items-start justify-start lg:w-3/5 text-green-400 font-bold h-80">
                     <div className="px-2 w-full rounded-md">
                       <div className="">Search:</div>
@@ -258,12 +268,12 @@ const Dashboard = () => {
             </div>
           </div>
           <div className="flex flex-col w-full min-h-full z-0 space-y-2 lg:space-y-4">
-            <div className="flex h-full items-center justify-center bg-gray-700 mr-2 mx-2 rounded-lg">
+            <div className="flex h-full items-center justify-center bg-gray-700 mr-2 mx-2 rounded-lg animate__animated animate__backInRight">
               <div className="text-2xl font-bold py-4 text-green-400">
                 Station Map
               </div>
             </div>
-            <div className="flex h-80 items-center justify-center bg-gray-700 p-2 rounded-lg mx-2">
+            <div className="flex h-custom-height-dash items-center justify-center bg-gray-700 p-2 rounded-lg mx-2 animate__animated animate__backInRight">
               <MapContainer
                 center={[14.65216, 121.03225]}
                 zoom={12}

@@ -5,6 +5,9 @@
   .h-custom-height {
     height: 86vh;
   }
+  .h-custom-height-dash {
+    height: 43vh;
+  }
 }
 @layer utilities {
   .h-custom-max-height {
