@@ -25,6 +25,7 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   const handleClick = () => {
+    isMenuOpen ? setIsMenuOpen(false) : setIsMenuOpen(true);
     logout();
     navigate("/admin");
   };

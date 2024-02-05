@@ -11,13 +11,15 @@ import Root from "../components/Root";
 
 const App = () => {
   const { user } = useAuthContext();
+  const hideNavbar = window.location.pathname.startsWith("/station"); // Check if the current path starts with "/station"
 
   console.log("Router", user);
 
   return (
     <BrowserRouter>
       <div>
-        <Navbar />
+        {!hideNavbar && <Navbar />}{" "}
+        {/* Render Navbar unless hideNavbar is true */}
         <Routes>
           <Route path={"/"} element={<Root />} />
           <Route path={"/admin"} element={<Admin />} />
@@ -65,7 +67,7 @@ const App = () => {
             element={
               <NotLogin
                 error="Page not found!"
-                message="Go back to login page."
+                message="Go back to the login page."
               />
             }
           />

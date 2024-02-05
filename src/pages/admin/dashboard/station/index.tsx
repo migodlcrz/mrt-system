@@ -282,6 +282,7 @@ const StationLanding: React.FC<StationLandingProps> = () => {
     if (response.ok) {
       setStationCount(json.length);
       setStations(json);
+      console.log("STATIONS", stations);
     }
   };
 

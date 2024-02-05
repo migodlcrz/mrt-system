@@ -1,8 +1,16 @@
+import { stat } from "fs";
 import React, { useEffect, useState } from "react";
 // import Leaflet from "leaflet";
-import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
+import {
+  MapContainer,
+  Marker,
+  Polyline,
+  Popup,
+  TileLayer,
+  Tooltip,
+} from "react-leaflet";
 import { useNavigate, useParams } from "react-router-dom";
-import NotLogin from "./NotLogin";
+import MapComponent from "./MapComponent";
 
 interface Station {
   _id: string;
@@ -14,6 +22,7 @@ interface Station {
 
 const CardScan = () => {
   const [station, setStation] = useState<Station[] | null>(null);
+  const [stationPage, setStationPage] = useState<Station | null>(null);
   const { stn, status } = useParams();
   const api = process.env.REACT_APP_API_KEY;
 
@@ -27,8 +36,8 @@ const CardScan = () => {
     lat2: number,
     lon2: number
   ): number {
-    const R = 6371e3; // Earth radius in meters
-    const φ1 = (lat1 * Math.PI) / 180; // φ, λ in radians
+    const R = 6371e3;
+    const φ1 = (lat1 * Math.PI) / 180;
     const φ2 = (lat2 * Math.PI) / 180;
     const Δφ = ((lat2 - lat1) * Math.PI) / 180;
     const Δλ = ((lon2 - lon1) * Math.PI) / 180;
@@ -38,7 +47,7 @@ const CardScan = () => {
       Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
-    return R * c; // Distance in meters
+    return R * c;
   }
 
   function findPath(
@@ -70,7 +79,7 @@ const CardScan = () => {
       }
     }
 
-    return null; // No path found
+    return null;
   }
 
   function calculatePathDistance(path: Station[]): number {
@@ -85,38 +94,35 @@ const CardScan = () => {
 
   const fetchData = async () => {
     const response = await fetch(`${api}/api/stations`, {
-      method: "GET",
       headers: { "Content-Type": "application/json" },
     });
+
+    const data = await response.json();
     if (response.ok) {
-      const data = await response.json();
       setStation(data);
     } else {
       throw new Error("Failed to fetch data");
     }
   };
 
-  const fetchOneStation = async () => {};
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const navigate = useNavigate();
-
-  if (station) {
-    for (let i = 0; i < station.length; i++) {
-      if (stn === station[i].name) {
-        console.log("Station found", station[i]);
-      } else {
-        console.log("Station not found");
+  const checkConnection = () => {
+    if (station) {
+      if (station.length > 0) {
+        const matchedStation = station.find((station) => station.name === stn);
+        if (matchedStation) {
+          setStationPage(matchedStation);
+        } else {
+          console.log("Station not found");
+        }
       }
     }
-    for (let i = 0; i < station.length; i++) {
-      console.log(station[i]);
-    }
-    const startStation = station[1];
-    const endStation = station[6];
+  };
+
+  // FOR USEPARAMS
+
+  if (station) {
+    const startStation = station[0];
+    const endStation = station[1];
 
     const result = findPath(startStation, endStation, station);
     if (result) {
@@ -129,11 +135,23 @@ const CardScan = () => {
   }
 
   const fontColor =
-    status === "IN"
+    status === "in"
       ? "text-green-500"
-      : status === "OUT"
+      : status === "out"
       ? "text-red-500"
       : "text-gray-300";
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    if (station) {
+      checkConnection();
+    }
+  }, [station]);
+
+  console.log("STATION PAGE", stationPage?.name);
 
   return (
     <div className="h-screen flex flex-col lg:flex-row">
@@ -148,7 +166,7 @@ const CardScan = () => {
           <label
             className={`block text-1xl font-bold lg:text-4xl lg:font-black ${fontColor} ml-2`}
           >
-            {status}
+            {status?.toUpperCase()}
           </label>
         </div>
         <input
@@ -160,29 +178,64 @@ const CardScan = () => {
           htmlFor="station-label"
           className={`block text-2xl font-bold lg:text-4xl lg:font-black text-blue-400 mt-2 lg:mr-0`}
         >
-          {stn}
+          {stationPage && <>{stationPage.name}</>}
         </label>
       </div>
 
       {/* right half - Map */}
-      <MapContainer
-        className="h-1/2 w-full lg:w-1/2 lg:h-full"
-        center={[14.6004, 121.0357]}
-        // center={[Number(station?.long), Number(station?.lat)]}
-        zoom={15}
-        zoomControl={false}
-        dragging={false}
-        style={{ height: "100%", width: "100%" }}
-        scrollWheelZoom={false}
-      >
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
-        <Marker position={[14.65216, 121.03225]}>
-          <Popup>NORTH AVENUE STATION</Popup>
-        </Marker>
-      </MapContainer>
+      {stationPage && (
+        <MapContainer
+          className="h-1/2 w-full lg:w-1/2 lg:h-full"
+          center={[stationPage.lat, stationPage.long]}
+          zoom={20}
+          zoomControl={false}
+          style={{ height: "100%", width: "100%" }}
+        >
+          <div>
+            <label className="z-40"></label>
+            <h3 className="z-40">hello</h3>
+          </div>
+          <TileLayer
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          />
+
+          {station &&
+            station.map((stations: Station) => (
+              <div key={stations._id}>
+                <Marker
+                  position={[stations.lat, stations.long]}
+                  // icon={customIcon}
+                >
+                  <Tooltip direction="top" offset={[0, -35]} permanent>
+                    <div className="font-bold text-green-400">STATION:</div>
+                    <span className="text-sm font-bold">{stations.name}</span>
+                  </Tooltip>
+                </Marker>
+
+                {stations.connection.map((connectedId: string) => {
+                  const connectedStation = station.find(
+                    (s) => s._id === connectedId
+                  );
+                  if (connectedStation) {
+                    return (
+                      <Polyline
+                        key={`${stations._id}-${connectedId}`}
+                        className=""
+                        positions={[
+                          [stations.lat, stations.long],
+                          [connectedStation.lat, connectedStation.long],
+                        ]}
+                        color="green"
+                      />
+                    );
+                  }
+                  return null;
+                })}
+              </div>
+            ))}
+        </MapContainer>
+      )}
     </div>
   );
 };

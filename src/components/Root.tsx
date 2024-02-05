@@ -1,6 +1,5 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import DashboardCard from "./DashboardCard";
 import { useLogout } from "../hooks/useLogout";
 
 const Root = () => {
@@ -17,7 +16,7 @@ const Root = () => {
             <div className="flex flex-col lg:flex-row w-full h-full">
               <button
                 onClick={() => {
-                  navigate("/station/test/test");
+                  navigate("/station/a/in");
                 }}
                 className="flex w-full lg:h-full hover:bg-gray-900 bg-gray-800 justify-center items-center hover:text-gray-300 font-bold"
               >
