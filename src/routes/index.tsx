@@ -8,6 +8,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import NotLogin from "../components/NotLogin";
 import CardScan from "../components/CardScan";
 import Root from "../components/Root";
+import FareCalculator from "../algorithm";
 
 const App = () => {
   const { user } = useAuthContext();
@@ -22,6 +23,10 @@ const App = () => {
         {/* Render Navbar unless hideNavbar is true */}
         <Routes>
           <Route path={"/"} element={<Root />} />
+          <Route
+            path={"/console"}
+            element={<FareCalculator stationParameter="i" />}
+          />
           <Route path={"/admin"} element={<Admin />} />
           <Route
             path={"/admin/dashboard"}

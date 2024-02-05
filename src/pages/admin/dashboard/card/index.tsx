@@ -8,6 +8,9 @@ interface Card {
   _id: string;
   uid: string;
   balance: number;
+  isTap: boolean;
+  in: string;
+  out: string;
 }
 
 interface CardLandingProps {}
@@ -184,6 +187,9 @@ const CardLanding: React.FC<CardLandingProps> = () => {
                         Balance
                       </th>
                       <th className="py-2 px-4 sticky top-0 text-green-400 w-10 lg:w-80">
+                        Status
+                      </th>
+                      <th className="py-2 px-4 sticky top-0 text-green-400 w-10 lg:w-80">
                         Actions
                       </th>
                     </tr>
@@ -203,6 +209,13 @@ const CardLanding: React.FC<CardLandingProps> = () => {
                             </td>
                             <td className="py-2 px-4 font-bold text-center text-black">
                               {card.balance}
+                            </td>
+                            <td
+                              className={`py-2 px-4 font-bold text-center ${
+                                card.isTap ? "text-green-400" : "text-red-600"
+                              }`}
+                            >
+                              {card.isTap ? "Tapped" : "Not Tapped"}
                             </td>
                             <td className="py-2 px-4 font-normal text-center">
                               <div className="flex flex-row justify-center items-center space-x-2">

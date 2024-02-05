@@ -1,5 +1,4 @@
-import { stat } from "fs";
-import React, { useEffect, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 // import Leaflet from "leaflet";
 import {
   MapContainer,
@@ -10,6 +9,7 @@ import {
   Tooltip,
 } from "react-leaflet";
 import { useNavigate, useParams } from "react-router-dom";
+import { useAuthContext } from "../hooks/useAuthContext";
 import MapComponent from "./MapComponent";
 
 interface Station {
@@ -20,79 +20,25 @@ interface Station {
   connection: string[];
 }
 
+interface Card {
+  _id: string;
+  uid: number;
+  balance: number;
+  isTap: boolean;
+  in: string;
+  out: string;
+}
+
 const CardScan = () => {
   const [station, setStation] = useState<Station[] | null>(null);
   const [stationPage, setStationPage] = useState<Station | null>(null);
+  const [enteredUID, setenteredUID] = useState("");
+  const [card, setCard] = useState<Card | null>(null);
+  const [isCardFound, setIsCardFound] = useState(true);
   const { stn, status } = useParams();
   const api = process.env.REACT_APP_API_KEY;
 
   const navigate = useNavigate();
-
-  // function addConnection(station: Station, connectedStationId: string): void {
-  //   station.connection.push(connectedStationId);
-  // }
-
-  function calculateDistance(
-    lat1: number,
-    lon1: number,
-    lat2: number,
-    lon2: number
-  ): number {
-    const R = 6371e3;
-    const φ1 = (lat1 * Math.PI) / 180;
-    const φ2 = (lat2 * Math.PI) / 180;
-    const Δφ = ((lat2 - lat1) * Math.PI) / 180;
-    const Δλ = ((lon2 - lon1) * Math.PI) / 180;
-
-    const a =
-      Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-      Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-    return R * c;
-  }
-
-  function findPath(
-    start: Station,
-    end: Station,
-    stations: Station[]
-  ): { stations: Station[]; distance: number } | null {
-    const visited: Set<string> = new Set();
-    const queue: { station: Station; path: Station[] }[] = [
-      { station: start, path: [] },
-    ];
-
-    while (queue.length > 0) {
-      const { station, path } = queue.shift()!;
-      visited.add(station._id);
-
-      if (station._id === end._id) {
-        return {
-          stations: path.concat(station),
-          distance: calculatePathDistance(path.concat(station)),
-        };
-      }
-
-      for (const connectionId of station.connection) {
-        const connection = stations.find((s) => s._id === connectionId);
-        if (connection && !visited.has(connection._id)) {
-          queue.push({ station: connection, path: path.concat(station) });
-        }
-      }
-    }
-
-    return null;
-  }
-
-  function calculatePathDistance(path: Station[]): number {
-    let totalDistance = 0;
-    for (let i = 0; i < path.length - 1; i++) {
-      const { lat: lat1, long: lon1 } = path[i];
-      const { lat: lat2, long: lon2 } = path[i + 1];
-      totalDistance += calculateDistance(lat1, lon1, lat2, lon2);
-    }
-    return totalDistance;
-  }
 
   const fetchData = async () => {
     const response = await fetch(`${api}/api/stations`, {
@@ -120,21 +66,48 @@ const CardScan = () => {
     }
   };
 
-  // FOR USEPARAMS
+  const checkCardExistence = async () => {
+    try {
+      const getAll = await fetch(`${api}/api/cards`, {
+        headers: { "Content-Type": "application/json" },
+      });
 
-  if (station && stationPage) {
-    const startStation = stationPage;
-    const endStation = station[1];
+      const allCards = await getAll.json();
 
-    const result = findPath(startStation, endStation, station);
-    if (result) {
-      console.log("Path found:");
-      result.stations.forEach((station) => console.log(station.name));
-      console.log("Total distance:", result.distance.toFixed(2), "meters");
-    } else {
-      console.log("No path found between the stations.");
+      const matchingCard = allCards.find(
+        (card: Card) => card.uid === Number(enteredUID)
+      );
+
+      if (matchingCard) {
+        setCard(matchingCard);
+        setIsCardFound(true);
+      } else {
+        setCard(null);
+        setIsCardFound(false);
+      }
+    } catch (error) {
+      console.error("Error checking card existence:", error);
     }
-  }
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    console.log("SUBMITTED", card?._id);
+    try {
+      const response = await fetch(`${api}/api/cards/in/${card?._id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ isTap: true, in: stationPage?._id }),
+      });
+
+      const data = await response.json();
+      console.log("DATA", data);
+    } catch (error) {
+      console.error("Error checking card existence:", error);
+    }
+  };
 
   const fontColor =
     status === "in"
@@ -148,10 +121,20 @@ const CardScan = () => {
   }, []);
 
   useEffect(() => {
+    checkCardExistence();
+    console.log("CARD", card);
+  }, [enteredUID]);
+
+  useEffect(() => {
     if (station) {
       checkConnection();
+    } else {
+      setCard(null);
+      setIsCardFound(false);
     }
   }, [station]);
+
+  console.log("ENTERED UID: ", enteredUID);
 
   console.log("STATION PAGE", stationPage?.name);
 
@@ -171,16 +154,38 @@ const CardScan = () => {
             {status?.toUpperCase()}
           </label>
         </div>
-        <input
-          type="text"
-          id="large-input"
-          className="block p-1 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 max-w-120 lg:w-80 lg:p-4"
-        />
+        <form onSubmit={handleSubmit} className="flex flex-row ml-16">
+          <input
+            type="text"
+            id="large-input"
+            className="block p-1 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 max-w-120 lg:w-80 lg:p-4"
+            onChange={(e: ChangeEvent<HTMLInputElement>) => {
+              setenteredUID(e.target.value);
+            }}
+          />
+          <button>Click Me</button>
+        </form>
         <label
           htmlFor="station-label"
           className={`block text-2xl font-bold lg:text-4xl lg:font-black text-blue-400 mt-2 lg:mr-0`}
         >
           {stationPage && <>{stationPage.name}</>}
+        </label>
+        <label>
+          {" "}
+          {isCardFound ? (
+            <label>ID NUMBER: {card?.uid}</label>
+          ) : (
+            <label>Card not found</label>
+          )}
+        </label>
+        <label>
+          {" "}
+          {isCardFound ? (
+            <label>BALANCE: {card?.balance}</label>
+          ) : (
+            <label>Card not found</label>
+          )}
         </label>
       </div>
 

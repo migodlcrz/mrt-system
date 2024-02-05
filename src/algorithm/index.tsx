@@ -1,4 +1,5 @@
-import React, { FC } from "react";
+import React, { FC, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface Station {
   _id: string;
@@ -9,14 +10,21 @@ interface Station {
 }
 
 interface FareCalculatorProps {
-  startStation: Station;
-  endStation: Station;
+  // startStation: Station;
+  // endStation: Station;
+  stationParameter: string;
 }
 
 const FareCalculator: FC<FareCalculatorProps> = ({
-  startStation,
-  endStation,
+  // startStation,
+  // endStation,
+  stationParameter,
 }) => {
+  const [station, setStation] = useState<Station[] | null>(null);
+  const [stationPage, setStationPage] = useState<Station | null>(null);
+  const api = process.env.REACT_APP_API_KEY;
+  const navigate = useNavigate();
+
   // function addConnection(station: Station, connectedStationId: string): void {
   //   station.connection.push(connectedStationId);
   // }
@@ -70,20 +78,72 @@ const FareCalculator: FC<FareCalculatorProps> = ({
       }
     }
 
-    function calculatePathDistance(path: Station[]): number {
-      let totalDistance = 0;
-      for (let i = 0; i < path.length - 1; i++) {
-        const { lat: lat1, long: lon1 } = path[i];
-        const { lat: lat2, long: lon2 } = path[i + 1];
-        totalDistance += calculateDistance(lat1, lon1, lat2, lon2);
-      }
-      return totalDistance;
-    }
-
     return null;
   }
 
-  return <div>index</div>;
+  function calculatePathDistance(path: Station[]): number {
+    let totalDistance = 0;
+    for (let i = 0; i < path.length - 1; i++) {
+      const { lat: lat1, long: lon1 } = path[i];
+      const { lat: lat2, long: lon2 } = path[i + 1];
+      totalDistance += calculateDistance(lat1, lon1, lat2, lon2);
+    }
+    return totalDistance;
+  }
+
+  const fetchData = async () => {
+    const response = await fetch(`${api}/api/stations`, {
+      headers: { "Content-Type": "application/json" },
+    });
+
+    const data = await response.json();
+    if (response.ok) {
+      setStation(data);
+    } else {
+      throw new Error("Failed to fetch data");
+    }
+  };
+
+  const checkConnection = () => {
+    if (station) {
+      if (station.length > 0) {
+        const matchedStation = station.find(
+          (station) => station.name === stationParameter
+        );
+        if (matchedStation) {
+          setStationPage(matchedStation);
+        } else {
+          navigate("/");
+        }
+      }
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    if (station) {
+      checkConnection();
+    }
+  }, [station]);
+
+  if (station && stationPage) {
+    const startStation = stationPage;
+    const endStation = station[2];
+
+    const result = findPath(startStation, endStation, station);
+    if (result) {
+      console.log("Path found:");
+      result.stations.forEach((station) => console.log(station.name));
+      console.log("Total distance:", result.distance.toFixed(2), "meters");
+    } else {
+      console.log("No path found between the stations.");
+    }
+  }
+
+  return null;
 };
 
 export default FareCalculator;
