@@ -26,6 +26,8 @@ const CardScan = () => {
   const { stn, status } = useParams();
   const api = process.env.REACT_APP_API_KEY;
 
+  const navigate = useNavigate();
+
   // function addConnection(station: Station, connectedStationId: string): void {
   //   station.connection.push(connectedStationId);
   // }
@@ -112,7 +114,7 @@ const CardScan = () => {
         if (matchedStation) {
           setStationPage(matchedStation);
         } else {
-          console.log("Station not found");
+          navigate("/");
         }
       }
     }
@@ -120,8 +122,8 @@ const CardScan = () => {
 
   // FOR USEPARAMS
 
-  if (station) {
-    const startStation = station[0];
+  if (station && stationPage) {
+    const startStation = stationPage;
     const endStation = station[1];
 
     const result = findPath(startStation, endStation, station);
