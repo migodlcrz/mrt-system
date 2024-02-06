@@ -573,7 +573,6 @@ const StationLanding: React.FC<StationLandingProps> = () => {
                     onChange={(e) => {
                       setSearchConnectedTerm(e.target.value);
                     }}
-                    readOnly={!isEdit}
                   />
                   <button
                     className={`flex ${

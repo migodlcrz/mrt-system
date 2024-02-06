@@ -30,6 +30,11 @@ interface Card {
   out: string;
 }
 
+interface Fare {
+  minimumAmount: number;
+  perKM: number;
+}
+
 const CardScan = () => {
   const [station, setStation] = useState<Station[] | null>(null);
   const [stationPage, setStationPage] = useState<Station | null>(null);
@@ -37,6 +42,7 @@ const CardScan = () => {
   const [stationEnd, setStationEnd] = useState<Station | null>(null);
   const [path, setPath] = useState<string[]>([]);
   const [distance, setDistance] = useState<number | null>(null);
+  const [fare, setFare] = useState<Fare | null>(null);
   const [enteredUID, setenteredUID] = useState("");
   const [card, setCard] = useState<Card | null>(null);
   const [isCardFound, setIsCardFound] = useState(true);
@@ -58,9 +64,23 @@ const CardScan = () => {
     }
   };
 
+  const fetchFare = async () => {
+    const response = await fetch(`${api}/api/fare/65a146cff1b7fd49a47868c4`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const json = await response.json();
+
+    if (response.ok) {
+      setFare(json);
+    }
+  };
+
   const checkConnection = () => {
     if (station) {
-      console.log("IS OUT?", isOut);
       if (station.length > 0) {
         const matchedStation = station.find((station) => station.name === stn);
         if (matchedStation) {
@@ -91,6 +111,7 @@ const CardScan = () => {
       );
 
       if (matchingCard) {
+        console.log("MATCHING CARD", matchingCard);
         setCard(matchingCard);
         setIsCardFound(true);
       } else {
@@ -158,6 +179,7 @@ const CardScan = () => {
 
   useEffect(() => {
     fetchData();
+    fetchFare();
   }, []);
 
   useEffect(() => {
@@ -246,7 +268,6 @@ const CardScan = () => {
   }
 
   const getStartStation = async () => {
-    console.log("CARD", card?.in);
     const response = await fetch(`${api}/api/stations/${card?.in}`, {
       method: "GET",
       headers: {
@@ -255,24 +276,14 @@ const CardScan = () => {
     });
     const data = await response.json();
     if (response.ok) {
-      console.log("DATA SET TO STATION START:", data);
       setStationStart(data);
     }
   };
 
-  console.log("station", station);
-  console.log("station start", stationStart);
-  console.log("station end", stationEnd);
-
-  // function calculateFare() {
   useEffect(() => {
     if (station && stationStart && stationEnd && isOut) {
-      console.log("NAKAPASOK");
       const startStation = stationStart;
       const endStation = stationEnd;
-
-      console.log("START", startStation);
-      console.log("END", endStation);
 
       const result = findPath(startStation, endStation, station);
       if (result) {
@@ -281,8 +292,8 @@ const CardScan = () => {
         const stationNames = result.stations.map((station) => station.name);
         setPath(stationNames);
 
-        stationNames.forEach((station) => console.log(station));
-        console.log("Total distance:", result.distance.toFixed(2), "meters");
+        // stationNames.forEach((station) => console.log(station));
+        // console.log("Total distance:", result.distance.toFixed(2), "meters");
 
         setDistance(Number(result.distance.toFixed(2)));
       } else {
@@ -368,15 +379,31 @@ const CardScan = () => {
                         <div className="text-white">End:</div>{" "}
                         <label>{stationEnd ? stationEnd.name : "N/A"}</label>
                       </div>
+                      <div>
+                        <span className="text-white font-normal">
+                          {fare && (
+                            <div className="">{fare.minimumAmount} meters</div>
+                          )}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-white font-normal">
+                          {distance && (
+                            <div className="">{distance} meters</div>
+                          )}
+                        </span>
+                      </div>
                     </div>
                   )}
                 </div>
                 <div>
                   <div className="flex flex-row space-x-3 text-green-400 font-bold">
+                    Fare:{" "}
+                  </div>
+                </div>
+                <div>
+                  <div className="flex flex-row space-x-3 text-green-400 font-bold">
                     Distance Travelled:{" "}
-                    <span className="text-white font-normal">
-                      {distance && <div className="">{distance} meters</div>}
-                    </span>
                   </div>
                 </div>
               </div>
@@ -447,7 +474,7 @@ const CardScan = () => {
                   position={[stations.lat, stations.long]}
                   // icon={customIcon}
                 >
-                  <Tooltip direction="top" offset={[0, -35]} permanent>
+                  <Tooltip direction="top" offset={[0, -35]}>
                     <div className="font-bold text-green-400">STATION:</div>
                     <span className="text-sm font-bold">{stations.name}</span>
                   </Tooltip>
@@ -500,7 +527,7 @@ const CardScan = () => {
                   position={[stations.lat, stations.long]}
                   // icon={customIcon}
                 >
-                  <Tooltip direction="top" offset={[0, -35]} permanent>
+                  <Tooltip direction="top" offset={[0, -35]}>
                     <div className="font-bold text-green-400">STATION:</div>
                     <span className="text-sm font-bold">{stations.name}</span>
                   </Tooltip>
