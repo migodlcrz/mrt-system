@@ -36,8 +36,8 @@ const ManageFare: React.FC<ManageFareProps> = () => {
   useEffect(() => {
     const fetchFareData = async () => {
       try {
-        const fareId = "65a146cff1b7fd49a47868c4";
-        const response = await fetch(`${api}/api/fare/${fareId}`, {
+        const fareId = "65c28317dd50fe2e56d242c9";
+        const response = await fetch(`${api}/api/fr/${fareId}`, {
           headers: {
             Authorization: `Bearer ${user.jwt}`,
           },
@@ -73,8 +73,8 @@ const ManageFare: React.FC<ManageFareProps> = () => {
     e.preventDefault();
 
     try {
-      const fareId = "65a146cff1b7fd49a47868c4";
-      const response = await fetch(`${api}/api/fare/${fareId}`, {
+      const fareId = "65c28317dd50fe2e56d242c9";
+      const response = await fetch(`${api}/api/fr/${fareId}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",

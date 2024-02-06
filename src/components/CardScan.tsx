@@ -65,16 +65,15 @@ const CardScan = () => {
   };
 
   const fetchFare = async () => {
-    const response = await fetch(`${api}/api/fare/65a146cff1b7fd49a47868c4`, {
-      method: "GET",
+    const fareId = "65c28317dd50fe2e56d242c9";
+    const getResponse = await fetch(`${api}/api/fr/${fareId}`, {
       headers: {
         "Content-Type": "application/json",
       },
     });
-
-    const json = await response.json();
-
-    if (response.ok) {
+    const json = await getResponse.json();
+    if (getResponse.ok) {
+      console.log("JSON", json);
       setFare(json);
     }
   };
@@ -377,15 +376,11 @@ const CardScan = () => {
                       </div>
                       <div className="flex flex-row space-x-2">
                         <div className="text-white">End:</div>{" "}
-                        <label>{stationEnd ? stationEnd.name : "N/A"}</label>
+                        <label className="text-green-400">
+                          {stationEnd ? stationEnd.name : "N/A"}
+                        </label>
                       </div>
-                      <div>
-                        <span className="text-white font-normal">
-                          {fare && (
-                            <div className="">{fare.minimumAmount} meters</div>
-                          )}
-                        </span>
-                      </div>
+                      <div></div>
                       <div>
                         <span className="text-white font-normal">
                           {distance && (
@@ -396,9 +391,17 @@ const CardScan = () => {
                     </div>
                   )}
                 </div>
-                <div>
-                  <div className="flex flex-row space-x-3 text-green-400 font-bold">
-                    Fare:{" "}
+                <div className="flex flex-row space-x-3">
+                  <div className="flex flex-row space-x-2 text-white w-full">
+                    <div>Starting Fare:</div>
+                    <div className="text-green-400">
+                      ₱{fare && fare.minimumAmount}
+                    </div>
+                  </div>
+
+                  <div className="flex flex-row space-x-2 text-white w-full">
+                    <div>Fare/KM:</div>
+                    <div className="text-green-400">₱{fare && fare.perKM}</div>
                   </div>
                 </div>
                 <div>

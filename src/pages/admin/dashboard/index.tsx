@@ -34,7 +34,7 @@ const Dashboard = () => {
   const { user } = useAuthContext();
   const [cardCount, setCardCount] = useState(0);
   const [stations, setStations] = useState<Stations[] | null>(null);
-  const [fare, setFare] = useState<Fare[] | null>(null);
+  const [fare, setFare] = useState<Fare | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const { logout } = useLogout();
   const navigate = useNavigate();
@@ -43,13 +43,15 @@ const Dashboard = () => {
   const api = process.env.REACT_APP_API_KEY;
 
   const fetchFare = async () => {
-    const getResponse = await fetch(`${api}/api/fare`, {
+    const fareId = "65c28317dd50fe2e56d242c9";
+    const getResponse = await fetch(`${api}/api/fr/${fareId}`, {
       headers: {
-        Authorization: `Bearer ${user.jwt}`,
+        "Content-Type": "application/json",
       },
     });
     const json = await getResponse.json();
     if (getResponse.ok) {
+      console.log("JSON", json);
       setFare(json);
     }
   };
@@ -136,7 +138,7 @@ const Dashboard = () => {
                       <FaCoins />-{" "}
                     </div>
                     <span className="text-green-400">
-                      ₱{fare && fare[0].minimumAmount}
+                      ₱{fare && fare.minimumAmount}
                     </span>
                   </div>
                   <div className="flex flex-col lg:flex-row items-center text-green-400 justify-between w-full border-b-2 border-b-white">
@@ -145,7 +147,7 @@ const Dashboard = () => {
                       <FaMoneyBill />-{" "}
                     </div>
                     <span className="text-green-400">
-                      ₱{fare && fare[0].perKM}/km
+                      ₱{fare && fare.perKM}
                     </span>
                   </div>
                 </div>
