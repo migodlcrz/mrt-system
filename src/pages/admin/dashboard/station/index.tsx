@@ -182,7 +182,6 @@ const StationLanding: React.FC<StationLandingProps> = () => {
           setIsEdit(false);
           fetchStations();
 
-          console.log("under 500", distance);
           return;
         }
       }

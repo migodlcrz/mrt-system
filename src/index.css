@@ -8,6 +8,9 @@
   .h-custom-height-dash {
     height: 43vh;
   }
+  .h-custom-height-travel-summary {
+    height: 30vh;
+  }
 }
 @layer utilities {
   .h-custom-max-height {
