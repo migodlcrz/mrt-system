@@ -10,14 +10,14 @@ interface Station {
 }
 
 interface FareCalculatorProps {
-  // startStation: Station;
-  // endStation: Station;
+  startStation: Station;
+  endStation: Station;
   stationParameter: string;
 }
 
 const FareCalculator: FC<FareCalculatorProps> = ({
-  // startStation,
-  // endStation,
+  startStation,
+  endStation,
   stationParameter,
 }) => {
   const [station, setStation] = useState<Station[] | null>(null);

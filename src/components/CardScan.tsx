@@ -11,6 +11,7 @@ import {
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuthContext } from "../hooks/useAuthContext";
 import MapComponent from "./MapComponent";
+import { FaCheck } from "react-icons/fa";
 
 interface Station {
   _id: string;
@@ -32,12 +33,16 @@ interface Card {
 const CardScan = () => {
   const [station, setStation] = useState<Station[] | null>(null);
   const [stationPage, setStationPage] = useState<Station | null>(null);
+  const [stationStart, setStationStart] = useState<Station | null>(null);
+  const [stationEnd, setStationEnd] = useState<Station | null>(null);
+  const [path, setPath] = useState<string[]>([]);
+  const [distance, setDistance] = useState<number | null>(null);
   const [enteredUID, setenteredUID] = useState("");
   const [card, setCard] = useState<Card | null>(null);
   const [isCardFound, setIsCardFound] = useState(true);
+  const [isOut, setIsOut] = useState(false);
   const { stn, status } = useParams();
   const api = process.env.REACT_APP_API_KEY;
-
   const navigate = useNavigate();
 
   const fetchData = async () => {
@@ -55,10 +60,17 @@ const CardScan = () => {
 
   const checkConnection = () => {
     if (station) {
+      console.log("IS OUT?", isOut);
       if (station.length > 0) {
         const matchedStation = station.find((station) => station.name === stn);
         if (matchedStation) {
-          setStationPage(matchedStation);
+          if (!isOut) {
+            setStationPage(matchedStation);
+            setStationStart(matchedStation);
+          } else {
+            setStationPage(matchedStation);
+            setStationEnd(matchedStation);
+          }
         } else {
           navigate("/");
         }
@@ -90,20 +102,48 @@ const CardScan = () => {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleTapIn = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("SUBMITTED", card?._id);
     try {
       const response = await fetch(`${api}/api/cards/in/${card?._id}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ isTap: true, in: stationPage?._id }),
+        body: JSON.stringify({ isTap: true, in: stationStart?._id }),
+      });
+      if (response.ok) {
+        setenteredUID("");
+        setCard(null);
+        setIsCardFound(false);
+      }
+    } catch (error) {
+      console.error("Error checking card existence:", error);
+    }
+  };
+
+  const handleTapOut = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      const response = await fetch(`${api}/api/cards/in/${card?._id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ isTap: false, in: null }),
       });
 
-      const data = await response.json();
-      console.log("DATA", data);
+      if (response.ok) {
+        getStartStation();
+        setTimeout(() => {
+          setPath([]);
+          setenteredUID("");
+          setStationStart(null);
+          setCard(null);
+          setIsCardFound(false);
+          setDistance(null);
+        }, 10000);
+      }
     } catch (error) {
       console.error("Error checking card existence:", error);
     }
@@ -121,8 +161,16 @@ const CardScan = () => {
   }, []);
 
   useEffect(() => {
+    if (status === "out") {
+      setIsOut(true);
+    } else {
+      setIsOut(false);
+    }
+    fetchData();
+  }, [isOut]);
+
+  useEffect(() => {
     checkCardExistence();
-    console.log("CARD", card);
   }, [enteredUID]);
 
   useEffect(() => {
@@ -134,66 +182,304 @@ const CardScan = () => {
     }
   }, [station]);
 
-  console.log("ENTERED UID: ", enteredUID);
+  //===================================================
+  function calculateDistance(
+    lat1: number,
+    lon1: number,
+    lat2: number,
+    lon2: number
+  ): number {
+    const R = 6371e3;
+    const φ1 = (lat1 * Math.PI) / 180;
+    const φ2 = (lat2 * Math.PI) / 180;
+    const Δφ = ((lat2 - lat1) * Math.PI) / 180;
+    const Δλ = ((lon2 - lon1) * Math.PI) / 180;
 
-  console.log("STATION PAGE", stationPage?.name);
+    const a =
+      Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+      Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    return R * c;
+  }
+
+  function findPath(
+    start: Station,
+    end: Station,
+    stations: Station[]
+  ): { stations: Station[]; distance: number } | null {
+    const visited: Set<string> = new Set();
+    const queue: { station: Station; path: Station[] }[] = [
+      { station: start, path: [] },
+    ];
+
+    while (queue.length > 0) {
+      const { station, path } = queue.shift()!;
+      visited.add(station._id);
+
+      if (station._id === end._id) {
+        return {
+          stations: path.concat(station),
+          distance: calculatePathDistance(path.concat(station)),
+        };
+      }
+
+      for (const connectionId of station.connection) {
+        const connection = stations.find((s) => s._id === connectionId);
+        if (connection && !visited.has(connection._id)) {
+          queue.push({ station: connection, path: path.concat(station) });
+        }
+      }
+    }
+
+    return null;
+  }
+
+  function calculatePathDistance(path: Station[]): number {
+    let totalDistance = 0;
+    for (let i = 0; i < path.length - 1; i++) {
+      const { lat: lat1, long: lon1 } = path[i];
+      const { lat: lat2, long: lon2 } = path[i + 1];
+      totalDistance += calculateDistance(lat1, lon1, lat2, lon2);
+    }
+    return totalDistance;
+  }
+
+  const getStartStation = async () => {
+    console.log("CARD", card?.in);
+    const response = await fetch(`${api}/api/stations/${card?.in}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const data = await response.json();
+    if (response.ok) {
+      console.log("DATA SET TO STATION START:", data);
+      setStationStart(data);
+    }
+  };
+
+  console.log("station", station);
+  console.log("station start", stationStart);
+  console.log("station end", stationEnd);
+
+  // function calculateFare() {
+  useEffect(() => {
+    if (station && stationStart && stationEnd && isOut) {
+      console.log("NAKAPASOK");
+      const startStation = stationStart;
+      const endStation = stationEnd;
+
+      console.log("START", startStation);
+      console.log("END", endStation);
+
+      const result = findPath(startStation, endStation, station);
+      if (result) {
+        console.log("Path found:");
+
+        const stationNames = result.stations.map((station) => station.name);
+        setPath(stationNames);
+
+        stationNames.forEach((station) => console.log(station));
+        console.log("Total distance:", result.distance.toFixed(2), "meters");
+
+        setDistance(Number(result.distance.toFixed(2)));
+      } else {
+        console.log("No path found between the stations.");
+      }
+    }
+  }, [station, stationStart, stationEnd, isOut]);
+  // }
 
   return (
     <div className="h-screen flex flex-col lg:flex-row">
       {/* left half - Form */}
       <div
-        className={`py-10 px-20 flex flex-col justify-center items-center lg:w-1/2 lg:h-full border border-gray-300 shadow-md text-blue-400 bg-gray-800`}
+        className={
+          "flex flex-col items-center lg:w-1/2 lg:h-full border border-gray-300 shadow-md text-blue-400 bg-gray-800"
+        }
       >
-        <div className="flex items-center mb-2">
-          <label className="block text-1xl font-bold lg:text-3xl lg:font-bold text-gray-100">
-            ENTER BEEP ID :
-          </label>
-          <label
-            className={`block text-1xl font-bold lg:text-4xl lg:font-black ${fontColor} ml-2`}
-          >
-            {status?.toUpperCase()}
-          </label>
+        <div className="flex flex-row lg:flex-col w-full p-8">
+          <div className="text-2xl font-bold border-b-2 border-gray-400 text-green-400">
+            <div className="mb-2 text-center w-full">
+              {stationPage && <>{stationPage.name}</>}
+            </div>
+          </div>
+          <div className="flex w-full text-center justify-center">
+            <form
+              onSubmit={isOut ? handleTapOut : handleTapIn}
+              className="flex flex-row"
+            >
+              <input
+                type="text"
+                id="large-input"
+                value={enteredUID}
+                className="p-1 text-gray-900 rounded-lg m-6"
+                onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                  setenteredUID(e.target.value);
+                }}
+              />
+              <button className="bg-gray-700 p-2 rounded-lg text-green-400 hover:bg-gray-900 my-6">
+                <FaCheck />
+              </button>
+            </form>
+          </div>
+          <div className="w-full">
+            <div className="bg-gray-700 m-2 rounded-lg py-1">
+              <div className="bg-gray-900 m-2 rounded-lg p-1">
+                <div className=" font-bold text-green-400">Card Info:</div>
+                <div className="flex flex-row space-x-3">
+                  <div className="w-full">
+                    <div className="flex flex-row space-x-2">
+                      <div className="text-white">Card ID:</div>
+                      <label>
+                        {isCardFound ? (
+                          <label className="text-green-400"> {card?.uid}</label>
+                        ) : (
+                          ""
+                        )}
+                      </label>
+                    </div>
+                    <div className="flex flex-row space-x-2">
+                      <div className="text-white">Balance:</div>{" "}
+                      <label>
+                        {" "}
+                        {isCardFound ? (
+                          <label className="text-green-400">
+                            {card?.balance}
+                          </label>
+                        ) : (
+                          <label className="text-gray-400">N/A</label>
+                        )}
+                      </label>
+                    </div>
+                  </div>
+
+                  {isOut && (
+                    <div className="w-full">
+                      <div className="flex flex-row space-x-2">
+                        <div className="text-white">Start:</div>
+                        <label>
+                          {stationStart ? stationStart.name : "N/A"}
+                        </label>
+                      </div>
+                      <div className="flex flex-row space-x-2">
+                        <div className="text-white">End:</div>{" "}
+                        <label>{stationEnd ? stationEnd.name : "N/A"}</label>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                <div>
+                  <div className="flex flex-row space-x-3 text-green-400 font-bold">
+                    Distance Travelled:{" "}
+                    <span className="text-white font-normal">
+                      {distance && <div className="">{distance} meters</div>}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          {isOut && (
+            <div className="w-full">
+              <div className="bg-gray-700 m-2 rounded-lg py-1">
+                <div className="bg-gray-900 m-2 rounded-lg p-1">
+                  <div
+                    style={{
+                      maxHeight: "200px",
+                      overflowY: "auto",
+                      scrollbarColor: "dark",
+                    }}
+                  >
+                    <table className="w-full">
+                      <thead className="bg-gray-900 sticky top-0 z-40">
+                        <tr>
+                          <th className="text-green-400 bg-gray-900">
+                            Travel Path:
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {path.map((station, index) => (
+                          <tr
+                            key={index}
+                            className={`hover:bg-gray-500 animate__animated animate__fadeIn z-0 ${
+                              index % 2 === 0 ? "bg-gray-400" : "bg-gray-300"
+                            }`}
+                          >
+                            <td className="text-black font-bold">{station}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
-        <form onSubmit={handleSubmit} className="flex flex-row ml-16">
-          <input
-            type="text"
-            id="large-input"
-            className="block p-1 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 max-w-120 lg:w-80 lg:p-4"
-            onChange={(e: ChangeEvent<HTMLInputElement>) => {
-              setenteredUID(e.target.value);
-            }}
-          />
-          <button>Click Me</button>
-        </form>
-        <label
-          htmlFor="station-label"
-          className={`block text-2xl font-bold lg:text-4xl lg:font-black text-blue-400 mt-2 lg:mr-0`}
-        >
-          {stationPage && <>{stationPage.name}</>}
-        </label>
-        <label>
-          {" "}
-          {isCardFound ? (
-            <label>ID NUMBER: {card?.uid}</label>
-          ) : (
-            <label>Card not found</label>
-          )}
-        </label>
-        <label>
-          {" "}
-          {isCardFound ? (
-            <label>BALANCE: {card?.balance}</label>
-          ) : (
-            <label>Card not found</label>
-          )}
-        </label>
       </div>
 
       {/* right half - Map */}
-      {stationPage && (
+      {stationStart && !isOut && (
         <MapContainer
           className="h-1/2 w-full lg:w-1/2 lg:h-full"
-          center={[stationPage.lat, stationPage.long]}
+          center={[stationStart.lat, stationStart.long]}
+          zoom={20}
+          zoomControl={false}
+          style={{ height: "100%", width: "100%" }}
+        >
+          <div>
+            <label className="z-40"></label>
+            <h3 className="z-40">hello</h3>
+          </div>
+          <TileLayer
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          />
+
+          {station &&
+            station.map((stations: Station) => (
+              <div key={stations._id}>
+                <Marker
+                  position={[stations.lat, stations.long]}
+                  // icon={customIcon}
+                >
+                  <Tooltip direction="top" offset={[0, -35]} permanent>
+                    <div className="font-bold text-green-400">STATION:</div>
+                    <span className="text-sm font-bold">{stations.name}</span>
+                  </Tooltip>
+                </Marker>
+
+                {stations.connection.map((connectedId: string) => {
+                  const connectedStation = station.find(
+                    (s) => s._id === connectedId
+                  );
+                  if (connectedStation) {
+                    return (
+                      <Polyline
+                        key={`${stations._id}-${connectedId}`}
+                        className=""
+                        positions={[
+                          [stations.lat, stations.long],
+                          [connectedStation.lat, connectedStation.long],
+                        ]}
+                        color="green"
+                      />
+                    );
+                  }
+                  return null;
+                })}
+              </div>
+            ))}
+        </MapContainer>
+      )}
+      {stationEnd && (
+        <MapContainer
+          className="h-1/2 w-full lg:w-1/2 lg:h-full"
+          center={[stationEnd.lat, stationEnd.long]}
           zoom={20}
           zoomControl={false}
           style={{ height: "100%", width: "100%" }}

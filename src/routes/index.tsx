@@ -14,8 +14,6 @@ const App = () => {
   const { user } = useAuthContext();
   const hideNavbar = window.location.pathname.startsWith("/station"); // Check if the current path starts with "/station"
 
-  console.log("Router", user);
-
   return (
     <BrowserRouter>
       <div>
@@ -23,10 +21,10 @@ const App = () => {
         {/* Render Navbar unless hideNavbar is true */}
         <Routes>
           <Route path={"/"} element={<Root />} />
-          <Route
+          {/* <Route
             path={"/console"}
             element={<FareCalculator stationParameter="i" />}
-          />
+          /> */}
           <Route path={"/admin"} element={<Admin />} />
           <Route
             path={"/admin/dashboard"}
