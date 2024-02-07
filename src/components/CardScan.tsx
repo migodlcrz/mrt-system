@@ -192,7 +192,7 @@ const CardScan = () => {
 
       if (response.ok) {
         getStartStation();
-        toast.success("Tapped Out!");
+
         setTimeout(() => {
           setPath([]);
           setenteredUID("");
@@ -219,6 +219,21 @@ const CardScan = () => {
       if (cardBalance < distance * fare?.perKM + fare?.minimumAmount) {
         toast.error("Insufficient Balance");
         return;
+      }
+
+      console.log("BALANCE", cardBalance);
+      const response = await fetch(`${api}/api/cards/out/${card?._id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          balance: cardBalance - (distance * fare?.perKM + fare?.minimumAmount),
+        }),
+      });
+
+      if (response.ok) {
+        toast.success("Tapped Out!");
+      } else {
+        toast.error("Server Error!");
       }
     }
   };

@@ -57,7 +57,7 @@ const CardModel: React.FC<ManageCardModelProps> = ({ card, update }) => {
     }
 
     try {
-      const response = await fetch(`${api}/api/cards/${card._id}`, {
+      const response = await fetch(`${api}/api/cards/add/${card._id}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
