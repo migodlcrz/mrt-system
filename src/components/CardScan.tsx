@@ -227,10 +227,19 @@ const CardScan = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           balance: cardBalance - (distance * fare?.perKM + fare?.minimumAmount),
+          history: {
+            in: stationStart?.name,
+            out: stationEnd?.name,
+            fare: distance * fare?.perKM + fare?.minimumAmount,
+          },
         }),
       });
 
       if (response.ok) {
+        console.log("START", stationStart);
+        console.log("END", stationEnd);
+        console.log("FARE", distance * fare?.perKM + fare?.minimumAmount);
+
         toast.success("Tapped Out!");
       } else {
         toast.error("Server Error!");
