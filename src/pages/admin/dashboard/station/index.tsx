@@ -1,4 +1,5 @@
 import React, { ChangeEvent, useEffect, useState } from "react";
+import { toast } from "react-toastify";
 import { useAuthContext } from "../../../../hooks/useAuthContext";
 import {
   MapContainer,
@@ -119,6 +120,7 @@ const StationLanding: React.FC<StationLandingProps> = () => {
       return;
     }
 
+    toast.success("Station added successfully");
     setStationName("");
     setLngClick(0);
     setLatClick(0);
@@ -202,9 +204,10 @@ const StationLanding: React.FC<StationLandingProps> = () => {
     });
 
     if (response.ok) {
+      toast.success("Station updated successfully");
       fetchStations();
     } else {
-      console.error("Failed to update station");
+      toast.error("Failed to update station");
     }
 
     clearSearch();
@@ -254,10 +257,11 @@ const StationLanding: React.FC<StationLandingProps> = () => {
       });
 
       if (!deleteResponse.ok) {
-        // setError("ERROR");
+        toast.error("Failed to delete station");
       }
 
       if (deleteResponse.ok) {
+        toast.success("Station deleted successfully");
         setSearchTerm("");
         setStationName("");
         setLngClick(0);
@@ -289,7 +293,6 @@ const StationLanding: React.FC<StationLandingProps> = () => {
     fetchStations();
   }, []);
 
-  console.log("EDIT", isEdit);
   return (
     <div className="CardLanding bg-gray-800 h-screen animate__animated animate__fadeIn">
       <div className="flex flex-col lg:flex-row h-screen">
@@ -391,20 +394,18 @@ const StationLanding: React.FC<StationLandingProps> = () => {
               <div
                 className="h-96 overflow-y-auto"
                 style={{
-                  maxHeight: "195px",
+                  maxHeight: "190px",
                   overflowY: "auto",
                   scrollbarColor: "dark",
                 }}
               >
                 <table className=" w-full bg-gray-500">
-                  <thead className="bg-gray-900 sticky top-0">
-                    <tr>
-                      <th className="py-2 px-4 sticky top-0 text-green-400">
-                        Station Name
-                      </th>
+                  <thead className="bg-gray-900 sticky top-0 z-50">
+                    <tr className="py-2 px-4 sticky text-green-400">
+                      <th>Station Name</th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody className="z-0">
                     {stations &&
                       stations
                         .filter((station: Station) =>
@@ -416,7 +417,7 @@ const StationLanding: React.FC<StationLandingProps> = () => {
                           return (
                             <tr
                               key={station._id}
-                              className={`hover:bg-gray-500 animate__animated animate__fadeIn ${
+                              className={`hover:bg-gray-500 animate__animated animate__fadeIn z-0 ${
                                 index % 2 === 0 ? "bg-gray-400" : "bg-gray-300"
                               }`}
                               onClick={() => {
