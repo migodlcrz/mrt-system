@@ -402,13 +402,13 @@ const CardLanding: React.FC<CardLandingProps> = () => {
           <div className="flex max-w-full mr-3 mb-5 p-2 justify-center bg-gray-600 rounded-lg space-x-2 h-full mx-3">
             <div className="flex flex-row bg-gray-800 py-3 px-6 rounded-md w-full">
               <div className="flex flex-col justify-start items-center w-1/2 border-r-2 border-gray-700">
-                <div>onboard</div>
+                <div className="text-white">onboard</div>
                 <div className="text-green-400 font-bold text-6xl my-16">
                   {onboardCount}
                 </div>
               </div>
               <div className="flex flex-col justify-start items-center w-1/2">
-                <div>offboard</div>
+                <div className="text-white">offboard</div>
                 <div className="text-green-400 font-bold text-6xl my-16">
                   {offboardCount}
                 </div>

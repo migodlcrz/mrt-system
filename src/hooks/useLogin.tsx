@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useAuthContext } from "./useAuthContext";
+import { toast } from "react-toastify";
 
 interface LoginResponse {
   error: string | null;
@@ -26,11 +27,12 @@ export const useLogin = () => {
 
     if (!response.ok) {
       setIsLoading(false);
-      setError(json.error);
+      setError(toast.error(json.error) as any); // TODO: fix this cast
     }
 
     if (response.ok) {
       if (json.jwt) {
+        toast.success("Login successful");
         localStorage.setItem("user", JSON.stringify(json));
         // localStorage.setItem("token", JSON.stringify(json.jwt));
       }

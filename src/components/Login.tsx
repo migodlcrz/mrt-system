@@ -76,9 +76,6 @@ const Login: FC<LoginProps> = () => {
                 Logout
               </button>
             )}
-            {error && (
-              <div className="my-2 text-red-600 font-bold">{error}</div>
-            )}
           </form>
         </div>
       </div>
