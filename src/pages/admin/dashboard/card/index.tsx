@@ -446,7 +446,7 @@ const CardLanding: React.FC<CardLandingProps> = () => {
                   <label className="font-bold">Balance:</label>
                   <input
                     type="number"
-                    className="rounded-lg"
+                    className="rounded-lg text-black"
                     onChange={(e: ChangeEvent<HTMLInputElement>) =>
                       setBalance(e.target.value)
                     }

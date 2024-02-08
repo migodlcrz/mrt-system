@@ -365,7 +365,7 @@ const CardScan = () => {
         setDistance(Number((result.distance / 1000).toFixed(2)));
         console.log("Distance", distance);
       } else {
-        console.log("No path found between the stations.");
+        toast.error("No path found!");
       }
     }
     handleBalance();
