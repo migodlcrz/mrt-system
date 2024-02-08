@@ -85,7 +85,7 @@ const StationLanding: React.FC<StationLandingProps> = () => {
         );
         if (Number(distance) < 500) {
           console.log("less than 500", distance);
-          setError(
+          toast.error(
             "New station must be at least 500 meters away from existing station"
           );
 
@@ -168,7 +168,7 @@ const StationLanding: React.FC<StationLandingProps> = () => {
         );
         if (Number(distance) < 500) {
           console.log("less than 500", distance);
-          setError(
+          toast.error(
             "Station must be at least 500 meters away from existing station"
           );
 

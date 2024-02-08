@@ -110,7 +110,7 @@ const ManageFare: React.FC<ManageFareProps> = () => {
                     name="minimumAmount"
                     value={formData.minimumAmount}
                     onChange={handleChange}
-                    className="h-6 w-16 rounded-lg p-1 ml-3"
+                    className="h-6 w-16 rounded-lg p-1 ml-3 text-black"
                   />
                 </div>
                 <div className="flex flex-col space-y-2">
@@ -122,7 +122,7 @@ const ManageFare: React.FC<ManageFareProps> = () => {
                     name="perKM"
                     value={formData.perKM}
                     onChange={handleChange}
-                    className="h-6 w-16 rounded-lg p-1 ml-3"
+                    className="h-6 w-16 rounded-lg p-1 ml-3 text-black"
                   />
                 </div>
               </div>

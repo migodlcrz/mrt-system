@@ -16,7 +16,7 @@ const Root = () => {
             <div className="flex flex-col lg:flex-row w-full h-full">
               <button
                 onClick={() => {
-                  navigate("/station/a/in");
+                  navigate("/station/North%20Avenue/in");
                 }}
                 className="flex w-full lg:h-full hover:bg-gray-900 bg-gray-800 justify-center items-center hover:text-gray-300 font-bold"
               >
