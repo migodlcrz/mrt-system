@@ -1,18 +1,20 @@
-import React, { ChangeEvent, useEffect, useState } from "react";
+import React, { ChangeEvent, useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { useAuthContext } from "../../../../hooks/useAuthContext";
 import {
   MapContainer,
-  Marker,
-  Polyline,
   TileLayer,
+  Marker,
   Tooltip,
+  Polyline,
 } from "react-leaflet";
+
 import MapComponent from "../../../../components/MapComponent";
 import { IoMdCloseCircle } from "react-icons/io";
 import { FaSearch } from "react-icons/fa";
 import "animate.css";
-import { Icon } from "leaflet";
+import { GiRailRoad } from "react-icons/gi";
+import L from "leaflet";
 
 interface Station {
   _id: string;
@@ -32,6 +34,7 @@ interface StationLandingProps {}
 const StationLanding: React.FC<StationLandingProps> = () => {
   const [stations, setStations] = useState<Station[] | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const mapRef = useRef<any>(null);
 
   const { user } = useAuthContext();
   const api = process.env.REACT_APP_API_KEY;
@@ -48,7 +51,7 @@ const StationLanding: React.FC<StationLandingProps> = () => {
 
   const [stationCount, setStationCount] = useState<number>(0);
 
-  const customIcon = new Icon({
+  const customIcon = new L.Icon({
     iconUrl: require("../station/marker.png"),
     iconSize: [30, 30],
     iconAnchor: [15, 29],
@@ -128,6 +131,12 @@ const StationLanding: React.FC<StationLandingProps> = () => {
 
     // Fetch updated list of stations
     fetchStations();
+  };
+
+  const handleFlyTo = (station: Station) => {
+    mapRef.current!.flyTo([station.lat, station.long], 14, {
+      duration: 1,
+    });
   };
 
   // Function to calculate distance between two points (using Haversine formula)
@@ -235,6 +244,7 @@ const StationLanding: React.FC<StationLandingProps> = () => {
   };
 
   const handleClickEdit = (station: Station) => {
+    handleFlyTo(station);
     setStationName(station.name);
     setLatClick(station.lat);
     setLngClick(station.long);
@@ -301,41 +311,39 @@ const StationLanding: React.FC<StationLandingProps> = () => {
           {/* eMAP */}
           <div className="flex h-96 lg:h-custom-height items-center justify-center bg-gray-700 mx-5 my-2 lg:mr-1 p-2 rounded-lg lg:mt-24">
             <MapContainer
+              ref={mapRef}
               className="animate__animated animate__fadeIn"
               center={[14.648028524991535, 121.05955123901369]}
               zoom={13}
               zoomControl={false}
               style={{ height: "100%", width: "100%" }}
             >
-              <div>
-                <label className="z-40"></label>
-                <h3 className="z-40">hello</h3>
-              </div>
-              <TileLayer
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              />
-
               <MapComponent
                 setLatClicked={setLatClick}
                 setLngClicked={setLngClick}
               />
 
-              <Marker position={[latClick, lngClick]} icon={customIcon} />
+              <Marker position={[latClick, lngClick]} />
 
+              <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              />
+
+              {/* Other map elements, like connections, can remain as they are */}
               {stations &&
                 stations.map((station: Station) => (
                   <div key={station._id}>
                     <Marker
                       position={[station.lat, station.long]}
-                      icon={customIcon}
+                      // icon={customIcon}
                       eventHandlers={{
                         click: () => handleClickEdit(station),
                       }}
                     >
                       <Tooltip direction="top" offset={[0, -35]}>
                         <div className="font-bold text-green-400">STATION:</div>
-                        <span className="text-sm font-bold">
+                        <span className="text-sm fontstationld">
                           {station.name}
                         </span>
                       </Tooltip>
@@ -349,7 +357,6 @@ const StationLanding: React.FC<StationLandingProps> = () => {
                         return (
                           <Polyline
                             key={`${station._id}-${connectedId}`}
-                            className=""
                             positions={[
                               [station.lat, station.long],
                               [connectedStation.lat, connectedStation.long],
@@ -466,12 +473,12 @@ const StationLanding: React.FC<StationLandingProps> = () => {
                     </div>
                     <input
                       type="text"
-                      className="rounded-lg text-black"
+                      className="rounded-lg text-black disabled:opacity-80"
                       value={stationName}
                       onChange={(e: ChangeEvent<HTMLInputElement>) => {
                         setStationName(e.target.value);
                       }}
-                      readOnly={latClick === 0 && lngClick === 0}
+                      disabled={latClick === 0 && lngClick === 0}
                       required
                     />
                     <div className="flex flex-col lg:flex-row w-auto lg:space-x-10">
@@ -479,9 +486,10 @@ const StationLanding: React.FC<StationLandingProps> = () => {
                         <label>Latitude:</label>
                         <input
                           type="text"
-                          className="w-full rounded-lg text-black"
+                          className="w-full rounded-lg text-black disabled:opacity-80"
                           value={latClick}
                           readOnly
+                          disabled={latClick === 0 && lngClick === 0}
                           required
                         />
                       </div>
@@ -489,9 +497,10 @@ const StationLanding: React.FC<StationLandingProps> = () => {
                         <label>Longitude:</label>
                         <input
                           type="text"
-                          className="w-full rounded-lg text-black"
+                          className="w-full rounded-lg text-black disabled:opacity-80"
                           value={lngClick}
                           readOnly
+                          disabled={latClick === 0 && lngClick === 0}
                           required
                         />
                       </div>
@@ -568,8 +577,9 @@ const StationLanding: React.FC<StationLandingProps> = () => {
                   </div>
                   <input
                     type=""
-                    className="bg-gray-200 w-full h-10 text-black rounded-r-lg lg:rounded-none"
+                    className="bg-gray-200 w-full h-10 text-black rounded-r-lg lg:rounded-none disabled:opacity-80"
                     value={searchConnectedTerm}
+                    disabled={latClick === 0 && lngClick === 0}
                     onChange={(e) => {
                       setSearchConnectedTerm(e.target.value);
                     }}
@@ -580,7 +590,7 @@ const StationLanding: React.FC<StationLandingProps> = () => {
                         ? `bg-gray-400 text-gray-700 hover:bg-gray-600`
                         : `bg-green-400 text-black hover:bg-green-600`
                     }  font-bold rounded-r-lg w-auto h-10 px-2 items-center hidden lg:block`}
-                    onClick={clearSearch}
+                    onClick={() => setSearchConnectedTerm("")}
                   >
                     Clear
                   </button>
