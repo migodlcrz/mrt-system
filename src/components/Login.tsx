@@ -57,7 +57,7 @@ const Login: FC<LoginProps> = () => {
             <Label className="text-green-400 mt-5 text-md">Password:</Label>
 
             <input
-              className="rounded-lg"
+              className="rounded-lg text-black"
               type="password"
               value={password}
               onChange={(e: ChangeEvent<HTMLInputElement>) =>

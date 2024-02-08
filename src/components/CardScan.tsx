@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useEffect, useState } from "react";
+import React, { ChangeEvent, useEffect, useState, useRef } from "react";
 // import Leaflet from "leaflet";
 import {
   MapContainer,
@@ -7,7 +7,7 @@ import {
   TileLayer,
   Tooltip,
 } from "react-leaflet";
-import { useNavigate, useParams } from "react-router-dom";
+import { useFetcher, useNavigate, useParams } from "react-router-dom";
 import { FaCheck } from "react-icons/fa";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -47,6 +47,7 @@ const CardScan = () => {
   const [card, setCard] = useState<Card | null>(null);
   const [isCardFound, setIsCardFound] = useState(true);
   const [isOut, setIsOut] = useState(false);
+  const mapRef = useRef<L.Map>(null);
   const { stn, status } = useParams();
   const api = process.env.REACT_APP_API_KEY;
   const navigate = useNavigate();
@@ -94,6 +95,24 @@ const CardScan = () => {
           navigate("/");
         }
       }
+    }
+  };
+
+  const handleFlyTo = (lat: number, long: number) => {
+    if (mapRef.current) {
+      mapRef.current.flyTo([lat, long], 15);
+    }
+  };
+
+  const handleStartEndPan = (start: Station, end: Station) => {
+    if (mapRef.current) {
+      mapRef.current.flyToBounds(
+        [
+          [start.lat, start.long],
+          [end.lat, end.long],
+        ],
+        { padding: [50, 50] }
+      );
     }
   };
 
@@ -200,7 +219,7 @@ const CardScan = () => {
           setCard(null);
           setIsCardFound(false);
           setDistance(null);
-        }, 20000);
+        }, 30000);
       }
       if (!response.ok) {
         setenteredUID("");
@@ -216,7 +235,9 @@ const CardScan = () => {
   const handleBalance = async () => {
     console.log("Distance", distance);
     if (distance && fare) {
-      if (cardBalance < distance * fare?.perKM + fare?.minimumAmount) {
+      if (
+        cardBalance < Math.round(distance * fare?.perKM + fare?.minimumAmount)
+      ) {
         toast.error("Insufficient Balance");
         return;
       }
@@ -226,11 +247,13 @@ const CardScan = () => {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          balance: cardBalance - (distance * fare?.perKM + fare?.minimumAmount),
+          balance:
+            cardBalance -
+            Math.round(distance * fare?.perKM + fare?.minimumAmount),
           history: {
             in: stationStart?.name,
             out: stationEnd?.name,
-            fare: distance * fare?.perKM + fare?.minimumAmount,
+            fare: Math.round(distance * fare?.perKM + fare?.minimumAmount),
           },
         }),
       });
@@ -260,6 +283,16 @@ const CardScan = () => {
     }
     fetchData();
   }, [isOut]);
+
+  useEffect(() => {
+    if (stationStart && stationEnd) {
+      handleStartEndPan(stationStart, stationEnd);
+    }
+  }, [stationStart]);
+
+  useEffect(() => {
+    handleFlyTo(stationPage?.lat ?? 0, stationPage?.long ?? 0);
+  }, [stationPage]);
 
   useEffect(() => {
     checkCardExistence();
@@ -362,8 +395,8 @@ const CardScan = () => {
         const stationNames = result.stations.map((station) => station.name);
         setPath(stationNames);
 
-        setDistance(Number((result.distance / 1000).toFixed(2)));
-        console.log("Distance", distance);
+        // setDistance(Number((result.distance / 1000).toFixed()));
+        setDistance(result.distance / 1000);
       } else {
         toast.error("No path found!");
       }
@@ -479,7 +512,10 @@ const CardScan = () => {
                         <label className="text-green-400">
                           {fare && distance ? (
                             <div>
-                              ₱{fare.minimumAmount + fare.perKM * distance}
+                              ₱
+                              {Math.round(
+                                fare.minimumAmount + fare.perKM * distance
+                              )}
                             </div>
                           ) : (
                             <label className="text-gray-400">N/A</label>
@@ -493,7 +529,9 @@ const CardScan = () => {
                             <div>
                               ₱
                               {card?.balance -
-                                (fare.minimumAmount + fare.perKM * distance)}
+                                Math.round(
+                                  fare.minimumAmount + fare.perKM * distance
+                                )}
                             </div>
                           ) : (
                             <label className="text-gray-400">N/A</label>
@@ -592,9 +630,10 @@ const CardScan = () => {
       {/* right half - Map */}
       {stationStart && !isOut && (
         <MapContainer
+          ref={mapRef}
           className="h-1/2 w-full lg:w-1/2 lg:h-full"
           center={[stationStart.lat, stationStart.long]}
-          zoom={20}
+          zoom={10}
           zoomControl={false}
           style={{ height: "100%", width: "100%" }}
         >
@@ -613,6 +652,9 @@ const CardScan = () => {
                 <Marker
                   position={[stations.lat, stations.long]}
                   // icon={customIcon}
+                  eventHandlers={{
+                    click: () => handleFlyTo(stations.lat, stations.long),
+                  }}
                 >
                   <Tooltip direction="top" offset={[0, -35]}>
                     <div className="font-bold text-green-400">STATION:</div>
@@ -645,6 +687,7 @@ const CardScan = () => {
       )}
       {stationEnd && (
         <MapContainer
+          ref={mapRef}
           className="h-1/2 w-full lg:w-1/2 lg:h-full"
           center={[stationEnd.lat, stationEnd.long]}
           zoom={20}

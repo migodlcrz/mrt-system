@@ -8,7 +8,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import NotLogin from "../components/NotLogin";
 import CardScan from "../components/CardScan";
 import Root from "../components/Root";
-import FareCalculator from "../algorithm";
+import NavBar1 from "../components/NavBar1";
+import NavBar from "../components/NavBar";
 
 const App = () => {
   const { user } = useAuthContext();
@@ -17,7 +18,7 @@ const App = () => {
   return (
     <BrowserRouter>
       <div>
-        {!hideNavbar && <Navbar />}{" "}
+        {!hideNavbar && <NavBar />}{" "}
         {/* Render Navbar unless hideNavbar is true */}
         <Routes>
           <Route path={"/"} element={<Root />} />

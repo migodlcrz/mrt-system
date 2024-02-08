@@ -187,7 +187,7 @@ const CardLanding: React.FC<CardLandingProps> = () => {
                 setCardInfo(null);
                 setisView(false);
               }}
-              className="bg-gray-900 font-bold py-2 px-3 rounded-lg w-1/3"
+              className="bg-gray-900 font-bold py-2 px-3 rounded-lg w-1/3 text-white"
             >
               Generate Card
             </button>

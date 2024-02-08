@@ -13,8 +13,8 @@ import MapComponent from "../../../../components/MapComponent";
 import { IoMdCloseCircle } from "react-icons/io";
 import { FaSearch } from "react-icons/fa";
 import "animate.css";
-import { GiRailRoad } from "react-icons/gi";
 import L from "leaflet";
+// import L from "leaflet";
 
 interface Station {
   _id: string;
@@ -34,7 +34,7 @@ interface StationLandingProps {}
 const StationLanding: React.FC<StationLandingProps> = () => {
   const [stations, setStations] = useState<Station[] | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const mapRef = useRef<any>(null);
+  const mapRef = useRef<L.Map>(null);
 
   const { user } = useAuthContext();
   const api = process.env.REACT_APP_API_KEY;
@@ -49,15 +49,13 @@ const StationLanding: React.FC<StationLandingProps> = () => {
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [editStruct, setEditStruct] = useState<Station | null>(null);
 
-  const [stationCount, setStationCount] = useState<number>(0);
-
-  const customIcon = new L.Icon({
-    iconUrl: require("../station/marker.png"),
-    iconSize: [30, 30],
-    iconAnchor: [15, 29],
-    popupAnchor: [0, -35],
-    className: "animate__animated animate__fadeIn",
-  });
+  // const customIcon = new L.Icon({
+  //   iconUrl: require("../station/marker.png"),
+  //   iconSize: [30, 30],
+  //   iconAnchor: [15, 29],
+  //   popupAnchor: [0, -35],
+  //   className: "animate__animated animate__fadeIn",
+  // });
 
   const handleCreate = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -293,7 +291,6 @@ const StationLanding: React.FC<StationLandingProps> = () => {
     const json = await response.json();
 
     if (response.ok) {
-      setStationCount(json.length);
       setStations(json);
       console.log("STATIONS", stations);
     }
@@ -316,6 +313,7 @@ const StationLanding: React.FC<StationLandingProps> = () => {
               center={[14.648028524991535, 121.05955123901369]}
               zoom={13}
               zoomControl={false}
+              renderer={new L.SVG({ padding: 100 })}
               style={{ height: "100%", width: "100%" }}
             >
               <MapComponent
