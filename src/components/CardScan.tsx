@@ -632,7 +632,7 @@ const CardScan = () => {
         <MapContainer
           ref={mapRef}
           className="h-1/2 w-full lg:w-1/2 lg:h-full"
-          center={[stationStart.lat, stationStart.long]}
+          center={[stationStart.lat - 0.2, stationStart.long - 0.2]}
           zoom={10}
           zoomControl={false}
           style={{ height: "100%", width: "100%" }}
@@ -689,8 +689,8 @@ const CardScan = () => {
         <MapContainer
           ref={mapRef}
           className="h-1/2 w-full lg:w-1/2 lg:h-full"
-          center={[stationEnd.lat, stationEnd.long]}
-          zoom={20}
+          center={[stationEnd.lat - 0.2, stationEnd.long - 0.2]}
+          zoom={10}
           zoomControl={false}
           style={{ height: "100%", width: "100%" }}
         >

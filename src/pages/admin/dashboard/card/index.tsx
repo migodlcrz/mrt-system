@@ -9,6 +9,7 @@ import { IoMdCloseCircle } from "react-icons/io";
 import { divIcon } from "leaflet";
 import { toast } from "react-toastify";
 import { clear } from "console";
+import { GrStatusGoodSmall } from "react-icons/gr";
 
 interface Card {
   _id: string;
@@ -176,10 +177,10 @@ const CardLanding: React.FC<CardLandingProps> = () => {
   }, [user, update]);
 
   return (
-    <div className="bg-gray-800 h-screen animate__animated animate__fadeIn">
+    <div className="bg-[#dbe7c9] h-screen animate__animated animate__fadeIn">
       <div className="flex flex-col lg:flex-row w-full">
         <div className="w-full lg:w-1/3">
-          <div className="flex mx-3 mb-2 mt-24 p-2 bg-gray-600 rounded-lg space-x-2">
+          <div className="flex mx-3 mb-2 mt-24 p-2 bg-[#dbe7c9] shadow-lg shadow-black rounded-lg space-x-2">
             <button
               onClick={(e) => {
                 setisAdd(true);
@@ -187,36 +188,42 @@ const CardLanding: React.FC<CardLandingProps> = () => {
                 setCardInfo(null);
                 setisView(false);
               }}
-              className="bg-gray-900 font-bold py-2 px-3 rounded-lg w-1/3 text-white"
+              className="bg-[#0d9276] font-bold py-2 px-3 rounded-lg w-1/3 text-white shadow-lg hover:bg-[#0D423E]"
             >
               Generate Card
             </button>
             <input
-              type="text"
-              className="w-2/3 rounded-lg"
+              type="number"
+              className="w-2/3 rounded-lg text-black shadow-inner shadow-black"
               onChange={(e) => setSearchTerm(e.target.value)}
               value={searchTerm}
+              onKeyPress={(e) => {
+                if (e.key === "e" || e.key === "-" || e.key === "+") {
+                  e.preventDefault();
+                }
+              }}
             />
           </div>
 
-          <div className="bg-gray-600 p-2 rounded-md shadow-md mx-3">
-            <div className="table-container max-h-screen">
+          <div className="bg-[#dbe7c9] p-2 rounded-md shadow-lg shadow-black mx-3">
+            <div className="table-container min-h-[250px] bg-slate-300 shadow-inner shadow-black">
               <div
                 style={{
-                  maxHeight: "255px",
+                  maxHeight: "250px",
                   overflowY: "auto",
-                  scrollbarColor: "dark",
+                  scrollbarColor: "#dbe7c9 #0d9276",
+                  scrollbarWidth: "thin",
                 }}
               >
-                <table className=" w-full bg-gray-500">
-                  <thead className="bg-gray-800 sticky top-0">
+                <table className=" w-full ">
+                  <thead className="bg-[#0d9276] sticky top-0 shadow-md shadow-black">
                     <tr>
-                      <th className=" px-4 sticky top-0 text-green-400 w-auto">
+                      <th className=" py-1 px-4 sticky top-0 text-[#dbe7c9]">
                         UID
                       </th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody className="">
                     {cards &&
                       cards
                         .filter((card: Card) =>
@@ -228,16 +235,25 @@ const CardLanding: React.FC<CardLandingProps> = () => {
                               key={card._id}
                               className={`${
                                 index % 2 === 0
-                                  ? "bg-gray-400 hover:bg-gray-600"
-                                  : "bg-gray-300 hover:bg-gray-500"
+                                  ? "bg-gray-400 hover:bg-gray-600 shadow-lg shadow-black"
+                                  : "bg-[#dbe7c9] hover:bg-gray-600 shadow-inner shadow-black"
                               }`}
                               onClick={() => {
                                 handleClickEdit(card);
                                 setisAdd(false);
                               }}
                             >
-                              <td className="py-2 px-4 font-bold text-center text-black">
-                                {card.uid}
+                              <td className="flex flex-row w-full items-center justify-between py-2 px-36 font-bold text-center text-black shadow-lg shadow-black">
+                                <div
+                                  className={`${
+                                    card.isTap
+                                      ? "text-green-400"
+                                      : "text-red-800"
+                                  }`}
+                                >
+                                  <GrStatusGoodSmall />
+                                </div>
+                                <div>{card.uid}</div>
                               </td>
                             </tr>
                           );
@@ -250,86 +266,95 @@ const CardLanding: React.FC<CardLandingProps> = () => {
         </div>
         <div className="w-full lg:w-2/3">
           <div
-            className={`flex max-w-full mr-3 mb-5 mt-24 p-2 justify-center bg-gray-600 ${
-              cardInfo && "bg-green-400"
+            className={`flex max-w-full mr-3 mb-5 mt-24 p-2 justify-center  shadow-lg shadow-black ${
+              cardInfo ? "bg-[#0d9276]" : "bg-[#dbe7c9]"
             } rounded-lg space-x-2`}
           >
-            <div className="flex flex-row bg-gray-800 p-3 rounded-md w-full">
-              <div className="flex flex-col space-y-6 w-1/2 m-4 bg-gray-600 items-center justify-center rounded-lg p-4">
+            <div className="flex flex-row bg-[#dbe7c9] shadow-inner shadow-black p-3 rounded-md w-full">
+              <div
+                className={`flex flex-col space-y-6 w-1/2 m-4 bg-red-[#dbe7c9] ${
+                  cardInfo && "bg-[#0d9276]"
+                } items-center justify-center rounded-lg p-4 shadow-lg shadow-black`}
+              >
                 <div
-                  className={`text-gray-400 font-bold text-2xl ${
-                    cardInfo && "text-green-400"
+                  className={`flex flex-row w-full justify-between px-16 font-bold text-2xl ${
+                    cardInfo ? "text-[#dbe7c9]" : "text-gray-400"
                   }`}
                 >
                   CARD ID:{" "}
-                  <span className="text-white">{cardInfo && cardInfo.uid}</span>
+                  <span className="text-[#dbe7c9]">
+                    {cardInfo && cardInfo.uid}
+                  </span>
                 </div>
                 <div
-                  className={`flex flex-row space-x-2 text-lg text-gray-400 w-full items-center justify-center ${
-                    cardInfo && "text-green-400"
+                  className={`flex flex-row space-x-2 text-lg px-16 w-full items-center justify-between ${
+                    cardInfo ? "text-[#dbe7c9]" : "text-gray-400"
                   }`}
                 >
-                  <div className="text-2xl mr-2">
-                    <FaCoins />
+                  <div className="flex flex-row">
+                    <div className="text-2xl mr-2">
+                      <FaCoins />
+                    </div>
+                    Balance:{" "}
                   </div>
-                  Balance:{" "}
                   <span className="text-white">
                     {cardInfo && <div>₱{cardInfo.balance}</div>}
                   </span>
                 </div>
                 <div
-                  className={`flex flex-row space-x-2 text-lg text-gray-400 w-full items-center justify-center ${
-                    cardInfo && "text-green-400"
+                  className={`flex flex-row space-x-2 text-lg px-16 w-full items-center justify-between ${
+                    cardInfo ? "text-[#dbe7c9]" : "text-gray-400 "
                   }`}
                 >
-                  <div className="text-2xl mr-2">
-                    <FaAddressCard />
+                  <div className="flex flex-row">
+                    {" "}
+                    <div className="text-2xl mr-2">
+                      <FaAddressCard />
+                    </div>
+                    Status:{" "}
                   </div>
-                  Status:{" "}
                   <span className="text-white">
                     {cardInfo && (
                       <div>{cardInfo.isTap ? "Tapped In" : "Tapped Off"}</div>
                     )}
                   </span>
                 </div>
-                <div className="flex flex-row justify-between w-full px-8">
+                <div className="flex flex-row justify-between w-full px-16">
                   <button
                     disabled={cardInfo ? false : true}
                     onClick={() => {
                       setisAddBalance(true);
                       setisAdd(false);
                     }}
-                    className="bg-gray-800 px-3 py-1 rounded-lg shadow-lg font-bold hover:shadow-green-400 text-green-400 disabled:text-gray-400"
+                    className="bg-[#dbe7c9] px-3 py-1 rounded-lg shadow-lg font-bold shadow-black focus:shadow-none text-[#0d9276] disabled:text-gray-400"
                   >
                     Add
                   </button>
-                  {/* <button
-                    disabled={cardInfo ? false : true}
-                    className="bg-gray-800 px-3 py-1 rounded-lg shadow-lg font-bold hover:shadow-green-400 text-green-400 disabled:text-gray-400"
-                  >
-                    Edit
-                  </button> */}
 
                   <button
                     disabled={cardInfo ? false : true}
                     onClick={() => {
                       cardInfo && handleDelete(cardInfo._id);
                     }}
-                    className="bg-gray-800 px-3 py-1 rounded-lg shadow-lg font-bold hover:shadow-green-400 text-green-400 disabled:text-gray-400"
+                    className="bg-[#dbe7c9] px-3 py-1 rounded-lg shadow-lg font-bold shadow-black focus:shadow-none text-[#0d9276] disabled:text-gray-400"
                   >
                     Delete
                   </button>
                 </div>
               </div>
 
-              <div className="bg-gray-600 w-1/2 m-4 rounded-lg">
+              <div
+                className={`bg-gray-[#dbe7c9] ${
+                  cardInfo && "bg-[#0d9276]"
+                } w-1/2 m-4 rounded-lg shadow-lg shadow-black`}
+              >
                 <div className="p-4 text-center">
                   <div
-                    className={`flex text-gray-400 font-bold text-xl w-full justify-between items-center mb-4 ${
-                      cardInfo && "text-green-400"
+                    className={`flex  font-bold text-xl w-full justify-between items-center mb-4 ${
+                      cardInfo ? "text-[#dbe7c9]" : "text-gray-400"
                     }`}
                   >
-                    <label htmlFor="">Travel History:</label>
+                    <label className="">Travel History:</label>
                     {isView && (
                       <button onClick={clearSearch} className="text-2xl">
                         <IoMdCloseCircle />
@@ -342,15 +367,22 @@ const CardLanding: React.FC<CardLandingProps> = () => {
                         style={{
                           maxHeight: "185px",
                           overflowY: "auto",
-                          scrollbarColor: "dark",
+                          scrollbarColor: "#0d9276 #dbe7c9",
+                          scrollbarWidth: "thin",
                         }}
                       >
                         <table className="w-full bg-gray-500">
-                          <thead className="bg-gray-900 sticky z-50 top-0">
-                            <tr className="py-2 px-4 sticky text-green-400">
-                              <th className="p-2">From</th>
-                              <th className="p-2">To</th>
-                              <th className="p-2">Date</th>
+                          <thead className="bg-[#dbe7c9] sticky top-0 shadow-md shadow-black z-50">
+                            <tr className="py-2 px-4 sticky">
+                              <th className=" py-1 px-4 sticky top-0 text-[#0d9276] shadow-lg">
+                                From
+                              </th>
+                              <th className=" py-1 px-4 sticky top-0 text-[#0d9276] shadow-lg">
+                                To
+                              </th>
+                              <th className=" py-1 px-4 sticky top-0 text-[#0d9276] shadow-lg">
+                                Date
+                              </th>
                             </tr>
                           </thead>
                           <tbody className="z-0">
@@ -360,8 +392,8 @@ const CardLanding: React.FC<CardLandingProps> = () => {
                                   key={index}
                                   className={`hover:bg-gray-500 animate__animated animate__fadeIn ${
                                     index % 2 === 0
-                                      ? "bg-gray-400"
-                                      : "bg-gray-300"
+                                      ? "bg-gray-400 hover:bg-gray-600 shadow-lg shadow-black "
+                                      : "bg-[#dbe7c9] hover:bg-gray-600 shadow-inner shadow-black"
                                   }`}
                                 >
                                   <td className="p-2 text-black">
@@ -377,7 +409,10 @@ const CardLanding: React.FC<CardLandingProps> = () => {
                               ))
                             ) : (
                               <tr>
-                                <td colSpan={3} className="p-2 text-black">
+                                <td
+                                  colSpan={3}
+                                  className="p-2 bg-gray-400 text-[#0d9276] font-bold h-36"
+                                >
                                   No travel history available.
                                 </td>
                               </tr>
@@ -399,16 +434,26 @@ const CardLanding: React.FC<CardLandingProps> = () => {
       </div>
       <div className="flex flex-col lg:flex-row w-full">
         <div className="w-1/3">
-          <div className="flex max-w-full mr-3 mb-5 p-2 justify-center bg-gray-600 rounded-lg space-x-2 h-full mx-3">
-            <div className="flex flex-row bg-gray-800 py-3 px-6 rounded-md w-full">
+          <div className="flex max-w-full mr-3 mb-5 p-2 justify-center bg-[#dbe7c9] rounded-lg shadow-lg shadow-black space-x-2 h-full mx-3">
+            <div className="flex flex-row bg-[#dbe7c9] shadow-inner shadow-black py-3 px-6 rounded-md w-full">
               <div className="flex flex-col justify-start items-center w-1/2 border-r-2 border-gray-700">
-                <div className="text-white">onboard</div>
+                <div className="flex flex-row w-full pl-10 items-center space-x-4">
+                  <div className="text-green-400">
+                    <GrStatusGoodSmall />
+                  </div>
+                  <div className="text-[#0d9276] font-bold">onboard</div>
+                </div>
                 <div className="text-green-400 font-bold text-6xl my-16">
                   {onboardCount}
                 </div>
               </div>
               <div className="flex flex-col justify-start items-center w-1/2">
-                <div className="text-white">offboard</div>
+                <div className="flex flex-row w-full pl-10 items-center space-x-4">
+                  <div className="text-red-800">
+                    <GrStatusGoodSmall />
+                  </div>
+                  <div className="text-[#0d9276] font-bold">offboard</div>
+                </div>
                 <div className="text-green-400 font-bold text-6xl my-16">
                   {offboardCount}
                 </div>
@@ -418,12 +463,12 @@ const CardLanding: React.FC<CardLandingProps> = () => {
         </div>
         <div className="w-full lg:w-1/3">
           <div
-            className={`flex max-w-full mr-3 mb-5 p-2 justify-center bg-gray-600 ${
-              (isAdd || isAddBalance) && "bg-green-400"
+            className={`flex max-w-full mr-3 mb-5 p-2 justify-center shadow-lg shadow-black ${
+              isAdd || isAddBalance ? "bg-[#0d9276]" : "bg-[#dbe7c9]"
             } rounded-lg space-x-2 h-full`}
           >
             {isAdd && (
-              <div className="flex flex-col space-y-6 bg-gray-800 py-3 px-6 rounded-md w-full">
+              <div className="flex flex-col space-y-6 bg-[#dbe7c9] py-3 px-6 rounded-md w-full">
                 <div className="flex flex-row w-full justify-between">
                   <div className="flex flex-row justify-between w-full">
                     <label className="text-green-400 font-bold text-xl">
@@ -446,26 +491,40 @@ const CardLanding: React.FC<CardLandingProps> = () => {
                   <label className="font-bold">Balance:</label>
                   <input
                     type="number"
-                    className="rounded-lg text-black"
+                    className="rounded-lg text-black shadow-inner shadow-black"
                     onChange={(e: ChangeEvent<HTMLInputElement>) =>
                       setBalance(e.target.value)
                     }
+                    onKeyPress={(e) => {
+                      if (e.key === "e" || e.key === "-" || e.key === "+") {
+                        e.preventDefault();
+                      } else if (
+                        (e.target as HTMLInputElement).value.length >= 5 &&
+                        e.key !== "Backspace"
+                      ) {
+                        e.preventDefault();
+                      }
+                    }}
                     value={balance}
                   />
-                  <button className="mt-6 bg-gray-600 text-green-400 font-bold mx-10 rounded-lg py-2">
+                  <button className="mt-6 bg-[#0d9276] text-[#dbe7c9] font-bold mx-10 rounded-lg py-2 shadow-lg shadow-black focus:shadow-inner">
                     generate
                   </button>
                 </form>
               </div>
             )}
             {isAddBalance && (
-              <div className="flex flex-col space-y-6 bg-gray-800 py-3 px-6 rounded-md w-full">
-                <label className="text-green-400 font-bold text-xl">
+              <div className="flex flex-col space-y-6 bg-[#dbe7c9] py-3 px-6 rounded-md w-full shadow-inner shadow-black">
+                <label className="text-[#0d9276] font-bold text-xl">
                   Quick Add Balance:
                 </label>
                 <div className="flex flex-col w-full justify-center">
-                  <div>Card ID: {cardInfo && cardInfo.uid}</div>
-                  <div>Balance: ₱{cardInfo && cardInfo.balance}</div>
+                  <div className="text-[#0d9276]">
+                    Card ID: {cardInfo && cardInfo.uid}
+                  </div>
+                  <div className="text-[#0d9276]">
+                    Balance: ₱{cardInfo && cardInfo.balance}
+                  </div>
                 </div>
                 <div className="flex flex-col space-y-6 px-4">
                   <div className="grid grid-cols-5 space-x-2">
@@ -473,7 +532,7 @@ const CardLanding: React.FC<CardLandingProps> = () => {
                       onClick={() => {
                         addBalance(1);
                       }}
-                      className="bg-gray-600 px-4 py-1 rounded-lg shadow-lg hover:shadow-green-400 text-green-400 font-bold"
+                      className="bg-[#0d9276] shadow-lg shadow-black px-4 py-1 rounded-lg text-[#dbe7c9] font-bold"
                     >
                       1
                     </button>
@@ -481,7 +540,7 @@ const CardLanding: React.FC<CardLandingProps> = () => {
                       onClick={() => {
                         addBalance(5);
                       }}
-                      className="bg-gray-600 px-4 py-1 rounded-lg shadow-lg hover:shadow-green-400 text-green-400 font-bold"
+                      className="bg-[#0d9276] shadow-lg shadow-black px-4 py-1 rounded-lg text-[#dbe7c9] font-bold"
                     >
                       5
                     </button>
@@ -489,7 +548,7 @@ const CardLanding: React.FC<CardLandingProps> = () => {
                       onClick={() => {
                         addBalance(10);
                       }}
-                      className="bg-gray-600 px-4 py-1 rounded-lg shadow-lg hover:shadow-green-400 text-green-400 font-bold"
+                      className="bg-[#0d9276] shadow-lg shadow-black px-4 py-1 rounded-lg text-[#dbe7c9] font-bold"
                     >
                       10
                     </button>
@@ -497,7 +556,7 @@ const CardLanding: React.FC<CardLandingProps> = () => {
                       onClick={() => {
                         addBalance(20);
                       }}
-                      className="bg-gray-600 px-4 py-1 rounded-lg shadow-lg hover:shadow-green-400 text-green-400 font-bold"
+                      className="bg-[#0d9276] shadow-lg shadow-black px-4 py-1 rounded-lg text-[#dbe7c9] font-bold"
                     >
                       20
                     </button>
@@ -505,7 +564,7 @@ const CardLanding: React.FC<CardLandingProps> = () => {
                       onClick={() => {
                         addBalance(50);
                       }}
-                      className="bg-gray-600 px-4 py-1 rounded-lg shadow-lg hover:shadow-green-400 text-green-400 font-bold"
+                      className="bg-[#0d9276] shadow-lg shadow-black px-4 py-1 rounded-lg text-[#dbe7c9] font-bold"
                     >
                       50
                     </button>
@@ -515,7 +574,7 @@ const CardLanding: React.FC<CardLandingProps> = () => {
                       onClick={() => {
                         addBalance(100);
                       }}
-                      className="bg-gray-600 px-4 py-1 rounded-lg shadow-lg hover:shadow-green-400 text-green-400 font-bold"
+                      className="bg-[#0d9276] shadow-lg shadow-black px-4 py-1 rounded-lg text-[#dbe7c9] font-bold"
                     >
                       100
                     </button>
@@ -523,7 +582,7 @@ const CardLanding: React.FC<CardLandingProps> = () => {
                       onClick={() => {
                         addBalance(200);
                       }}
-                      className="bg-gray-600 px-4 py-1 rounded-lg shadow-lg hover:shadow-green-400 text-green-400 font-bold"
+                      className="bg-[#0d9276] shadow-lg shadow-black px-4 py-1 rounded-lg text-[#dbe7c9] font-bold"
                     >
                       200
                     </button>
@@ -531,7 +590,7 @@ const CardLanding: React.FC<CardLandingProps> = () => {
                       onClick={() => {
                         addBalance(500);
                       }}
-                      className="bg-gray-600 px-4 py-1 rounded-lg shadow-lg hover:shadow-green-400 text-green-400 font-bold"
+                      className="bg-[#0d9276] shadow-lg shadow-black px-4 py-1 rounded-lg text-[#dbe7c9] font-bold"
                     >
                       500
                     </button>
@@ -539,7 +598,7 @@ const CardLanding: React.FC<CardLandingProps> = () => {
                       onClick={() => {
                         addBalance(1000);
                       }}
-                      className="bg-gray-600 px-4 py-1 rounded-lg shadow-lg hover:shadow-green-400 text-green-400 font-bold"
+                      className="bg-[#0d9276] shadow-lg shadow-black px-4 py-1 rounded-lg text-[#dbe7c9] font-bold"
                     >
                       1000
                     </button>
@@ -547,7 +606,7 @@ const CardLanding: React.FC<CardLandingProps> = () => {
                       onClick={() => {
                         addBalance(2000);
                       }}
-                      className="bg-gray-600 px-4 py-1 rounded-lg shadow-lg hover:shadow-green-400 text-green-400 font-bold"
+                      className="bg-[#0d9276] shadow-lg shadow-black px-4 py-1 rounded-lg text-[#dbe7c9] font-bold"
                     >
                       2000
                     </button>
@@ -556,12 +615,23 @@ const CardLanding: React.FC<CardLandingProps> = () => {
               </div>
             )}
             {!isAdd && !isAddBalance && (
-              <div className="flex flex-col space-y-8 bg-gray-800 py-3 px-6 rounded-md w-full text-center">
-                <label className="my-24">
-                  Press an Action to open this panel
+              <div className="flex flex-col space-y-8 bg-[#dbe7c9] py-3 px-6 rounded-md w-full text-center shadow-inner shadow-black">
+                <label className="my-24 text-[#0d9276] font-bold">
+                  Press an action to open this panel
                 </label>
               </div>
             )}
+          </div>
+        </div>
+        <div className="w-full lg:w-1/3">
+          <div
+            className={`flex max-w-full mr-3 mb-5 p-2 justify-center  shadow-lg shadow-black ${
+              isAdd || isAddBalance ? "bg-[#0d9276]" : "bg-[#dbe7c9]"
+            } rounded-lg space-x-2 h-full`}
+          >
+            <div className="flex flex-row bg-[#dbe7c9] shadow-inner shadow-black py-3 px-6 rounded-md w-full">
+              hello
+            </div>
           </div>
         </div>
       </div>

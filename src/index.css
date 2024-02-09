@@ -6,10 +6,19 @@
     height: 86vh;
   }
   .h-custom-height-dash {
-    height: 43vh;
+    height: 45vh;
   }
   .h-custom-height-travel-summary {
     height: 35vh;
+  }
+  .cream {
+    background-color: #dbe7c9;
+  }
+  .green {
+    color: #294b29;
+  }
+  .darkmint {
+    background-color: #0d9276;
   }
 }
 @layer utilities {

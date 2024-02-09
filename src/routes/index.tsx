@@ -8,7 +8,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import NotLogin from "../components/NotLogin";
 import CardScan from "../components/CardScan";
 import Root from "../components/Root";
-import NavBar1 from "../components/NavBar1";
 import NavBar from "../components/NavBar";
 
 const App = () => {

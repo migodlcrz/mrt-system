@@ -301,15 +301,15 @@ const StationLanding: React.FC<StationLandingProps> = () => {
   }, []);
 
   return (
-    <div className="CardLanding bg-gray-800 h-screen animate__animated animate__fadeIn">
+    <div className="CardLanding bg-[#dbe7c9] h-screen animate__animated animate__fadeIn">
       <div className="flex flex-col lg:flex-row h-screen">
         {/* eLEFT PANEL */}
         <div className="w-full lg:w-1/2 z-0 mt-24 lg:mt-0">
           {/* eMAP */}
-          <div className="flex h-96 lg:h-custom-height items-center justify-center bg-gray-700 mx-5 my-2 lg:mr-1 p-2 rounded-lg lg:mt-24">
+          <div className="flex h-96 lg:h-custom-height items-center justify-center bg-[#dbe7c9] shadow-lg shadow-black mx-5 my-2 lg:mr-1 p-2 rounded-lg lg:mt-24">
             <MapContainer
               ref={mapRef}
-              className="animate__animated animate__fadeIn"
+              className="animate__animated animate__fadeIn shadow-inner shadow-black"
               center={[14.648028524991535, 121.05955123901369]}
               zoom={13}
               zoomControl={false}
@@ -359,7 +359,7 @@ const StationLanding: React.FC<StationLandingProps> = () => {
                               [station.lat, station.long],
                               [connectedStation.lat, connectedStation.long],
                             ]}
-                            color="green"
+                            color="#0d9276"
                           />
                         );
                       }
@@ -374,43 +374,46 @@ const StationLanding: React.FC<StationLandingProps> = () => {
         {/* eRIGHT PANEL */}
         <div className="flex flex-col w-full lg:w-1/2 h-full z-0">
           {/* eSEARCH BAR */}
-          <div className="flex max-w-full mx-5 mb-5 lg:mb-2 lg:mt-24 p-2 justify-center bg-gray-700 rounded-lg">
-            <div className="flex bg-green-400 text-gray-700 font-bold rounded-l-lg w-auto h-10 px-2 items-center">
-              <FaSearch />
+          <div className="flex max-w-full mx-5 mb-5 lg:mb-2 lg:mt-24 p-2 justify-center bg-[#dbe7c9] rounded-lg shadow-lg shadow-black">
+            <div className="flex bg-[#0d9276] text-gray-700 font-bold rounded-l-lg w-auto h-10 px-2 items-center">
+              <div className="text-[#dbe7c9]">
+                <FaSearch />
+              </div>
             </div>
             <input
               type=""
-              className="bg-gray-200 w-full h-10 text-black"
+              className="bg-white w-full h-10 text-black shadow-inner shadow-black px-3"
               value={searchTerm}
               onChange={(e) => {
                 setSearchTerm(e.target.value);
               }}
             />
             <button
-              className="flex bg-green-400 text-gray-700 font-bold  rounded-r-lg w-auto h-10 px-2 items-center"
-              onClick={clearSearch}
+              className="flex bg-[#0d9276] text-gray-700 font-bold  rounded-r-lg w-auto h-10 px-2 items-center"
+              onClick={() => setSearchTerm("")}
             >
-              Clear
+              <div className="text-[#dbe7c9]">Clear</div>
             </button>
           </div>
           {/* eTABLE */}
-          <div className="bg-gray-700 p-2 rounded-md shadow-md mx-5">
+          <div className="bg-[#dbe7c9] p-2 rounded-md mx-5 shadow-lg shadow-black">
             <div className="table-container h-custom-max-height">
               <div
-                className="h-96 overflow-y-auto"
+                className="h-96 overflow-y-auto shadow-black shadow-inner"
                 style={{
                   maxHeight: "190px",
                   overflowY: "auto",
-                  scrollbarColor: "dark",
+                  scrollbarColor: "#dbe7c9 #0d9276",
+                  scrollbarWidth: "thin",
                 }}
               >
                 <table className=" w-full bg-gray-500">
-                  <thead className="bg-gray-900 sticky top-0 z-50">
-                    <tr className="py-2 px-4 sticky text-green-400">
+                  <thead className="bg-[#0d9276] sticky top-0 z-50 shadow-md shadow-black">
+                    <tr className="py-2 px-4 sticky text-[#dbe7c9]">
                       <th>Station Name</th>
                     </tr>
                   </thead>
-                  <tbody className="z-0">
+                  <tbody className="">
                     {stations &&
                       stations
                         .filter((station: Station) =>
@@ -423,7 +426,9 @@ const StationLanding: React.FC<StationLandingProps> = () => {
                             <tr
                               key={station._id}
                               className={`hover:bg-gray-500 animate__animated animate__fadeIn z-0 ${
-                                index % 2 === 0 ? "bg-gray-400" : "bg-gray-300"
+                                index % 2 === 0
+                                  ? "bg-gray-400 hover:bg-gray-600 shadow-lg shadow-black"
+                                  : "bg-[#dbe7c9] hover:bg-gray-600 shadow-inner shadow-black"
                               }`}
                               onClick={() => {
                                 handleClickEdit(station);
@@ -442,15 +447,15 @@ const StationLanding: React.FC<StationLandingProps> = () => {
             </div>
           </div>
           {/* eSTATION FORM */}
-          <div className="flex justify-center items-center w-auto h-1/2 z-10 bg-gray-700 mx-5 mt-2 lg:mr-5 rounded-lg py-2 mb-2">
-            <div className="flex flex-row bg-gray-900 m-2 h-full w-full rounded-lg">
+          <div className="flex justify-center items-center w-auto h-1/2 z-10 bg-[#dbe7c9] shadow-lg shadow-black mx-5 mt-2 lg:mr-5 rounded-lg py-2 mb-2">
+            <div className="flex flex-row bg-[#dbe7c9] shadow-inner shadow-black m-2 h-full w-full rounded-lg">
               <div className="flex flex-col w-1/2 m-2">
                 <div className="flex flex=row justify-between">
                   <div
                     className={`text-xl font-bold ${
                       isEdit || (latClick !== 0 && lngClick !== 0)
-                        ? `text-green-400`
-                        : `text-gray-500`
+                        ? `text-[#0d9276]`
+                        : `text-gray-400`
                     }`}
                   >
                     {latClick !== 0 && lngClick !== 0
@@ -464,14 +469,22 @@ const StationLanding: React.FC<StationLandingProps> = () => {
                     onSubmit={isEdit ? handleEdit : handleCreate}
                   >
                     <div>
-                      <label>Station Name: </label>
-                      <span className="text-green-400 font-bold">
+                      <label
+                        className={`${
+                          isEdit || (latClick !== 0 && lngClick !== 0)
+                            ? `text-[#0d9276]`
+                            : `text-gray-400`
+                        }`}
+                      >
+                        Station Name:{" "}
+                      </label>
+                      <span className="text-[#0d9276] font-bold">
                         {editStruct?.name}
                       </span>
                     </div>
                     <input
                       type="text"
-                      className="rounded-lg text-black disabled:opacity-80"
+                      className="rounded-lg text-black disabled:opacity-80 shadow-inner shadow-black"
                       value={stationName}
                       onChange={(e: ChangeEvent<HTMLInputElement>) => {
                         setStationName(e.target.value);
@@ -481,10 +494,18 @@ const StationLanding: React.FC<StationLandingProps> = () => {
                     />
                     <div className="flex flex-col lg:flex-row w-auto lg:space-x-10">
                       <div className="flex flex-col w-1/2">
-                        <label>Latitude:</label>
+                        <label
+                          className={`${
+                            isEdit || (latClick !== 0 && lngClick !== 0)
+                              ? `text-[#0d9276]`
+                              : `text-gray-400`
+                          }`}
+                        >
+                          Latitude:
+                        </label>
                         <input
                           type="text"
-                          className="w-full rounded-lg text-black disabled:opacity-80"
+                          className="w-full rounded-lg text-black disabled:opacity-80 shadow-inner shadow-black"
                           value={latClick}
                           readOnly
                           disabled={latClick === 0 && lngClick === 0}
@@ -492,10 +513,18 @@ const StationLanding: React.FC<StationLandingProps> = () => {
                         />
                       </div>
                       <div className="flex flex-col w-1/2">
-                        <label>Longitude:</label>
+                        <label
+                          className={`${
+                            isEdit || (latClick !== 0 && lngClick !== 0)
+                              ? `text-[#0d9276]`
+                              : `text-gray-400`
+                          }`}
+                        >
+                          Longitude:
+                        </label>
                         <input
                           type="text"
-                          className="w-full rounded-lg text-black disabled:opacity-80"
+                          className="w-full rounded-lg text-black disabled:opacity-80 shadow-inner shadow-black"
                           value={lngClick}
                           readOnly
                           disabled={latClick === 0 && lngClick === 0}
@@ -505,7 +534,7 @@ const StationLanding: React.FC<StationLandingProps> = () => {
                     </div>
                     <div className="">
                       {latClick !== 0 && lngClick !== 0 && (
-                        <button className="bg-green-400 text-black p-2 rounded-lg font-bold w-16 hover:bg-green-600">
+                        <button className="bg-[#0d9276] text-black p-2 rounded-lg font-bold w-16 shadow-md shadow-black">
                           {isEdit ? "Edit" : "Add"}
                         </button>
                       )}
@@ -531,8 +560,8 @@ const StationLanding: React.FC<StationLandingProps> = () => {
                   <label
                     className={`mb-2 text-xl font-bold ${
                       isEdit || (latClick !== 0 && lngClick !== 0)
-                        ? `text-green-400`
-                        : `text-gray-500`
+                        ? `text-[#0d9276]`
+                        : `text-gray-400`
                     }`}
                   >
                     Station Connection:
@@ -541,17 +570,25 @@ const StationLanding: React.FC<StationLandingProps> = () => {
                     <button
                       className={`flex ${
                         latClick === 0 && lngClick === 0
-                          ? `bg-gray-400 text-gray-700 hover:bg-gray-600`
-                          : `bg-green-400 text-black hover:bg-green-600`
+                          ? `bg-gray-400 text-black`
+                          : `bg-[#0d9276] text-[#dbe7c9] shadow-lg shadow-black`
                       } text-gray-700 font-bold rounded-lg w-auto h-10 px-2 items-center`}
                       onClick={clearSearch}
                     >
-                      Clear
+                      <div
+                        className={`${
+                          latClick === 0 && lngClick === 0
+                            ? "text-gray-700"
+                            : "text-[#dbe7c9]"
+                        }`}
+                      >
+                        Cancel
+                      </div>
                     </button>
                   )}
                   {isEdit && (
                     <button
-                      className="bg-gray-900 text-2xl text-green-400 p-2 rounded-lg font-bold hover:text-green-600"
+                      className="text-2xl text-[#0d9276] p-2 rounded-lg font-bold"
                       onClick={(e) => {
                         clearSearch();
                         setIsEdit(false);
@@ -568,14 +605,14 @@ const StationLanding: React.FC<StationLandingProps> = () => {
                     className={`flex ${
                       latClick === 0 && lngClick === 0
                         ? `bg-gray-400 text-gray-700`
-                        : `bg-green-400 text-black`
+                        : `bg-[#0d9276] text-[#dbe7c9]`
                     }  font-bold  rounded-l-lg w-auto h-10 px-2 items-center`}
                   >
                     <FaSearch />
                   </div>
                   <input
                     type=""
-                    className="bg-gray-200 w-full h-10 text-black rounded-r-lg lg:rounded-none disabled:opacity-80"
+                    className="bg-gray-200 w-full h-10 text-black rounded-r-lg lg:rounded-none disabled:opacity-80 shadow-inner shadow-black"
                     value={searchConnectedTerm}
                     disabled={latClick === 0 && lngClick === 0}
                     onChange={(e) => {
@@ -585,17 +622,17 @@ const StationLanding: React.FC<StationLandingProps> = () => {
                   <button
                     className={`flex ${
                       latClick === 0 && lngClick === 0
-                        ? `bg-gray-400 text-gray-700 hover:bg-gray-600`
-                        : `bg-green-400 text-black hover:bg-green-600`
+                        ? `bg-gray-400 text-gray-700 `
+                        : `bg-[#0d9276] text-[#dbe7c9] `
                     }  font-bold rounded-r-lg w-auto h-10 px-2 items-center hidden lg:block`}
                     onClick={() => setSearchConnectedTerm("")}
                   >
                     Clear
                   </button>
                 </div>
-                <div className="w-full h-56 bg-gray-800 rounded-lg">
+                <div className="w-full h-56 bg-[#dbe7c9] rounded-lg shadow-inner shadow-black">
                   {latClick === 0 && lngClick === 0 && (
-                    <div className="text-center mt-20 font-bold px-3">
+                    <div className="text-center mt-20 font-bold px-3 text-gray-500">
                       Press on map or edit station to see connections.
                     </div>
                   )}
@@ -604,7 +641,8 @@ const StationLanding: React.FC<StationLandingProps> = () => {
                       style={{
                         maxHeight: "220px",
                         overflowY: "auto",
-                        scrollbarColor: "dark",
+                        scrollbarColor: "#0d9276 #dbe7c9",
+                        scrollbarWidth: "thin",
                       }}
                     >
                       <div className="m-2">
@@ -623,10 +661,10 @@ const StationLanding: React.FC<StationLandingProps> = () => {
                                       onClick={() =>
                                         handleConnectionClick(station)
                                       }
-                                      className={`px-2 py-1 my-1 font-bold w-full rounded-lg ${
+                                      className={`px-2 py-1 my-1 font-bold w-full rounded-lg  ${
                                         connections.includes(station._id)
-                                          ? "bg-green-400 text-black hover:bg-green-600"
-                                          : "bg-gray-700 text-white hover:bg-gray-900"
+                                          ? "bg-[#0d9276] text-[#dbe7c9] shadow-inner shadow-black"
+                                          : "bg-[#dbe7c9] text-[#0d9276] hover:bg-gray-900 shadow-lg shadow-black"
                                       }`}
                                     >
                                       {station.name}

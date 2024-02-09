@@ -96,90 +96,93 @@ const Dashboard = () => {
   }, []);
 
   return (
-    <div className="h-screen w-full bg-gray-800 animate__animated animate__fadeIn">
-      <div className="text-white min-h-screen bg-gray-800">
+    <div className="h-screen w-full bg-[#dbe7c9] animate__animated animate__fadeIn">
+      <div className="text-white min-h-screen bg-[#dbe7c9]">
         {/* upper right panel */}
         <div className="flex flex-col lg:flex-row min-h-full justify-center items-start space-y-2 lg:space-y-0 pt-28 pb-4">
           <div className="flex justify-start w-full h-full">
             <div className="flex flex-col w-full h-full space-y-4">
-              <div className="flex h-full items-center justify-center bg-gray-700 mr-2 mx-2 rounded-lg animate__animated animate__backInLeft">
-                <div className="text-2xl font-bold py-4">
-                  Admin:<span className="text-green-400"> migo@gmail.com</span>
+              <div className="flex h-full items-center justify-center bg-[#dbe7c9] shadow-lg shadow-black mr-2 mx-2 rounded-lg">
+                <div className="text-2xl text-[#0d9276] font-bold py-4">
+                  Welcome<span className="text-[#0d9276]"> migo@gmail.com</span>
                 </div>
               </div>
               <div className="flex flex-col lg:flex-row space-y-2 lg:space-y-0">
-                <div className="flex flex-row lg:flex-col h- lg:w-1/3 items-start  bg-gray-700 mr-2 mx-2 rounded-lg p-4 lg:space-y-4 font-bold py-6 animate__animated animate__backInLeft">
+                <div className="flex flex-row lg:flex-col h- lg:w-1/3 items-start bg-[#dbe7c9] shadow-lg shadow-black mr-2 mx-2 rounded-lg p-4 lg:space-y-4 font-bold py-6">
                   <div className="flex items-center">
-                    <div className="text-green-400 text-md lg:text-2xl bg-gray-900 h-full p-2 text-center rounded-lg ">
-                      Quick Info:
-                    </div>
+                    <div className="text-[#0d9276] text-xl">Quick Info:</div>
                   </div>
-                  <div className="flex flex-col lg:flex-row items-center text-green-400 justify-between w-full border-b-2 border-b-white">
-                    <div className="hidden lg:block text-white">
+                  <div className="flex flex-col lg:flex-row items-center text-green-400 justify-between w-full border-b-2 border-b-[#0d9276]">
+                    <div className="hidden lg:block text-[#0d9276]">
                       Beep Cards:{" "}
                     </div>
                     <div className="lg:hidden">
                       <FaCreditCard />-{" "}
                     </div>
-                    <span className="text-green-400">{cardCount}</span>
+                    <span className="text-[#0d9276]">{cardCount}</span>
                   </div>
-                  <div className="flex flex-col lg:flex-row items-center text-green-400 justify-between w-full border-b-2 border-b-white">
-                    <div className="hidden lg:block text-white">Stations: </div>
+                  <div className="flex flex-col lg:flex-row items-center text-green-400 justify-between w-full border-b-2 border-b-[#0d9276]">
+                    <div className="hidden lg:block text-[#0d9276]">
+                      Stations:{" "}
+                    </div>
                     <div className="lg:hidden">
                       <FaTrainSubway />-{" "}
                     </div>
-                    <span className="text-green-400"> {stations?.length}</span>
+                    <span className="text-[#0d9276]"> {stations?.length}</span>
                   </div>
-                  <div className="flex flex-col lg:flex-row items-center text-green-400 justify-between w-full border-b-2 border-b-white">
-                    <div className="hidden lg:block text-white">
+                  <div className="flex flex-col lg:flex-row items-center text-green-400 justify-between w-full border-b-2 border-b-[#0d9276]">
+                    <div className="hidden lg:block text-[#0d9276]">
                       Minimum Fare:{" "}
                     </div>
                     <div className="lg:hidden">
                       <FaCoins />-{" "}
                     </div>
-                    <span className="text-green-400">
+                    <span className="text-[#0d9276]">
                       ₱{fare && fare.minimumAmount}
                     </span>
                   </div>
-                  <div className="flex flex-col lg:flex-row items-center text-green-400 justify-between w-full border-b-2 border-b-white">
-                    <div className="hidden lg:block text-white">Fare/KM: </div>
+                  <div className="flex flex-col lg:flex-row items-center text-green-400 justify-between w-full border-b-2 border-b-[#0d9276]">
+                    <div className="hidden lg:block text-[#0d9276]">
+                      Fare/KM:{" "}
+                    </div>
                     <div className="lg:hidden">
                       <FaMoneyBill />-{" "}
                     </div>
-                    <span className="text-green-400">
+                    <span className="text-[#0d9276]">
                       ₱{fare && fare.perKM}
                     </span>
                   </div>
                 </div>
-                <div className="flex flex-col lg:flex-row h-full bg-gray-700 mx-2 rounded-lg w-auto lg:w-2/3 py-2 items-center  animate__animated animate__backInLeft">
-                  <div className="flex w-full items-start justify-start lg:w-3/5 text-green-400 font-bold h-80">
+                <div className="flex flex-col lg:flex-row h-full bg-[#dbe7c9] shadow-lg shadow-black p-2 mx-2 rounded-lg w-auto lg:w-2/3 py-2 items-center">
+                  <div className="flex w-full items-start justify-start lg:w-3/5 text-[#0d9276] font-bold h-80">
                     <div className="px-2 w-full rounded-md">
-                      <div className="">Search:</div>
+                      <div className="text-[#0d9276]">Search:</div>
                       <input
                         type="text"
-                        className="w-full rounded-lg text-black font-normal my-2"
+                        className="w-full rounded-lg text-black font-normal my-2 shadow-inner shadow-black"
                         value={searchTerm}
                         onChange={(e) => {
                           setSearchTerm(e.target.value);
                         }}
                       />
-                      <div className="table-container w-auto">
+                      <div className="table-container w-auto shadow-lg shadow-black">
                         <div
                           style={{
-                            maxHeight: "235px",
+                            maxHeight: "230px",
                             overflowY: "auto",
-                            scrollbarColor: "dark",
+                            scrollbarColor: "#0d9276 #dbe7c9",
+                            scrollbarWidth: "thin",
                           }}
                         >
                           <table className=" w-full bg-gray-500">
-                            <thead className="bg-gray-800 sticky top-0 w-full">
+                            <thead className="bg-[#dbe7c9] sticky top-0 w-full shadow-md shadow-black">
                               <tr className="w-full">
-                                <th className="py-2 px-4 sticky top-0 text-green-400 w-full">
+                                <th className="py-2 px-4 sticky top-0 text-[#0d9276] w-full">
                                   Station Name
                                 </th>
                               </tr>
                             </thead>
-                            <tbody className="w-20">
+                            <tbody className="w-20 ">
                               {stations &&
                                 stations
                                   .filter((station: Stations) =>
@@ -193,8 +196,8 @@ const Dashboard = () => {
                                         key={station._id}
                                         className={
                                           index % 2 === 0
-                                            ? "bg-gray-400"
-                                            : "bg-gray-300"
+                                            ? "bg-gray-400 shadow-inner shadow-black"
+                                            : "bg-gray-300 shadow-lg shadow-black"
                                         }
                                       >
                                         <td className="font-bold text-center text-black">
@@ -212,8 +215,10 @@ const Dashboard = () => {
 
                   <div className="flex w-full items-start justify-start lg:w-2/5 text-green-400 font-bold h-80">
                     <div className="px-2 w-full rounded-md">
-                      <div className="my-2 lg:my-0">Cards Info:</div>
-                      <div className="flex flex-row lg:flex-col w-full justify-center items-center space-x-10 lg:space-y-6 lg:space-x-0 bg-gray-800 rounded-lg mr-2 mt-2 py-4">
+                      <div className="my-2 lg:my-0 text-[#0d9276]">
+                        Cards Info:
+                      </div>
+                      <div className="flex flex-row lg:flex-col w-full justify-center items-center space-x-10 lg:space-y-6 lg:space-x-0 bg-[#dbe7c9] shadow-inner shadow-black rounded-lg mr-2 mt-2 py-4">
                         <div className="flex flex-col text-center">
                           {" "}
                           <span className="font-bold">On deck</span>
@@ -270,12 +275,12 @@ const Dashboard = () => {
             </div>
           </div>
           <div className="flex flex-col w-full min-h-full z-0 space-y-2 lg:space-y-4">
-            <div className="flex h-full items-center justify-center bg-gray-700 mr-2 mx-2 rounded-lg animate__animated animate__backInRight">
-              <div className="text-2xl font-bold py-4 text-green-400">
+            <div className="flex h-full items-center justify-center bg-[#dbe7c9] shadow-lg shadow-black mr-2 mx-2 rounded-lg">
+              <div className="text-2xl font-bold py-4 text-[#0d9276]">
                 Station Map
               </div>
             </div>
-            <div className="flex h-custom-height-dash items-center justify-center bg-gray-700 p-2 rounded-lg mx-2 animate__animated animate__backInRight">
+            <div className="flex h-custom-height-dash items-center justify-center bg-[#dbe7c9] shadow-lg shadow-black p-2 rounded-lg mx-2">
               <MapContainer
                 center={[14.65216, 121.03225]}
                 zoom={12}
@@ -320,7 +325,7 @@ const Dashboard = () => {
           </div>
         </div>
 
-        <div className="flex flex-col lg:flex-row items-center h-full justify-center space-y-2 lg:space-y-0 lg:space-x-4 overflow-y-auto py-4 px-2 border-t-8 border-gray-700">
+        {/* <div className="flex flex-col lg:flex-row items-center h-full justify-center space-y-2 lg:space-y-0 lg:space-x-4 overflow-y-auto py-4 px-2 border-t-8 border-gray-700">
           <div>
             <NavLink to="/admin/dashboard/card">
               <DashboardCard
@@ -363,7 +368,7 @@ const Dashboard = () => {
               ></DashboardCard>
             </button>
           </div>
-        </div>
+        </div> */}
       </div>
       {/* <div className="text-white h-96 bg-gray-800 lg:hidden"></div> */}
     </div>
