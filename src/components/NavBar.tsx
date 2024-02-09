@@ -67,20 +67,39 @@ const Navbar = () => {
               className=""
               onClick={toggleMenu}
             >
-              <div className="text-[#dbe7c9] font-bold hidden lg:block">
+              <button className="text-[#dbe7c9] font-bold hidden lg:block">
                 Card
-              </div>
+              </button>
             </NavLink>
             <NavLink
               to="/admin/dashboard/station"
               className=""
               onClick={toggleMenu}
             >
-              <div className="text-[#dbe7c9] font-bold hidden lg:block">
+              <button className="text-[#dbe7c9] font-bold hidden lg:block">
                 Stations
-              </div>
+              </button>
             </NavLink>
-            <div className="text-[#dbe7c9] font-bold hidden lg:block">Fare</div>
+            <button
+              className="text-[#dbe7c9] font-bold hidden lg:block"
+              onClick={handleEditModal}
+            >
+              Fare
+            </button>
+            <Modal
+              show={isEditModalOpen}
+              className="show:dark:bg-opacity-0 animate__animated animate__backInDown"
+              onClose={() => {
+                setEditModalOpen(false);
+              }}
+            >
+              <Modal.Header className="bg-gray-800">
+                <div className="text-green-400">Edit Fare</div>
+              </Modal.Header>
+              <Modal.Body className="bg-gray-800">
+                <ManageFare />
+              </Modal.Body>
+            </Modal>
             <div className="text-[#dbe7c9] font-bold">
               <Dropdown
                 className="animate__animated right-0 bg-[#dbe7c9] animate__fadeIn"

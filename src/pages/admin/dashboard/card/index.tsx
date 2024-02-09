@@ -515,9 +515,19 @@ const CardLanding: React.FC<CardLandingProps> = () => {
             )}
             {isAddBalance && (
               <div className="flex flex-col space-y-6 bg-[#dbe7c9] py-3 px-6 rounded-md w-full shadow-inner shadow-black">
-                <label className="text-[#0d9276] font-bold text-xl">
-                  Quick Add Balance:
-                </label>
+                <div className="flex flex-row items-center justify-between w-full">
+                  <label className="text-[#0d9276] font-bold text-xl">
+                    Quick Add Balance:
+                  </label>
+                  <button
+                    className="text-2xl text-[#0d9276]"
+                    onClick={() => {
+                      setisAddBalance(false);
+                    }}
+                  >
+                    <IoMdCloseCircle />
+                  </button>
+                </div>
                 <div className="flex flex-col w-full justify-center">
                   <div className="text-[#0d9276]">
                     Card ID: {cardInfo && cardInfo.uid}
@@ -532,7 +542,7 @@ const CardLanding: React.FC<CardLandingProps> = () => {
                       onClick={() => {
                         addBalance(1);
                       }}
-                      className="bg-[#0d9276] shadow-lg shadow-black px-4 py-1 rounded-lg text-[#dbe7c9] font-bold"
+                      className="bg-[#0d9276] shadow-lg shadow-black px-4 py-1 rounded-lg text-[#dbe7c9] font-bold focus:shadow-inner"
                     >
                       1
                     </button>
@@ -540,7 +550,7 @@ const CardLanding: React.FC<CardLandingProps> = () => {
                       onClick={() => {
                         addBalance(5);
                       }}
-                      className="bg-[#0d9276] shadow-lg shadow-black px-4 py-1 rounded-lg text-[#dbe7c9] font-bold"
+                      className="bg-[#0d9276] shadow-lg shadow-black px-4 py-1 rounded-lg text-[#dbe7c9] font-bold focus:shadow-inner"
                     >
                       5
                     </button>
@@ -548,7 +558,7 @@ const CardLanding: React.FC<CardLandingProps> = () => {
                       onClick={() => {
                         addBalance(10);
                       }}
-                      className="bg-[#0d9276] shadow-lg shadow-black px-4 py-1 rounded-lg text-[#dbe7c9] font-bold"
+                      className="bg-[#0d9276] shadow-lg shadow-black px-4 py-1 rounded-lg text-[#dbe7c9] font-bold focus:shadow-inner"
                     >
                       10
                     </button>
@@ -556,7 +566,7 @@ const CardLanding: React.FC<CardLandingProps> = () => {
                       onClick={() => {
                         addBalance(20);
                       }}
-                      className="bg-[#0d9276] shadow-lg shadow-black px-4 py-1 rounded-lg text-[#dbe7c9] font-bold"
+                      className="bg-[#0d9276] shadow-lg shadow-black px-4 py-1 rounded-lg text-[#dbe7c9] font-bold focus:shadow-inner"
                     >
                       20
                     </button>
@@ -564,7 +574,7 @@ const CardLanding: React.FC<CardLandingProps> = () => {
                       onClick={() => {
                         addBalance(50);
                       }}
-                      className="bg-[#0d9276] shadow-lg shadow-black px-4 py-1 rounded-lg text-[#dbe7c9] font-bold"
+                      className="bg-[#0d9276] shadow-lg shadow-black px-4 py-1 rounded-lg text-[#dbe7c9] font-bold focus:shadow-inner"
                     >
                       50
                     </button>
@@ -574,7 +584,7 @@ const CardLanding: React.FC<CardLandingProps> = () => {
                       onClick={() => {
                         addBalance(100);
                       }}
-                      className="bg-[#0d9276] shadow-lg shadow-black px-4 py-1 rounded-lg text-[#dbe7c9] font-bold"
+                      className="bg-[#0d9276] shadow-lg shadow-black px-4 py-1 rounded-lg text-[#dbe7c9] font-bold focus:shadow-inner"
                     >
                       100
                     </button>
@@ -582,7 +592,7 @@ const CardLanding: React.FC<CardLandingProps> = () => {
                       onClick={() => {
                         addBalance(200);
                       }}
-                      className="bg-[#0d9276] shadow-lg shadow-black px-4 py-1 rounded-lg text-[#dbe7c9] font-bold"
+                      className="bg-[#0d9276] shadow-lg shadow-black px-4 py-1 rounded-lg text-[#dbe7c9] font-bold focus:shadow-inner"
                     >
                       200
                     </button>
@@ -590,7 +600,7 @@ const CardLanding: React.FC<CardLandingProps> = () => {
                       onClick={() => {
                         addBalance(500);
                       }}
-                      className="bg-[#0d9276] shadow-lg shadow-black px-4 py-1 rounded-lg text-[#dbe7c9] font-bold"
+                      className="bg-[#0d9276] shadow-lg shadow-black px-4 py-1 rounded-lg text-[#dbe7c9] font-bold focus:shadow-inner"
                     >
                       500
                     </button>
@@ -598,7 +608,7 @@ const CardLanding: React.FC<CardLandingProps> = () => {
                       onClick={() => {
                         addBalance(1000);
                       }}
-                      className="bg-[#0d9276] shadow-lg shadow-black px-4 py-1 rounded-lg text-[#dbe7c9] font-bold"
+                      className="bg-[#0d9276] shadow-lg shadow-black px-4 py-1 rounded-lg text-[#dbe7c9] font-bold focus:shadow-inner"
                     >
                       1000
                     </button>
@@ -606,7 +616,7 @@ const CardLanding: React.FC<CardLandingProps> = () => {
                       onClick={() => {
                         addBalance(2000);
                       }}
-                      className="bg-[#0d9276] shadow-lg shadow-black px-4 py-1 rounded-lg text-[#dbe7c9] font-bold"
+                      className="bg-[#0d9276] shadow-lg shadow-black px-4 py-1 rounded-lg text-[#dbe7c9] font-bold focus:shadow-inner"
                     >
                       2000
                     </button>
