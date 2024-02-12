@@ -48,6 +48,7 @@ const StationLanding: React.FC<StationLandingProps> = () => {
   const [searchConnectedTerm, setSearchConnectedTerm] = useState<string>("");
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [editStruct, setEditStruct] = useState<Station | null>(null);
+  const [isDelete, setIsDelete] = useState<boolean>(false);
 
   // const customIcon = new L.Icon({
   //   iconUrl: require("../station/marker.png"),
@@ -214,7 +215,11 @@ const StationLanding: React.FC<StationLandingProps> = () => {
       toast.success("Station updated successfully");
       fetchStations();
     } else {
-      toast.error("Failed to update station");
+      if (!isDelete) {
+        toast.error("Failed to update station");
+      } else {
+        return;
+      }
     }
 
     clearSearch();
@@ -397,7 +402,7 @@ const StationLanding: React.FC<StationLandingProps> = () => {
           </div>
           {/* eTABLE */}
           <div className="bg-[#dbe7c9] p-2 rounded-md mx-5 shadow-lg shadow-black">
-            <div className="table-container h-custom-max-height">
+            <div className="table-container lg:h-custom-max-height">
               <div
                 className="h-96 overflow-y-auto shadow-black shadow-inner"
                 style={{
@@ -452,7 +457,7 @@ const StationLanding: React.FC<StationLandingProps> = () => {
               <div className="flex flex-col w-1/2 m-2">
                 <div className="flex flex=row justify-between">
                   <div
-                    className={`text-xl font-bold ${
+                    className={`text-sm lg:text-xl font-bold ${
                       isEdit || (latClick !== 0 && lngClick !== 0)
                         ? `text-[#0d9276]`
                         : `text-gray-400`
@@ -465,12 +470,12 @@ const StationLanding: React.FC<StationLandingProps> = () => {
                 </div>
                 <div className="">
                   <form
-                    className="flex flex-col w-full justify-between space-y-4"
+                    className="flex flex-col w-full justify-between"
                     onSubmit={isEdit ? handleEdit : handleCreate}
                   >
                     <div>
                       <label
-                        className={`${
+                        className={`text-sm lg:text-md ${
                           isEdit || (latClick !== 0 && lngClick !== 0)
                             ? `text-[#0d9276]`
                             : `text-gray-400`
@@ -492,10 +497,10 @@ const StationLanding: React.FC<StationLandingProps> = () => {
                       disabled={latClick === 0 && lngClick === 0}
                       required
                     />
-                    <div className="flex flex-col lg:flex-row w-auto lg:space-x-10">
+                    <div className="flex space-x-2 flex-row w-auto lg:space-x-10 my-2">
                       <div className="flex flex-col w-1/2">
                         <label
-                          className={`${
+                          className={`text-sm lg:text-md ${
                             isEdit || (latClick !== 0 && lngClick !== 0)
                               ? `text-[#0d9276]`
                               : `text-gray-400`
@@ -505,7 +510,7 @@ const StationLanding: React.FC<StationLandingProps> = () => {
                         </label>
                         <input
                           type="text"
-                          className="w-full rounded-lg text-black disabled:opacity-80 shadow-inner shadow-black"
+                          className="w-full rounded-lg h-auto text-black disabled:opacity-80 shadow-inner shadow-black"
                           value={latClick}
                           readOnly
                           disabled={latClick === 0 && lngClick === 0}
@@ -514,7 +519,7 @@ const StationLanding: React.FC<StationLandingProps> = () => {
                       </div>
                       <div className="flex flex-col w-1/2">
                         <label
-                          className={`${
+                          className={`text-sm lg:text-md ${
                             isEdit || (latClick !== 0 && lngClick !== 0)
                               ? `text-[#0d9276]`
                               : `text-gray-400`
@@ -532,33 +537,36 @@ const StationLanding: React.FC<StationLandingProps> = () => {
                         />
                       </div>
                     </div>
-                    <div className="">
-                      {latClick !== 0 && lngClick !== 0 && (
-                        <button className="bg-[#0d9276] text-black p-2 rounded-lg font-bold w-16 shadow-md shadow-black">
-                          {isEdit ? "Edit" : "Add"}
-                        </button>
-                      )}
-                      {error && <div className="text-red-600">{error}</div>}
+                    <div className="flex flex-row justify-between items-center w-full ">
+                      <div className="">
+                        {latClick !== 0 && lngClick !== 0 && (
+                          <button className="bg-[#0d9276] text-black text-sm lg:text-md py-1 lg:p-2 rounded-lg font-bold w-16 shadow-md shadow-black">
+                            {isEdit ? "Edit" : "Add"}
+                          </button>
+                        )}
+                        {error && <div className="text-red-600">{error}</div>}
+                      </div>
+                      <div className="w-1/2">
+                        {isEdit && (
+                          <button
+                            className="bg-red-600 text-black text-sm lg:text-md py-1 lg:p-2 rounded-lg mt-1 font-bold w-16 shadow-md shadow-black"
+                            onClick={() => {
+                              handleDelete(String(editStruct?._id));
+                              setIsDelete(true);
+                            }}
+                          >
+                            Delete
+                          </button>
+                        )}
+                      </div>
                     </div>
                   </form>
-                  <div className="w-1/2">
-                    {isEdit && (
-                      <button
-                        className="bg-red-600 text-black p-2 rounded-lg font-bold mt-2 hover"
-                        onClick={() => {
-                          handleDelete(String(editStruct?._id));
-                        }}
-                      >
-                        Delete
-                      </button>
-                    )}
-                  </div>
                 </div>
               </div>
               <div className="flex flex-col justify-between w-1/2 m-2">
                 <div className="flex flex-row justify-between w-full h-10">
                   <label
-                    className={`mb-2 text-xl font-bold ${
+                    className={`mb-2 text-sm lg:text-xl font-bold ${
                       isEdit || (latClick !== 0 && lngClick !== 0)
                         ? `text-[#0d9276]`
                         : `text-gray-400`
@@ -600,19 +608,18 @@ const StationLanding: React.FC<StationLandingProps> = () => {
                   )}
                 </div>
 
-                <div className="flex flex-row">
+                <div className="flex flex-row my-1">
                   <div
-                    className={`flex ${
+                    className={`flex text-sm ${
                       latClick === 0 && lngClick === 0
                         ? `bg-gray-400 text-gray-700`
                         : `bg-[#0d9276] text-[#dbe7c9]`
-                    }  font-bold  rounded-l-lg w-auto h-10 px-2 items-center`}
+                    }  font-bold  rounded-l-lg w-auto h-auto lg:h-10 px-2 items-center`}
                   >
                     <FaSearch />
                   </div>
                   <input
-                    type=""
-                    className="bg-gray-200 w-full h-10 text-black rounded-r-lg lg:rounded-none disabled:opacity-80 shadow-inner shadow-black"
+                    className="bg-gray-200 y-1 w-full h-auto lg:h-10 text-black rounded-r-lg lg:rounded-none disabled:opacity-80 shadow-inner shadow-black"
                     value={searchConnectedTerm}
                     disabled={latClick === 0 && lngClick === 0}
                     onChange={(e) => {
@@ -630,16 +637,17 @@ const StationLanding: React.FC<StationLandingProps> = () => {
                     Clear
                   </button>
                 </div>
-                <div className="w-full h-56 bg-[#dbe7c9] rounded-lg shadow-inner shadow-black">
+                <div className="w-full h-40 lg:h-56 bg-[#dbe7c9] rounded-lg shadow-inner shadow-black">
                   {latClick === 0 && lngClick === 0 && (
-                    <div className="text-center mt-20 font-bold px-3 text-gray-500">
+                    <div className="text-sm lg:text-md text-center mt-10 lg:mt-20 font-bold px-3 text-gray-500">
                       Press on map or edit station to see connections.
                     </div>
                   )}
                   {latClick !== 0 && lngClick !== 0 && (
                     <div
+                      className="max-h-40 lg:max-h-56"
                       style={{
-                        maxHeight: "220px",
+                        // maxHeight: "220px",
                         overflowY: "auto",
                         scrollbarColor: "#0d9276 #dbe7c9",
                         scrollbarWidth: "thin",
@@ -661,7 +669,7 @@ const StationLanding: React.FC<StationLandingProps> = () => {
                                       onClick={() =>
                                         handleConnectionClick(station)
                                       }
-                                      className={`px-2 py-1 my-1 font-bold w-full rounded-lg  ${
+                                      className={`px-2 py-1 text-sm lg:text-md my-1 font-bold w-full rounded-lg  ${
                                         connections.includes(station._id)
                                           ? "bg-[#0d9276] text-[#dbe7c9] shadow-inner shadow-black"
                                           : "bg-[#dbe7c9] text-[#0d9276] hover:bg-gray-900 shadow-lg shadow-black"

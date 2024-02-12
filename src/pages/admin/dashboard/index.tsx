@@ -99,7 +99,7 @@ const Dashboard = () => {
     <div className="h-screen w-full bg-[#dbe7c9] animate__animated animate__fadeIn">
       <div className="text-white min-h-screen bg-[#dbe7c9]">
         {/* upper right panel */}
-        <div className="flex flex-col lg:flex-row min-h-full justify-center items-start space-y-2 lg:space-y-0 pt-28 pb-4">
+        <div className="flex flex-col lg:flex-row min-h-full justify-center items-start space-y-2 lg:space-y-0 pt-24 lg:pt-28 pb-4">
           <div className="flex justify-start w-full h-full">
             <div className="flex flex-col w-full h-full space-y-4">
               <div className="flex h-full items-center justify-center bg-[#dbe7c9] shadow-lg shadow-black mr-2 mx-2 rounded-lg">
@@ -213,7 +213,7 @@ const Dashboard = () => {
                     </div>
                   </div>
 
-                  <div className="flex w-full items-start justify-start lg:w-2/5 text-green-400 font-bold h-80">
+                  <div className="flex w-full items-start justify-start lg:w-2/5 text-green-400 font-bold h-auto lg:h-80">
                     <div className="px-2 w-full rounded-md">
                       <div className="my-2 lg:my-0 text-[#0d9276]">
                         Cards Info:
