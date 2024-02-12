@@ -219,7 +219,7 @@ const CardScan = () => {
           setCard(null);
           setIsCardFound(false);
           setDistance(null);
-        }, 30000);
+        }, 500000);
       }
       if (!response.ok) {
         setenteredUID("");
@@ -410,16 +410,18 @@ const CardScan = () => {
       {/* left half - Form */}
       <div
         className={
-          "flex flex-col items-center lg:w-1/2 lg:h-full border border-gray-300 shadow-md text-blue-400 bg-gray-800"
+          "flex flex-col items-center lg:w-1/2 lg:h-full border border-gray-300 bg-[#0d9276] shadow-inner shadow-black"
         }
       >
         <div className="flex flex-row lg:flex-col w-full p-8">
-          <div className="text-2xl font-bold border-b-2 border-gray-400 text-green-400">
+          <div className="text-2xl font-bold border-b-2 border-[#dbe7c9] text-[#dbe7c9]">
             <div className="mb-2 text-center w-full">
               {stationPage && (
                 <div>
                   {stationPage.name} -{" "}
-                  <label className="text-white">{status?.toUpperCase()}</label>
+                  <label className="text-[#dbe7c9]">
+                    {status?.toUpperCase()}
+                  </label>
                 </div>
               )}
             </div>
@@ -433,43 +435,43 @@ const CardScan = () => {
                 type="text"
                 id="large-input"
                 value={enteredUID}
-                className="p-1 text-gray-900 rounded-lg m-6"
+                className="p-1 text-gray-900 rounded-lg shadow-inner shadow-black m-6"
                 onChange={(e: ChangeEvent<HTMLInputElement>) => {
                   setenteredUID(e.target.value);
                 }}
               />
 
-              <button className="bg-gray-700 p-2 rounded-lg text-green-400 hover:bg-gray-900 my-6">
+              <button className="bg-[#dbe7c9] p-2 rounded-lg shadow-lg shadow-black text-[#0d9276] hover:bg-gray-900 my-6">
                 <FaCheck />
               </button>
             </form>
           </div>
           {/* CARD INFO */}
           <div className="w-full">
-            <div className="bg-gray-700 m-2 rounded-lg py-1">
-              <div className="bg-gray-900 m-2 rounded-lg p-1">
-                <div className=" font-bold text-green-400">Card Info:</div>
+            <div className="bg-[#0d9276] shadow-lg shadow-black m-2 p-2 rounded-lg">
+              <div className="bg-[#dbe7c9] shadow-inner shadow-black px-2 rounded-lg">
+                <div className=" font-bold text-[#0d9276]">Card Info:</div>
                 <div className="flex flex-row space-x-3">
                   <div className="flex flex-row space-x-2 w-1/2">
-                    <div className="text-white">Card ID:</div>
+                    <div className="text-[#0d9276]">Card ID:</div>
                     <label>
                       {isCardFound ? (
-                        <label className="text-green-400"> {card?.uid}</label>
+                        <label className="text-[#0d9276]"> {card?.uid}</label>
                       ) : (
-                        <label className="text-gray-400">N/A</label>
+                        <label className="text-[#0d9276]">N/A</label>
                       )}
                     </label>
                   </div>
                   <div className="flex flex-row space-x-2 w-1/2">
-                    <div className="text-white">Balance:</div>{" "}
+                    <div className="text-[#0d9276]">Balance:</div>{" "}
                     <label>
                       {" "}
                       {isCardFound ? (
-                        <label className="text-green-400">
+                        <label className="text-[#dbe7c9] z-50">
                           {card?.balance}
                         </label>
                       ) : (
-                        <label className="text-gray-400">N/A</label>
+                        <label className="text-[#dbe7c9]">N/A</label>
                       )}
                     </label>
                   </div>
@@ -481,35 +483,35 @@ const CardScan = () => {
             <div>
               {" "}
               <div className="w-full">
-                <div className="bg-gray-700 m-2 rounded-lg py-1">
-                  <div className="bg-gray-900 m-2 rounded-lg p-1">
+                <div className="bg-[#0d9276] shadow-lg shadow-black m-2 p-2 rounded-lg">
+                  <div className="bg-[#dbe7c9] shadow-inner shadow-black px-2 rounded-lg">
                     <div>
-                      <div className="text-green-400 font-bold">
+                      <div className="text-[#0d9276] font-bold">
                         Fare Summary:
                       </div>
                     </div>
                     <div className="flex flex-row w-full">
-                      <div className="flex flex-row space-x-2 text-white w-1/2">
-                        <div className="text-white">Minimum:</div>
-                        <label className="text-green-400">
+                      <div className="flex flex-row space-x-2 text-[#0d9276] w-1/2">
+                        <div className="text-[#0d9276]">Minimum:</div>
+                        <label className="text-[#0d9276]">
                           ₱{fare ? fare.minimumAmount : "N/A"}
                         </label>
                       </div>
                       <div className="flex flex-row space-x-2 text-white w-1/2">
-                        <div className="text-white">Per KM:</div>
-                        <label className="text-green-400">
+                        <div className="text-[#0d9276]">Per KM:</div>
+                        <label className="text-[#0d9276]">
                           {fare ? (
                             <div>₱{fare.perKM}</div>
                           ) : (
-                            <div className="text-gray-400">N/A</div>
+                            <div className="text-[#0d9276]">N/A</div>
                           )}
                         </label>
                       </div>
                     </div>
                     <div className="flex flex-row w-full">
-                      <div className="flex flex-row space-x-2 text-white w-1/2">
-                        <div className="text-white">Total Fare:</div>
-                        <label className="text-green-400">
+                      <div className="flex flex-row space-x-2 text-[#0d9276] w-1/2">
+                        <div className="text-[#0d9276]">Total Fare:</div>
+                        <label className="text-[#0d9276]">
                           {fare && distance ? (
                             <div>
                               ₱
@@ -518,13 +520,13 @@ const CardScan = () => {
                               )}
                             </div>
                           ) : (
-                            <label className="text-gray-400">N/A</label>
+                            <label className="text-[#0d9276]">N/A</label>
                           )}
                         </label>
                       </div>
                       <div className="flex flex-row space-x-2 text-white w-1/2">
-                        <div className="text-white">New Balance:</div>
-                        <label className="text-green-400">
+                        <div className="text-[#0d9276]">New Balance:</div>
+                        <label className="text-[#0d9276]">
                           {fare && distance && card ? (
                             <div>
                               ₱
@@ -534,7 +536,7 @@ const CardScan = () => {
                                 )}
                             </div>
                           ) : (
-                            <label className="text-gray-400">N/A</label>
+                            <label className="text-g[#0d9276]">N/A</label>
                           )}
                         </label>
                       </div>
@@ -543,46 +545,46 @@ const CardScan = () => {
                 </div>
               </div>
               <div className="w-full">
-                <div className="bg-gray-700 m-2 rounded-lg py-1">
-                  <div className="bg-gray-900 m-2 rounded-lg p-1">
+                <div className="bg-[#0d9276] shadow-lg shadow-black mt-3 m-2 p-2 rounded-lg">
+                  <div className="bg-[#dbe7c9] shadow-inner shadow-black px-2 rounded-lg">
                     <div>
-                      <div className="flex flex-row space-x-3 text-green-400 font-bold">
+                      <div className="flex flex-row space-x-3 text-[#0d9276] font-bold">
                         Travel Summary:
                       </div>
                     </div>
                     <div className="flex flex-row w-full">
                       <div className="flex flex-row space-x-2 w-1/2">
-                        <div className="text-white">Start:</div>
+                        <div className="text-[#0d9276]">Start:</div>
 
                         {stationStart ? (
-                          <label className="text-green-400">
+                          <label className="text-[#0d9276]">
                             {stationStart.name}
                           </label>
                         ) : (
-                          <label className="text-gray-400">N/A</label>
+                          <label className="text-[#0d9276]">N/A</label>
                         )}
                       </div>
                       <div className="flex flex-row space-x-2 w-1/2">
-                        <div className="text-white">End:</div>{" "}
-                        <label className="text-green-400">
+                        <div className="text-[#0d9276]">End:</div>{" "}
+                        <label className="text-[#0d9276]">
                           {stationEnd ? stationEnd.name : "N/A"}
                         </label>
                       </div>
                     </div>
                     <div className="flex flex-row space-x-2 text-white w-full">
-                      <div className="text-white">Distance:</div>
-                      <span className="text-white font-normal">
+                      <div className="text-[#0d9276]">Distance:</div>
+                      <span className="text-[#0d9276] font-normal">
                         {distance ? (
                           <div className="">{distance} km</div>
                         ) : (
-                          <label className="text-gray-400">N/A</label>
+                          <label className="text-[#0d9276]">N/A</label>
                         )}
                       </span>
                     </div>
 
                     <div className="w-full h-custom-height-travel-summary">
-                      <div className="bg-gray-700 rounded-lg py-1">
-                        <div className="bg-gray-900 m-2 rounded-lg p-1">
+                      <div className="bg-[#dbe7c9] shadow-lg shadow-black rounded-lg py-1">
+                        <div className="bg-[#0d9276] shadow-inner shadow-black m-2 rounded-lg p-1">
                           <div
                             style={{
                               maxHeight: "225px",
@@ -591,9 +593,9 @@ const CardScan = () => {
                             }}
                           >
                             <table className="w-full">
-                              <thead className="bg-gray-900 sticky top-0 z-40">
+                              <thead className="sticky top-0 z-40">
                                 <tr>
-                                  <th className="text-green-400 bg-gray-900">
+                                  <th className="text-[#dbe7c9]">
                                     Travel Path:
                                   </th>
                                 </tr>
