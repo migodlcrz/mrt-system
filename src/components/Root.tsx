@@ -6,31 +6,29 @@ const Root = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="h-screen w-full bg-gray-800">
+    <div className="h-screen w-full bg-[#dbe7c9]">
       <div className="text-white h-screen bg-gray">
         <div className="flex flex-col justify-center items-center h-screen">
-          <div className="flex flex-col w-full justify-center items-center h-screen mt-56 lg:mt-24">
-            <div className="font-bold text-green-400 text-2xl">
+          <div className="flex flex-col w-full justify-start items-center h-screen mt-56 lg:mt-24">
+            <div className="flex justify-center items-center text-center py-10 px-10 font-bold text-green-400 text-2xl lg:text-6xl">
               WELCOME TO GLOBALTEK RAILS
             </div>
-            <div className="flex flex-col lg:flex-row w-full h-full">
+            <div className="flex flex-col lg:flex-row w-full p-20 space-y-10 lg:space-y-0 lg:space-x-20">
               <button
                 onClick={() => {
                   navigate("/station/North%20Avenue/in");
                 }}
-                className="flex w-full lg:h-full hover:bg-gray-900 bg-gray-800 justify-center items-center hover:text-gray-300 font-bold"
+                className="flex w-full py-10 rounded-lg shadow-lg shadow-black hover:shadow-inner hover:shadow-black bg-[#0d9276] justify-center items-center hover:text-gray-300 font-bold"
               >
-                <div className="text-2xl">TRY TAP IN AND TAP OUT</div>
+                STATION USER END
               </button>
               <button
                 onClick={() => {
                   navigate("/admin");
                 }}
-                className="flex w-full lg:h-full hover:bg-gray-900 bg-gray-800 justify-center items-center hover:text-gray-300 font-bold"
+                className="flex w-full py-10 rounded-lg shadow-lg shadow-black hover:shadow-inner hover:shadow-black bg-[#0d9276] justify-center items-center hover:text-gray-300 font-bold"
               >
-                <div className="flex w-full lg:h-full hover:bg-gray-900 bg-gray-800 justify-center items-center hover:text-gray-300 font-bold">
-                  <div className="text-2xl">MANAGE STATIONS</div>
-                </div>
+                MANAGE STATIONS
               </button>
             </div>
           </div>

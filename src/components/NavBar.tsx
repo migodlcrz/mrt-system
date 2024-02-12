@@ -40,7 +40,6 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    isMenuOpen ? setIsMenuOpen(false) : setIsMenuOpen(true);
     logout();
     navigate("/admin");
   };

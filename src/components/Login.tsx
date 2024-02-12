@@ -73,6 +73,14 @@ const Login: FC<LoginProps> = () => {
           </form>
         </div>
       </div>
+      <div className="text-black">
+        <button
+          className="flex mx-10 mb-10 bg-[#0d9276] px-2 py-1 rounded-lg font-bold text-[#dbe7c9] shadow-lg shadow-black"
+          onClick={() => navigate("/")}
+        >
+          Go back to home
+        </button>
+      </div>
     </div>
   );
 };
