@@ -13,8 +13,10 @@ import MapComponent from "../../../../components/MapComponent";
 import { IoMdCloseCircle } from "react-icons/io";
 import { FaSearch } from "react-icons/fa";
 import "animate.css";
-import L from "leaflet";
-// import L from "leaflet";
+import L, { DivIcon } from "leaflet";
+import { renderToStaticMarkup } from "react-dom/server";
+import { FaTrainSubway } from "react-icons/fa6";
+import { FaMapMarkerAlt } from "react-icons/fa";
 
 interface Station {
   _id: string;
@@ -50,13 +52,21 @@ const StationLanding: React.FC<StationLandingProps> = () => {
   const [editStruct, setEditStruct] = useState<Station | null>(null);
   const [isDelete, setIsDelete] = useState<boolean>(false);
 
-  // const customIcon = new L.Icon({
-  //   iconUrl: require("../station/marker.png"),
-  //   iconSize: [30, 30],
-  //   iconAnchor: [15, 29],
-  //   popupAnchor: [0, -35],
-  //   className: "animate__animated animate__fadeIn",
-  // });
+  const StationIcon = new DivIcon({
+    className: "custom-icon",
+    html: renderToStaticMarkup(<FaTrainSubway size={30} color="black" />),
+    iconSize: [30, 30],
+    iconAnchor: [15, 15],
+    popupAnchor: [0, -15],
+  });
+
+  const PinIcon = new DivIcon({
+    className: "custom-icon",
+    html: renderToStaticMarkup(<FaMapMarkerAlt size={30} color="#0d9276" />),
+    iconSize: [30, 30],
+    iconAnchor: [15, 30],
+    popupAnchor: [0, -15],
+  });
 
   const handleCreate = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -297,7 +307,6 @@ const StationLanding: React.FC<StationLandingProps> = () => {
 
     if (response.ok) {
       setStations(json);
-      console.log("STATIONS", stations);
     }
   };
 
@@ -326,7 +335,7 @@ const StationLanding: React.FC<StationLandingProps> = () => {
                 setLngClicked={setLngClick}
               />
 
-              <Marker position={[latClick, lngClick]} />
+              <Marker position={[latClick, lngClick]} icon={PinIcon} />
 
               <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -339,7 +348,7 @@ const StationLanding: React.FC<StationLandingProps> = () => {
                   <div key={station._id}>
                     <Marker
                       position={[station.lat, station.long]}
-                      // icon={customIcon}
+                      icon={StationIcon}
                       eventHandlers={{
                         click: () => handleClickEdit(station),
                       }}

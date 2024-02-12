@@ -10,6 +10,7 @@ import { divIcon } from "leaflet";
 import { toast } from "react-toastify";
 import { clear } from "console";
 import { GrStatusGoodSmall } from "react-icons/gr";
+import Switch from "react-switch";
 
 interface Card {
   _id: string;
@@ -41,6 +42,8 @@ const CardLanding: React.FC<CardLandingProps> = () => {
 
   const [onboardCount, setOnboardCount] = useState(0);
   const [offboardCount, setOffboardCount] = useState(0);
+
+  const [isToggle, setIsToggle] = useState(false);
 
   const [cardInfo, setCardInfo] = useState<Card | null>(null);
 
@@ -111,6 +114,10 @@ const CardLanding: React.FC<CardLandingProps> = () => {
       setOpenModal(false);
       setisAdd(false);
     }
+  };
+
+  const handleClickToggle = () => {
+    console.log(isToggle);
   };
 
   const handleClickEdit = (card: Card) => {
@@ -347,30 +354,48 @@ const CardLanding: React.FC<CardLandingProps> = () => {
             </div>
           </div>
         </div>
-        <div className="flex flex-col lg:flex-row w-full mt-8">
+        <div className="flex flex-col lg:flex-row w-full mt-6">
           <div className="w-full lg:w-1/2">
             <div className="flex max-w-full mr-3 mb-5 p-2 justify-center bg-[#dbe7c9] rounded-lg shadow-lg shadow-black space-x-2 h-full mx-3">
-              <div className="flex flex-row bg-[#dbe7c9] shadow-inner shadow-black py-3 px-6 rounded-md w-full">
-                <div className="flex flex-col justify-start items-center w-1/2 border-r-2 border-gray-700">
-                  <div className="flex flex-row w-full pl-10 items-center space-x-4">
-                    <div className="text-green-400">
-                      <GrStatusGoodSmall />
-                    </div>
-                    <div className="text-[#0d9276] font-bold">onboard</div>
-                  </div>
-                  <div className="text-green-400 font-bold text-6xl my-16">
-                    {onboardCount}
-                  </div>
+              <div className="flex flex-col bg-[#dbe7c9] shadow-inner shadow-black py-3 px-6 rounded-md w-full">
+                <div className="flex flex-row w-full space-x-2 mb-2">
+                  <Switch
+                    onChange={() => {
+                      setIsToggle(!isToggle);
+                      handleClickToggle();
+                    }}
+                    checked={isToggle}
+                  />
+                  <label
+                    className={`text-[#0d9276] font-bold w-full ${
+                      isToggle ? "text-[#0d9276]" : "text-red-700"
+                    }`}
+                  >
+                    {isToggle ? "Stations Running" : "Maintenance"}
+                  </label>
                 </div>
-                <div className="flex flex-col justify-start items-center w-1/2">
-                  <div className="flex flex-row w-full pl-10 items-center space-x-4">
-                    <div className="text-red-800">
-                      <GrStatusGoodSmall />
+                <div className="flex flex-row bg-[#dbe7c9] shadow-inner shadow-black py-3 px-6 rounded-md w-full">
+                  <div className="flex flex-col justify-start items-center w-1/2 border-r-2 border-gray-700">
+                    <div className="flex flex-row w-full pl-10 items-center space-x-4">
+                      <div className="text-green-400">
+                        <GrStatusGoodSmall />
+                      </div>
+                      <div className="text-[#0d9276] font-bold">onboard</div>
                     </div>
-                    <div className="text-[#0d9276] font-bold">offboard</div>
+                    <div className="text-green-400 font-bold text-6xl my-16">
+                      {onboardCount}
+                    </div>
                   </div>
-                  <div className="text-green-400 font-bold text-6xl my-16">
-                    {offboardCount}
+                  <div className="flex flex-col justify-start items-center w-1/2">
+                    <div className="flex flex-row w-full pl-10 items-center space-x-4">
+                      <div className="text-red-800">
+                        <GrStatusGoodSmall />
+                      </div>
+                      <div className="text-[#0d9276] font-bold">offboard</div>
+                    </div>
+                    <div className="text-green-400 font-bold text-6xl my-16">
+                      {offboardCount}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -378,7 +403,7 @@ const CardLanding: React.FC<CardLandingProps> = () => {
           </div>
           <div className="w-full lg:w-1/2">
             <div
-              className={`flex max-w-full mr-3 mb-5 p-2 justify-center shadow-lg shadow-black ${
+              className={`flex max-w-full mx-3 mb-5 p-2 justify-center shadow-lg shadow-black ${
                 isAdd || isAddBalance ? "bg-[#0d9276]" : "bg-[#dbe7c9]"
               } rounded-lg space-x-2 h-full`}
             >
@@ -550,13 +575,13 @@ const CardLanding: React.FC<CardLandingProps> = () => {
           </div>
         </div>
       </div>
-      <div className="w-full lg:w-1/3 mt-4 lg:mt-24">
+      <div className="w-1/3 mt-4 lg:mt-24">
         <div
           className={`bg-gray-[#dbe7c9] ${
             cardInfo && "bg-[#0d9276]"
           } w-auto mx-4 h-auto mb-10 rounded-lg shadow-lg shadow-black`}
         >
-          <div className="p-4 text-center h-[630px]">
+          <div className="p-4 text-center h-[675px]">
             <div
               className={`flex  font-bold text-xl w-full justify-between items-center mb-4 ${
                 cardInfo ? "text-[#dbe7c9]" : "text-gray-400"
@@ -569,11 +594,11 @@ const CardLanding: React.FC<CardLandingProps> = () => {
                 </button>
               )}
             </div>
-            <div className="table-container h-custom-max-height">
+            <div className="table-container ">
               {cardInfo ? (
                 <div
                   style={{
-                    maxHeight: "550px",
+                    maxHeight: "595px",
                     overflowY: "auto",
                     scrollbarColor: "#0d9276 #dbe7c9",
                     scrollbarWidth: "thin",

@@ -19,6 +19,7 @@ import { IconType } from "react-icons";
 import { Dropdown } from "flowbite-react";
 import { Button } from "flowbite-react";
 import { RxHamburgerMenu } from "react-icons/rx";
+import Switch from "react-switch";
 
 const Navbar = () => {
   const { logout } = useLogout();
@@ -28,6 +29,9 @@ const Navbar = () => {
   const [isEditModalOpen, setEditModalOpen] = useState(false);
   const [open, setOpen] = useState(false);
   const [openModal, setOpenModal] = useState(false);
+  const [isToggle, setIsToggle] = useState(false);
+
+  const handleClickToggle = () => {};
 
   const handleEditModal = () => {
     isEditModalOpen ? setEditModalOpen(false) : setEditModalOpen(true);
@@ -104,7 +108,7 @@ const Navbar = () => {
                 </Modal>
                 <div className="text-[#dbe7c9] font-bold">
                   <Dropdown
-                    className="animate__animated right-0 bg-[#dbe7c9] animate__fadeIn"
+                    className="animate__animated right-0 bg-[#dbe7c9] animate__fadeIn w-96 h-96"
                     label={<FaTrainSubway />}
                     dismissOnClick={false}
                     inline
@@ -115,8 +119,8 @@ const Navbar = () => {
                     <Dropdown.Item className="text-[#0d9276]">
                       Dashboard
                     </Dropdown.Item>
-                    <Dropdown.Item className="text-[#0d9276]">
-                      Settings
+                    <Dropdown.Item className="bg-[#dbe7c9]">
+                      Setting
                     </Dropdown.Item>
                     <Dropdown.Item
                       className="text-[#0d9276]"
@@ -124,6 +128,15 @@ const Navbar = () => {
                     >
                       Sign out
                     </Dropdown.Item>
+                    <label className="m-2 bg-[#dbe7c9] ">
+                      <Switch
+                        onChange={() => {
+                          setIsToggle(!isToggle);
+                        }}
+                        checked={isToggle}
+                      />
+                    </label>
+                    <span>Maintenace</span>
                   </Dropdown>
                 </div>
                 <div>

@@ -11,6 +11,10 @@ import { useFetcher, useNavigate, useParams } from "react-router-dom";
 import { FaCheck } from "react-icons/fa";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { DivIcon, Icon } from "leaflet";
+import { FaTrainSubway } from "react-icons/fa6";
+import { JSX } from "react/jsx-runtime";
+import { renderToStaticMarkup, renderToString } from "react-dom/server";
 
 interface Station {
   _id: string;
@@ -51,6 +55,21 @@ const CardScan = () => {
   const { stn, status } = useParams();
   const api = process.env.REACT_APP_API_KEY;
   const navigate = useNavigate();
+
+  // const customIcon = new Icon({
+  //   iconSize: [30, 30],
+  //   iconAnchor: [15, 15],
+  //   popupAnchor: [0, -15],
+  //   html: renderToString(<FaTrainSubway size={30} />),
+  // });
+
+  const CustomIcon = new DivIcon({
+    className: "custom-icon",
+    html: renderToStaticMarkup(<FaTrainSubway size={30} />),
+    iconSize: [30, 30],
+    iconAnchor: [15, 15],
+    popupAnchor: [0, -15],
+  });
 
   const fetchData = async () => {
     const response = await fetch(`${api}/api/stations`, {
@@ -390,13 +409,11 @@ const CardScan = () => {
 
       const result = findPath(startStation, endStation, station);
       if (result) {
-        console.log("Path found:");
-
         const stationNames = result.stations.map((station) => station.name);
         setPath(stationNames);
 
-        // setDistance(Number((result.distance / 1000).toFixed()));
-        setDistance(result.distance / 1000);
+        setDistance(Number((result.distance / 1000).toFixed()));
+        // setDistance(result.distance / 1000);
       } else {
         toast.error("No path found!");
       }
@@ -595,8 +612,10 @@ const CardScan = () => {
                             <table className="w-full">
                               <thead className="sticky top-0 z-40">
                                 <tr>
-                                  <th className="text-[#dbe7c9]">
-                                    Travel Path:
+                                  <th className="text-[#dbe7c9] bg-[#dbe7c9] rounded-lg">
+                                    <div className="text-[#0d9276]">
+                                      Travel Path:
+                                    </div>
                                   </th>
                                 </tr>
                               </thead>
@@ -653,7 +672,7 @@ const CardScan = () => {
               <div key={stations._id}>
                 <Marker
                   position={[stations.lat, stations.long]}
-                  // icon={customIcon}
+                  icon={CustomIcon}
                   eventHandlers={{
                     click: () => handleFlyTo(stations.lat, stations.long),
                   }}
@@ -677,7 +696,7 @@ const CardScan = () => {
                           [stations.lat, stations.long],
                           [connectedStation.lat, connectedStation.long],
                         ]}
-                        color="green"
+                        color="#0d9276"
                       />
                     );
                   }
@@ -710,7 +729,7 @@ const CardScan = () => {
               <div key={stations._id}>
                 <Marker
                   position={[stations.lat, stations.long]}
-                  // icon={customIcon}
+                  icon={CustomIcon}
                 >
                   <Tooltip direction="top" offset={[0, -35]}>
                     <div className="font-bold text-green-400">STATION:</div>
@@ -731,7 +750,7 @@ const CardScan = () => {
                           [stations.lat, stations.long],
                           [connectedStation.lat, connectedStation.long],
                         ]}
-                        color="green"
+                        color="#0d9276"
                       />
                     );
                   }

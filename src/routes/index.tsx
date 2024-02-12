@@ -4,15 +4,28 @@ import StationLanding from "../pages/admin/dashboard/station";
 import CardLanding from "../pages/admin/dashboard/card";
 import Admin from "../pages/admin";
 import { useAuthContext } from "../hooks/useAuthContext";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 import NotLogin from "../components/NotLogin";
 import CardScan from "../components/CardScan";
 import Root from "../components/Root";
 import NavBar from "../components/NavBar";
+import StationList from "../components/StationList";
+import { useEffect, useState } from "react";
 
 const App = () => {
   const { user } = useAuthContext();
-  const hideNavbar = window.location.pathname.startsWith("/station"); // Check if the current path starts with "/station"
+  const [hideNavbar, setHideNavbar] = useState(false);
+
+  useEffect(() => {
+    // Check if the current path starts with "/station"
+    setHideNavbar(window.location.pathname.startsWith("/station"));
+  }, []);
 
   return (
     <BrowserRouter>
@@ -21,10 +34,6 @@ const App = () => {
         {/* Render Navbar unless hideNavbar is true */}
         <Routes>
           <Route path={"/"} element={<Root />} />
-          {/* <Route
-            path={"/console"}
-            element={<FareCalculator stationParameter="i" />}
-          /> */}
           <Route path={"/admin"} element={<Admin />} />
           <Route
             path={"/admin/dashboard"}
@@ -52,6 +61,7 @@ const App = () => {
               )
             }
           />
+
           <Route
             path={"/admin/dashboard/station"}
             element={
@@ -74,6 +84,9 @@ const App = () => {
               />
             }
           />
+
+          <Route path={"/station"} element={<StationList />} />
+
           <Route path={"/station/:stn/:status"} element={<CardScan />} />
         </Routes>
       </div>

@@ -15,6 +15,8 @@ import { FaCreditCard } from "react-icons/fa";
 import { FaTrainSubway } from "react-icons/fa6";
 import { FaMoneyBill } from "react-icons/fa";
 import { FaCoins } from "react-icons/fa";
+import { DivIcon } from "leaflet";
+import { renderToStaticMarkup } from "react-dom/server";
 
 interface Stations {
   _id: string;
@@ -38,9 +40,16 @@ const Dashboard = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const { logout } = useLogout();
   const navigate = useNavigate();
-  // const [value, setValue] = useState(0);
   const style = { "--value": 100 } as React.CSSProperties;
   const api = process.env.REACT_APP_API_KEY;
+
+  const StationIcon = new DivIcon({
+    className: "custom-icon",
+    html: renderToStaticMarkup(<FaTrainSubway size={30} color="black" />),
+    iconSize: [30, 30],
+    iconAnchor: [15, 15],
+    popupAnchor: [0, -15],
+  });
 
   const fetchFare = async () => {
     const fareId = "65c28317dd50fe2e56d242c9";
@@ -296,7 +305,7 @@ const Dashboard = () => {
                     <div key={station._id}>
                       <Marker
                         position={[station.lat, station.long]}
-                        // icon={customIcon}
+                        icon={StationIcon}
                       >
                         <Popup>{station.name}</Popup>
                       </Marker>
@@ -313,6 +322,7 @@ const Dashboard = () => {
                                 [station.lat, station.long],
                                 [connectedStation.lat, connectedStation.long],
                               ]}
+                              color="#0d9276"
                             />
                           );
                         }
