@@ -17,6 +17,8 @@ import L, { DivIcon } from "leaflet";
 import { renderToStaticMarkup } from "react-dom/server";
 import { FaTrainSubway } from "react-icons/fa6";
 import { FaMapMarkerAlt } from "react-icons/fa";
+import Switch from "react-switch";
+import { clear } from "console";
 
 interface Station {
   _id: string;
@@ -24,6 +26,10 @@ interface Station {
   long: number;
   lat: number;
   connection: [string];
+}
+
+interface Status {
+  isDeployed: boolean;
 }
 
 interface LatLng {
@@ -51,6 +57,7 @@ const StationLanding: React.FC<StationLandingProps> = () => {
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [editStruct, setEditStruct] = useState<Station | null>(null);
   const [isDelete, setIsDelete] = useState<boolean>(false);
+  const [isDeployed, setisDeployed] = useState<boolean>(false);
 
   const StationIcon = new DivIcon({
     className: "custom-icon",
@@ -68,8 +75,57 @@ const StationLanding: React.FC<StationLandingProps> = () => {
     popupAnchor: [0, -15],
   });
 
+  const fetchStatus = async () => {
+    const status_id = "65cb78bfe51a352d5ae51dd1";
+    const response = await fetch(`${api}/api/status/${status_id}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        // Authorization: `Bearer ${user.jwt}`,
+      },
+    });
+
+    const json: Status = await response.json();
+
+    if (response.ok) {
+      setisDeployed(json.isDeployed);
+    }
+
+    if (!response.ok) {
+      toast.error("Cannot retrieve data");
+    }
+  };
+
+  const handleMaintenance = async () => {
+    const status_id = "65cb78bfe51a352d5ae51dd1";
+    const response = await fetch(`${api}/api/status/${status_id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${user.jwt}`,
+      },
+      body: JSON.stringify({ isDeployed: isDeployed }),
+    });
+
+    const json = await response.json();
+
+    if (response.ok) {
+      console.log("Changed");
+    }
+
+    if (!response.ok) {
+      console.log("NOT CHANGED");
+    }
+  };
+
   const handleCreate = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (isDeployed) {
+      toast.error("Server deployed. Cannot create station.");
+      clearSearch();
+      return;
+    }
 
     const station = {
       name: stationName,
@@ -109,6 +165,7 @@ const StationLanding: React.FC<StationLandingProps> = () => {
           setLngClick(0);
           setLatClick(0);
           setConnections([]);
+          setSearchConnectedTerm("");
           fetchStations();
 
           console.log("DISTANCE", distance);
@@ -137,8 +194,6 @@ const StationLanding: React.FC<StationLandingProps> = () => {
     setLngClick(0);
     setLatClick(0);
     setConnections([]);
-
-    // Fetch updated list of stations
     fetchStations();
   };
 
@@ -166,6 +221,13 @@ const StationLanding: React.FC<StationLandingProps> = () => {
 
   const handleEdit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (isDeployed) {
+      toast.error("Server deployed. Cannot edit station.");
+      setIsEdit(false);
+      clearSearch();
+      return;
+    }
 
     for (const connectedStationId of connections) {
       const response = await fetch(
@@ -251,6 +313,7 @@ const StationLanding: React.FC<StationLandingProps> = () => {
   const clearSearch = () => {
     setSearchTerm("");
     setStationName("");
+    setSearchConnectedTerm("");
     setLngClick(0);
     setLatClick(0);
     setConnections([]);
@@ -267,7 +330,13 @@ const StationLanding: React.FC<StationLandingProps> = () => {
   };
 
   const handleDelete = async (station: String): Promise<void> => {
-    console.log("BEFORE DELETE", editStruct);
+    if (isDeployed) {
+      toast.error("Server deployed. Cannot delete station.");
+      setIsDelete(false);
+      clearSearch();
+
+      return;
+    }
     const isConfirmed = window.confirm("Are you sure you want to delete this?");
 
     if (isConfirmed) {
@@ -311,8 +380,16 @@ const StationLanding: React.FC<StationLandingProps> = () => {
   };
 
   useEffect(() => {
+    fetchStatus();
+  }, []);
+
+  useEffect(() => {
     fetchStations();
   }, []);
+
+  useEffect(() => {
+    handleMaintenance();
+  }, [isDeployed]);
 
   return (
     <div className="CardLanding bg-[#dbe7c9] h-screen animate__animated animate__fadeIn">
@@ -348,7 +425,7 @@ const StationLanding: React.FC<StationLandingProps> = () => {
                   <div key={station._id}>
                     <Marker
                       position={[station.lat, station.long]}
-                      icon={StationIcon}
+                      icon={PinIcon}
                       eventHandlers={{
                         click: () => handleClickEdit(station),
                       }}
@@ -476,6 +553,23 @@ const StationLanding: React.FC<StationLandingProps> = () => {
                       ? `Station ${isEdit ? "Edit" : "Add"}`
                       : "Station"}
                   </div>
+                  <div className="flex flex-row justify-between items-center space-x-2 w-auto bg-[#0d9276] pt-1 px-2 rounded-2xl shadow-md shadow-black">
+                    <label
+                      className={`font-bold text-center text-sm hidden lg:block ${
+                        isDeployed ? "text-[#dbe7c9]" : "text-gray-400"
+                      }`}
+                    >
+                      {isDeployed ? "DEPLOYED" : "MAINTENACE"}
+                    </label>
+                    <div>
+                      <Switch
+                        onChange={() => {
+                          setisDeployed(!isDeployed);
+                        }}
+                        checked={isDeployed}
+                      />
+                    </div>
+                  </div>
                 </div>
                 <div className="">
                   <form
@@ -490,11 +584,8 @@ const StationLanding: React.FC<StationLandingProps> = () => {
                             : `text-gray-400`
                         }`}
                       >
-                        Station Name:{" "}
+                        Station Name:
                       </label>
-                      <span className="text-[#0d9276] font-bold">
-                        {editStruct?.name}
-                      </span>
                     </div>
                     <input
                       type="text"
@@ -503,7 +594,9 @@ const StationLanding: React.FC<StationLandingProps> = () => {
                       onChange={(e: ChangeEvent<HTMLInputElement>) => {
                         setStationName(e.target.value);
                       }}
-                      disabled={latClick === 0 && lngClick === 0}
+                      disabled={
+                        (latClick === 0 && lngClick === 0) || isDeployed
+                      }
                       required
                     />
                     <div className="flex space-x-2 flex-row w-auto lg:space-x-10 my-2">
@@ -522,7 +615,9 @@ const StationLanding: React.FC<StationLandingProps> = () => {
                           className="w-full rounded-lg h-auto text-black disabled:opacity-80 shadow-inner shadow-black"
                           value={latClick}
                           readOnly
-                          disabled={latClick === 0 && lngClick === 0}
+                          disabled={
+                            (latClick === 0 && lngClick === 0) || isDeployed
+                          }
                           required
                         />
                       </div>
@@ -541,7 +636,9 @@ const StationLanding: React.FC<StationLandingProps> = () => {
                           className="w-full rounded-lg text-black disabled:opacity-80 shadow-inner shadow-black"
                           value={lngClick}
                           readOnly
-                          disabled={latClick === 0 && lngClick === 0}
+                          disabled={
+                            (latClick === 0 && lngClick === 0) || isDeployed
+                          }
                           required
                         />
                       </div>
@@ -553,7 +650,6 @@ const StationLanding: React.FC<StationLandingProps> = () => {
                             {isEdit ? "Edit" : "Add"}
                           </button>
                         )}
-                        {error && <div className="text-red-600">{error}</div>}
                       </div>
                       <div className="w-1/2">
                         {isEdit && (

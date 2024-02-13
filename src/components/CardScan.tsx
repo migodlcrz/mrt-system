@@ -33,6 +33,10 @@ interface Card {
   out: string;
 }
 
+interface Status {
+  isDeployed: boolean;
+}
+
 interface Fare {
   minimumAmount: number;
   perKM: number;
@@ -44,6 +48,7 @@ const CardScan = () => {
   const [stationStart, setStationStart] = useState<Station | null>(null);
   const [stationEnd, setStationEnd] = useState<Station | null>(null);
   const [path, setPath] = useState<string[]>([]);
+  const [isDeployed, setIsDeployed] = useState<boolean>(false);
   const [distance, setDistance] = useState<number | null>(null);
   const [fare, setFare] = useState<Fare | null>(null);
   const [enteredUID, setenteredUID] = useState("");
@@ -65,7 +70,9 @@ const CardScan = () => {
 
   const CustomIcon = new DivIcon({
     className: "custom-icon",
-    html: renderToStaticMarkup(<FaTrainSubway size={30} />),
+    html: renderToStaticMarkup(
+      <FaTrainSubway className={`text-green-400`} size={30} />
+    ),
     iconSize: [30, 30],
     iconAnchor: [15, 15],
     popupAnchor: [0, -15],
@@ -81,6 +88,27 @@ const CardScan = () => {
       setStation(data);
     } else {
       throw new Error("Failed to fetch data");
+    }
+  };
+
+  const fetchStatus = async () => {
+    const status_id = "65cb78bfe51a352d5ae51dd1";
+    const response = await fetch(`${api}/api/status/${status_id}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        // Authorization: `Bearer ${user.jwt}`,
+      },
+    });
+
+    const json: Status = await response.json();
+
+    if (response.ok) {
+      setIsDeployed(json.isDeployed);
+    }
+
+    if (!response.ok) {
+      toast.error("Cannot retrieve data");
     }
   };
 
@@ -238,7 +266,7 @@ const CardScan = () => {
           setCard(null);
           setIsCardFound(false);
           setDistance(null);
-        }, 500000);
+        }, 20000);
       }
       if (!response.ok) {
         setenteredUID("");
@@ -252,7 +280,6 @@ const CardScan = () => {
   };
 
   const handleBalance = async () => {
-    console.log("Distance", distance);
     if (distance && fare) {
       if (
         cardBalance < Math.round(distance * fare?.perKM + fare?.minimumAmount)
@@ -278,10 +305,6 @@ const CardScan = () => {
       });
 
       if (response.ok) {
-        console.log("START", stationStart);
-        console.log("END", stationEnd);
-        console.log("FARE", distance * fare?.perKM + fare?.minimumAmount);
-
         toast.success("Tapped Out!");
       } else {
         toast.error("Server Error!");
@@ -292,6 +315,7 @@ const CardScan = () => {
   useEffect(() => {
     fetchData();
     fetchFare();
+    fetchStatus();
   }, []);
 
   useEffect(() => {
@@ -432,6 +456,7 @@ const CardScan = () => {
       >
         <div className="flex flex-row lg:flex-col w-full p-8">
           <div className="text-2xl font-bold border-b-2 border-[#dbe7c9] text-[#dbe7c9]">
+            <div>{isDeployed ? "Deployed" : "Under Maintenace"}</div>
             <div className="mb-2 text-center w-full">
               {stationPage && (
                 <div>
@@ -452,6 +477,7 @@ const CardScan = () => {
                 type="text"
                 id="large-input"
                 value={enteredUID}
+                readOnly={!isDeployed}
                 className="p-1 text-gray-900 rounded-lg shadow-inner shadow-black m-6"
                 onChange={(e: ChangeEvent<HTMLInputElement>) => {
                   setenteredUID(e.target.value);

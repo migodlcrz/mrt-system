@@ -1,11 +1,17 @@
 import React, { useState, useEffect, ChangeEvent, FormEvent } from "react";
 import { useAuthContext } from "../hooks/useAuthContext";
 import { FaPlus } from "react-icons/fa";
+import { json } from "stream/consumers";
+import { toast } from "react-toastify";
 
 interface Card {
   _id: string;
   uid: string;
   balance: number;
+}
+
+interface Status {
+  isDeployed: boolean;
 }
 
 interface ManageCardModelProps {
@@ -26,6 +32,7 @@ const CardModel: React.FC<ManageCardModelProps> = ({ card, update }) => {
 
   const [isOpen, setIsOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [status, setStatus] = useState<Status | null>(null);
 
   const handleButton = () => {
     isOpen ? setIsOpen(false) : setIsOpen(true);
@@ -44,8 +51,6 @@ const CardModel: React.FC<ManageCardModelProps> = ({ card, update }) => {
       ...prevData,
       balance: parseFloat(value),
     }));
-
-    // fetchCards();
   };
 
   //FIX
