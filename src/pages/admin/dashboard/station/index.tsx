@@ -18,7 +18,6 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { FaTrainSubway } from "react-icons/fa6";
 import { FaMapMarkerAlt } from "react-icons/fa";
 import Switch from "react-switch";
-import { clear } from "console";
 
 interface Station {
   _id: string;
@@ -392,12 +391,19 @@ const StationLanding: React.FC<StationLandingProps> = () => {
   }, [isDeployed]);
 
   return (
-    <div className="CardLanding bg-[#dbe7c9] h-screen animate__animated animate__fadeIn">
-      <div className="flex flex-col lg:flex-row h-screen">
+    <div className="CardLanding bg-[#dbe7c9] lg:pb-[18px] h-full animate__animated animate__fadeIn">
+      <div className="flex flex-col lg:flex-row">
         {/* eLEFT PANEL */}
-        <div className="w-full lg:w-1/2 z-0 mt-24 lg:mt-0">
+        <div className="w-full lg:w-1/2 z-0">
+          <div className="mt-24">
+            <div className="flex items-center justify-center bg-[#dbe7c9] shadow-lg shadow-black mx-5 my-2 lg:mr-1 p-2 rounded-lg lg:mt-24">
+              <label className="text-[#0d9276] my-2 font-bold">
+                Station Management
+              </label>
+            </div>
+          </div>
           {/* eMAP */}
-          <div className="flex h-96 lg:h-custom-height items-center justify-center bg-[#dbe7c9] shadow-lg shadow-black mx-5 my-2 lg:mr-1 p-2 rounded-lg lg:mt-24">
+          <div className="flex h-96 lg:h-custom-height items-center justify-center bg-[#dbe7c9] shadow-lg shadow-black mx-5 my-2 lg:mr-1 p-2 rounded-lg">
             <MapContainer
               ref={mapRef}
               className="animate__animated animate__fadeIn shadow-inner shadow-black"
@@ -407,10 +413,12 @@ const StationLanding: React.FC<StationLandingProps> = () => {
               renderer={new L.SVG({ padding: 100 })}
               style={{ height: "100%", width: "100%" }}
             >
-              <MapComponent
-                setLatClicked={setLatClick}
-                setLngClicked={setLngClick}
-              />
+              {!isDeployed && (
+                <MapComponent
+                  setLatClicked={setLatClick}
+                  setLngClicked={setLngClick}
+                />
+              )}
 
               <Marker position={[latClick, lngClick]} icon={PinIcon} />
 
@@ -538,7 +546,7 @@ const StationLanding: React.FC<StationLandingProps> = () => {
             </div>
           </div>
           {/* eSTATION FORM */}
-          <div className="flex justify-center items-center w-auto h-1/2 z-10 bg-[#dbe7c9] shadow-lg shadow-black mx-5 mt-2 lg:mr-5 rounded-lg py-2 mb-2">
+          <div className="flex justify-center items-center w-auto h-[370px] z-10 bg-[#dbe7c9] shadow-lg shadow-black mx-5 mt-2 lg:mr-5 rounded-lg py-2 mb-2">
             <div className="flex flex-row bg-[#dbe7c9] shadow-inner shadow-black m-2 h-full w-full rounded-lg">
               <div className="flex flex-col w-1/2 m-2">
                 <div className="flex flex=row justify-between">
@@ -565,8 +573,13 @@ const StationLanding: React.FC<StationLandingProps> = () => {
                       <Switch
                         onChange={() => {
                           setisDeployed(!isDeployed);
+                          clearSearch();
+                          setIsEdit(false);
+                          setIsDelete(false);
                         }}
                         checked={isDeployed}
+                        handleDiameter={15}
+                        height={20}
                       />
                     </div>
                   </div>
@@ -645,14 +658,14 @@ const StationLanding: React.FC<StationLandingProps> = () => {
                     </div>
                     <div className="flex flex-row justify-between items-center w-full ">
                       <div className="">
-                        {latClick !== 0 && lngClick !== 0 && (
+                        {latClick !== 0 && lngClick !== 0 && !isDeployed && (
                           <button className="bg-[#0d9276] text-black text-sm lg:text-md py-1 lg:p-2 rounded-lg font-bold w-16 shadow-md shadow-black">
                             {isEdit ? "Edit" : "Add"}
                           </button>
                         )}
                       </div>
                       <div className="w-1/2">
-                        {isEdit && (
+                        {isEdit && !isDeployed && (
                           <button
                             className="bg-red-600 text-black text-sm lg:text-md py-1 lg:p-2 rounded-lg mt-1 font-bold w-16 shadow-md shadow-black"
                             onClick={() => {
@@ -679,24 +692,20 @@ const StationLanding: React.FC<StationLandingProps> = () => {
                   >
                     Station Connection:
                   </label>
+
                   {!isEdit && (
                     <button
-                      className={`flex ${
+                      className={`text-2xl ${
                         latClick === 0 && lngClick === 0
-                          ? `bg-gray-400 text-black`
-                          : `bg-[#0d9276] text-[#dbe7c9] shadow-lg shadow-black`
-                      } text-gray-700 font-bold rounded-lg w-auto h-10 px-2 items-center`}
-                      onClick={clearSearch}
+                          ? "text-gray-400"
+                          : "text-[#0d9276]"
+                      } p-2 rounded-lg font-bold`}
+                      disabled={latClick === 0 && lngClick === 0}
+                      onClick={() => {
+                        clearSearch();
+                      }}
                     >
-                      <div
-                        className={`${
-                          latClick === 0 && lngClick === 0
-                            ? "text-gray-700"
-                            : "text-[#dbe7c9]"
-                        }`}
-                      >
-                        Cancel
-                      </div>
+                      <IoMdCloseCircle />
                     </button>
                   )}
                   {isEdit && (
@@ -737,6 +746,7 @@ const StationLanding: React.FC<StationLandingProps> = () => {
                         ? `bg-gray-400 text-gray-700 `
                         : `bg-[#0d9276] text-[#dbe7c9] `
                     }  font-bold rounded-r-lg w-auto h-10 px-2 items-center hidden lg:block`}
+                    disabled={latClick === 0 && lngClick === 0}
                     onClick={() => setSearchConnectedTerm("")}
                   >
                     Clear
@@ -745,9 +755,20 @@ const StationLanding: React.FC<StationLandingProps> = () => {
                 <div className="w-full h-40 lg:h-56 bg-[#dbe7c9] rounded-lg shadow-inner shadow-black">
                   {latClick === 0 && lngClick === 0 && (
                     <div className="text-sm lg:text-md text-center mt-10 lg:mt-20 font-bold px-3 text-gray-500">
-                      Press on map or edit station to see connections.
+                      {!isDeployed && (
+                        <div>
+                          Press on map or edit station to see connections.
+                        </div>
+                      )}
+                      {isDeployed && (
+                        <div className="text-sm lg:text-md text-center mt-10 lg:mt-20 font-bold px-3 text-gray-500">
+                          Set the stations under maintentance to see
+                          connections.
+                        </div>
+                      )}
                     </div>
                   )}
+
                   {latClick !== 0 && lngClick !== 0 && (
                     <div
                       className="max-h-40 lg:max-h-56"
@@ -760,6 +781,7 @@ const StationLanding: React.FC<StationLandingProps> = () => {
                     >
                       <div className="m-2">
                         {stations &&
+                          !isDeployed &&
                           stations
                             .filter((station: Station) =>
                               station.name

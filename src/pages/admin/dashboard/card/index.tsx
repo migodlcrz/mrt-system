@@ -1,10 +1,10 @@
 import React, { useState, useEffect, ChangeEvent } from "react";
 import { useAuthContext } from "../../../../hooks/useAuthContext";
-import { FaCoins } from "react-icons/fa";
-import { FaAddressCard } from "react-icons/fa";
+import { FaCoins, FaAddressCard, FaPlus } from "react-icons/fa";
 import { IoMdCloseCircle } from "react-icons/io";
 import { toast } from "react-toastify";
 import { GrStatusGoodSmall } from "react-icons/gr";
+import ProgressBar from "@ramonak/react-progress-bar";
 
 interface Card {
   _id: string;
@@ -176,7 +176,7 @@ const CardLanding: React.FC<CardLandingProps> = () => {
   }, [user, update]);
 
   return (
-    <div className="flex flex-col lg:flex-row bg-[#dbe7c9] h-screen animate__animated animate__fadeIn">
+    <div className="flex flex-col lg:flex-row lg:pb-[17px] bg-[#dbe7c9] h-full animate__animated animate__fadeIn">
       <div className="w-full lg:w-2/3">
         <div className="flex flex-col lg:flex-row w-full">
           <div className="w-full lg:w-1/2">
@@ -188,13 +188,25 @@ const CardLanding: React.FC<CardLandingProps> = () => {
                   setCardInfo(null);
                   setisView(false);
                 }}
-                className="bg-[#0d9276] font-bold py-2 px-3 rounded-lg w-1/3 text-white shadow-lg hover:bg-[#0D423E]"
+                className="bg-[#0d9276] font-bold py-2 px-3 rounded-lg w-1/3 text-white shadow-lg hover:bg-[#0D423E] hidden lg:block"
               >
                 Generate Card
               </button>
+
+              <button
+                onClick={(e) => {
+                  setisAdd(true);
+                  setisAddBalance(false);
+                  setCardInfo(null);
+                  setisView(false);
+                }}
+                className="bg-[#0d9276] font-bold py-2 px-3 rounded-lg text-white shadow-lg hover:bg-[#0D423E] lg:hidden"
+              >
+                <FaPlus />
+              </button>
               <input
                 type="number"
-                className="w-2/3 rounded-lg text-black shadow-inner shadow-black"
+                className="w-full lg:w-2/3 rounded-lg text-black shadow-inner shadow-black"
                 onChange={(e) => setSearchTerm(e.target.value)}
                 value={searchTerm}
                 onKeyPress={(e) => {
@@ -208,15 +220,14 @@ const CardLanding: React.FC<CardLandingProps> = () => {
             <div className="bg-[#dbe7c9] p-2 rounded-md shadow-lg shadow-black mx-3">
               <div className="table-container min-h-[240px] bg-slate-300 shadow-inner shadow-black">
                 <div
+                  className="max-h-[240px] overflow-y-auto"
                   style={{
-                    maxHeight: "240px",
-                    overflowY: "auto",
                     scrollbarColor: "#dbe7c9 #0d9276",
                     scrollbarWidth: "thin",
                   }}
                 >
-                  <table className="w-auto lg:w-full">
-                    <thead className="bg-[#0d9276] sticky top-0 shadow-md shadow-black">
+                  <table className="w-full">
+                    <thead className="bg-[#0d9276] sticky top-0 shadow-md shadow-black w-full">
                       <tr>
                         <th className=" py-1 px-4 sticky top-0 text-[#dbe7c9]">
                           UID
@@ -243,17 +254,19 @@ const CardLanding: React.FC<CardLandingProps> = () => {
                                   setisAdd(false);
                                 }}
                               >
-                                <td className="flex flex-row w-auto lg:w-full items-center justify-between py-2 px-36 font-bold text-center text-black shadow-lg shadow-black">
-                                  <div
-                                    className={`${
-                                      card.isTap
-                                        ? "text-green-400"
-                                        : "text-red-800"
-                                    }`}
-                                  >
-                                    <GrStatusGoodSmall />
+                                <td className=" py-2 px-36 font-bold text-center text-black shadow-lg shadow-black">
+                                  <div className="flex flex-row space-x-4 items-center justify-center">
+                                    <div
+                                      className={`${
+                                        card.isTap
+                                          ? "text-[#0d9276]"
+                                          : "text-red-800"
+                                      }`}
+                                    >
+                                      <GrStatusGoodSmall />
+                                    </div>
+                                    <div>{card.uid}</div>
                                   </div>
-                                  <div>{card.uid}</div>
                                 </td>
                               </tr>
                             );
@@ -270,24 +283,24 @@ const CardLanding: React.FC<CardLandingProps> = () => {
                 cardInfo ? "bg-[#0d9276]" : "bg-[#dbe7c9]"
               } rounded-lg space-x-2`}
             >
-              <div className="flex flex-col lg:flex-row bg-[#dbe7c9] shadow-inner p-4 lg:p-0 shadow-black rounded-md h-[305px] w-full">
+              <div className="flex flex-col lg:flex-row bg-[#dbe7c9] shadow-inner p-4 lg:p-0 shadow-black rounded-md h-auto lg:h-[305px] w-full">
                 <div
                   className={`flex flex-col space-y-6 w-full lg:m-4 bg-red-[#dbe7c9] ${
                     cardInfo && "bg-[#0d9276]"
-                  } items-center justify-center rounded-lg p-4 shadow-lg shadow-black`}
+                  } items-center justify-center rounded-lg shadow-lg shadow-black`}
                 >
                   <div
-                    className={`flex flex-row w-full justify-between px-6 lg:px-16 font-bold text-sm lg:text-xl ${
+                    className={`flex flex-row w-full justify-between px-4 pt-2 lg:px-10 font-bold text-sm lg:text-xl ${
                       cardInfo ? "text-[#dbe7c9]" : "text-gray-400"
                     }`}
                   >
-                    CARD ID:{" "}
-                    <span className="text-[#dbe7c9]">
+                    <label className="hidden lg:block">ID:</label>
+                    <span className="text-[#dbe7c9] text-center w-full lg:text-end">
                       {cardInfo && cardInfo.uid}
                     </span>
                   </div>
                   <div
-                    className={`flex flex-row space-x-2 text-sm lg:text-lg px-6 lg:px-16 w-full items-center justify-between ${
+                    className={`flex flex-row space-x-2 text-sm lg:text-lg px-6 lg:px-10 w-full items-center justify-center lg:justify-between ${
                       cardInfo ? "text-[#dbe7c9]" : "text-gray-400"
                     }`}
                   >
@@ -295,14 +308,14 @@ const CardLanding: React.FC<CardLandingProps> = () => {
                       <div className="text-sm lg:text-2xl mr-2">
                         <FaCoins />
                       </div>
-                      Balance:{" "}
+                      <label className="hidden lg:block">Balance:</label>
                     </div>
                     <span className="text-white">
                       {cardInfo && <div>₱{cardInfo.balance}</div>}
                     </span>
                   </div>
                   <div
-                    className={`flex flex-row space-x-2 text-sm lg:text-lg px-6 lg:px-16 w-full items-center justify-between ${
+                    className={`flex flex-row space-x-2 text-sm lg:text-lg px-6 lg:px-10 w-full items-center justify-center lg:justify-between ${
                       cardInfo ? "text-[#dbe7c9]" : "text-gray-400 "
                     }`}
                   >
@@ -311,7 +324,7 @@ const CardLanding: React.FC<CardLandingProps> = () => {
                       <div className="text-sm lg:text-2xl mr-2">
                         <FaAddressCard />
                       </div>
-                      Status:{" "}
+                      <label className="hidden lg:block">Status:</label>
                     </div>
                     <span className="text-white ">
                       {cardInfo && (
@@ -319,14 +332,14 @@ const CardLanding: React.FC<CardLandingProps> = () => {
                       )}
                     </span>
                   </div>
-                  <div className="flex flex-row justify-between w-full px-6 lg:px-16">
+                  <div className="flex flex-row justify-between w-full px-6 lg:px-10 ">
                     <button
                       disabled={cardInfo ? false : true}
                       onClick={() => {
                         setisAddBalance(true);
                         setisAdd(false);
                       }}
-                      className="bg-[#dbe7c9] px-3 py-1 text-sm lg:text-lg rounded-lg shadow-lg disabled:shadow-inner disabled:shadow-black font-bold shadow-black focus:shadow-none text-[#0d9276] disabled:text-gray-400"
+                      className="bg-[#dbe7c9] px-3 py-1 mb-4 lg:mb-0 text-sm lg:text-lg rounded-lg shadow-lg disabled:shadow-inner disabled:shadow-black font-bold shadow-black focus:shadow-none text-[#0d9276] disabled:text-gray-400"
                     >
                       Add
                     </button>
@@ -336,7 +349,7 @@ const CardLanding: React.FC<CardLandingProps> = () => {
                       onClick={() => {
                         cardInfo && handleDelete(cardInfo._id);
                       }}
-                      className="bg-[#dbe7c9] px-3 py-1 text-sm lg:text-lg rounded-lg shadow-lg disabled:shadow-inner disabled:shadow-black font-bold shadow-black focus:shadow-none text-[#0d9276] disabled:text-gray-400"
+                      className="bg-[#dbe7c9] px-3 py-2 mb-4 lg:mb-0 text-sm lg:text-lg rounded-lg shadow-lg disabled:shadow-inner disabled:shadow-black font-bold shadow-black focus:shadow-none text-[#0d9276] disabled:text-gray-400"
                     >
                       Delete
                     </button>
@@ -346,31 +359,66 @@ const CardLanding: React.FC<CardLandingProps> = () => {
             </div>
           </div>
         </div>
-        <div className="flex flex-col lg:flex-row w-full mt-6">
+        <div className="flex flex-col lg:flex-row w-full mt-6 space-y-5 lg:space-y-0">
           <div className="w-full lg:w-1/2">
             <div className="flex max-w-full h-full mr-3 p-2 justify-center bg-[#dbe7c9] rounded-lg shadow-lg shadow-black space-x-2 mx-3">
               <div className="flex flex-col bg-[#dbe7c9] shadow-inner shadow-black py-3 px-6 rounded-md w-full">
-                <div className="flex flex-row bg-[#dbe7c9] shadow-inner shadow-black py-3 px-6 rounded-md w-full">
-                  <div className="flex flex-col justify-start items-center w-1/2 border-r-2 border-gray-700">
-                    <div className="flex flex-row w-full px-10 items-center space-x-4">
-                      <div className="text-green-400">
+                <div className="flex flex-col bg-[#dbe7c9] rounded-md w-auto">
+                  <div className="flex flex-col justify-start items-center w-full py-2">
+                    <div className="flex flex-row w-full items-center space-x-4 mb-4">
+                      <div className="text-[#0d9276]">
                         <GrStatusGoodSmall />
                       </div>
-                      <div className="text-[#0d9276] font-bold">onboard</div>
+                      <div className="text-[#0d9276] font-bold">Onboard</div>
                     </div>
-                    <div className="text-green-400 font-bold text-6xl my-14">
-                      {onboardCount}
+                    <div className="w-full">
+                      <ProgressBar
+                        completed={Math.round(
+                          (onboardCount / (onboardCount + offboardCount)) * 100
+                        )}
+                        bgColor="#0d9276"
+                        baseBgColor="#b3bdb6"
+                        labelColor="#dbe7c9"
+                        customLabel={onboardCount.toString()}
+                      />
                     </div>
                   </div>
-                  <div className="flex flex-col justify-start items-center w-1/2">
-                    <div className="flex flex-row w-full px-10 items-center space-x-4">
+                  <div className="flex flex-col justify-start items-center w-full py-2">
+                    <div className="flex flex-row w-full items-center space-x-4 mb-4">
                       <div className="text-red-800">
                         <GrStatusGoodSmall />
                       </div>
-                      <div className="text-[#0d9276] font-bold">offboard</div>
+                      <div className="text-[#0d9276] font-bold">Offboard</div>
                     </div>
-                    <div className="text-green-400 font-bold text-6xl my-14">
-                      {offboardCount}
+                    <div className="w-full">
+                      <ProgressBar
+                        completed={Math.round(
+                          (offboardCount / (onboardCount + offboardCount)) * 100
+                        )}
+                        bgColor="#0d9276"
+                        baseBgColor="#b3bdb6"
+                        labelColor="#dbe7c9"
+                        customLabel={offboardCount.toString()}
+                      />
+                    </div>
+                  </div>
+                  <div className="flex flex-col justify-start items-center w-full py-2">
+                    <div className="flex flex-row w-full items-center space-x-4 mb-4">
+                      <div className="flex flex-row items-center text-[#0d9276] font-bold">
+                        <div>
+                          <FaAddressCard />
+                        </div>
+                        <div className="ml-3">Total Cards</div>
+                      </div>
+                    </div>
+                    <div className="w-full">
+                      <ProgressBar
+                        completed={100}
+                        bgColor="#0d9276"
+                        baseBgColor="#b3bdb6"
+                        labelColor="#dbe7c9"
+                        customLabel={(onboardCount + offboardCount).toString()}
+                      />
                     </div>
                   </div>
                 </div>
@@ -542,7 +590,7 @@ const CardLanding: React.FC<CardLandingProps> = () => {
               )}
               {!isAdd && !isAddBalance && (
                 <div className="flex flex-col space-y-8 bg-[#dbe7c9] py-3 px-6 rounded-md w-full text-center shadow-inner shadow-black">
-                  <label className="my-24 text-[#0d9276] font-bold">
+                  <label className="my-24 text-gray-400 font-bold">
                     Press an action to open this panel
                   </label>
                 </div>
@@ -551,7 +599,7 @@ const CardLanding: React.FC<CardLandingProps> = () => {
           </div>
         </div>
       </div>
-      <div className="w-1/3 mt-4 lg:mt-24">
+      <div className="w-full lg:w-1/3 mt-4 lg:mt-24">
         <div
           className={`bg-gray-[#dbe7c9] ${
             cardInfo && "bg-[#0d9276]"

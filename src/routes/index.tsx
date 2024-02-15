@@ -51,7 +51,8 @@ const App = () => {
   };
 
   useEffect(() => {
-    // Check if the current path starts with "/station"
+    console.log();
+
     setHideNavbar(window.location.pathname.startsWith("/station"));
     fetchStatus();
   }, []);

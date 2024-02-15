@@ -107,6 +107,7 @@ const ManageFare: React.FC<ManageFareProps> = () => {
                   </label>
                   <input
                     type="number"
+                    min={0}
                     name="minimumAmount"
                     value={formData.minimumAmount}
                     onChange={handleChange}
@@ -119,6 +120,7 @@ const ManageFare: React.FC<ManageFareProps> = () => {
                   </label>
                   <input
                     type="number"
+                    min={0}
                     name="perKM"
                     value={formData.perKM}
                     onChange={handleChange}

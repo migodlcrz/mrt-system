@@ -27,7 +27,7 @@ export const useLogin = () => {
 
     if (!response.ok) {
       setIsLoading(false);
-      setError(toast.error(json.error) as any); // TODO: fix this cast
+      setError(toast.error(json.error) as any);
     }
 
     if (response.ok) {

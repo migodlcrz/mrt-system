@@ -3,7 +3,7 @@
 @tailwind utilities;
 @layer utilities {
   .h-custom-height {
-    height: 86vh;
+    height: 76vh;
   }
   .h-custom-height-dash {
     height: 43vh;

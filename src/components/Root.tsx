@@ -14,14 +14,15 @@ const Root = () => {
               WELCOME TO GLOBALTEK RAILS
             </div>
             <div className="flex flex-col lg:flex-row w-full p-20 space-y-10 lg:space-y-0 lg:space-x-20">
-              <button
-                onClick={() => {
-                  navigate("/station/");
-                }}
+              <a
+                href="/station"
+                // onClick={() => {
+                //   navigate("/station/");
+                // }}
                 className="flex w-full py-10 rounded-lg shadow-lg shadow-black hover:shadow-inner hover:shadow-black bg-[#0d9276] justify-center items-center hover:text-gray-300 font-bold"
               >
                 STATION USER END
-              </button>
+              </a>
               <button
                 onClick={() => {
                   navigate("/admin");

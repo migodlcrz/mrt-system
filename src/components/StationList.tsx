@@ -60,7 +60,7 @@ const StationList = () => {
   return (
     <div className="flex flex-row bg-[#dbe7c9] h-screen w-auto animate__animated animate__fadeIn">
       <div
-        className="bg-[#dbe7c9] h-screen w-1/2 overflow-y-auto max-h-full"
+        className="bg-[#dbe7c9] h-screen w-full lg:w-1/2 overflow-y-auto max-h-full"
         style={{ scrollbarColor: "#dbe7c9 #0d9276", scrollbarWidth: "thin" }}
       >
         <div className="flex flex-row h-20 w-full bg-[#0d9276] items-center rounded-b-lg shadow-lg shadow-black justify-center sticky top-0">
@@ -130,7 +130,7 @@ const StationList = () => {
             })}
       </div>
       <MapContainer
-        className="h-1/2 w-full lg:w-1/2 lg:h-full"
+        className="h-1/2 w-full lg:w-1/2 lg:h-full hidden lg:block"
         center={[14.65216, 121.03225]}
         zoom={12}
         zoomControl={false}

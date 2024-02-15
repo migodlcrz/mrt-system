@@ -7,14 +7,13 @@ import {
   TileLayer,
   Tooltip,
 } from "react-leaflet";
-import { useFetcher, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { FaCheck } from "react-icons/fa";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { DivIcon, Icon } from "leaflet";
+import { DivIcon } from "leaflet";
 import { FaTrainSubway } from "react-icons/fa6";
-import { JSX } from "react/jsx-runtime";
-import { renderToStaticMarkup, renderToString } from "react-dom/server";
+import { renderToStaticMarkup } from "react-dom/server";
 
 interface Station {
   _id: string;
@@ -454,9 +453,8 @@ const CardScan = () => {
           "flex flex-col items-center lg:w-1/2 lg:h-full border border-gray-300 bg-[#0d9276] shadow-inner shadow-black"
         }
       >
-        <div className="flex flex-row lg:flex-col w-full p-8">
-          <div className="text-2xl font-bold border-b-2 border-[#dbe7c9] text-[#dbe7c9]">
-            <div>{isDeployed ? "Deployed" : "Under Maintenace"}</div>
+        <div className="flex flex-col w-full p-8">
+          <div className="text-md lg:text-2xl font-bold border-b-2 border-[#dbe7c9] text-[#dbe7c9]">
             <div className="mb-2 text-center w-full">
               {stationPage && (
                 <div>
@@ -491,7 +489,7 @@ const CardScan = () => {
           </div>
           {/* CARD INFO */}
           <div className="w-full">
-            <div className="bg-[#0d9276] shadow-lg shadow-black m-2 p-2 rounded-lg">
+            <div className="bg-[#0d9276] shadow-lg shadow-black m-2 p-2 rounded-lg hidden lg:block">
               <div className="bg-[#dbe7c9] shadow-inner shadow-black px-2 rounded-lg">
                 <div className=" font-bold text-[#0d9276]">Card Info:</div>
                 <div className="flex flex-row space-x-3">
@@ -625,13 +623,14 @@ const CardScan = () => {
                       </span>
                     </div>
 
-                    <div className="w-full h-custom-height-travel-summary">
+                    <div className="w-full h-auto lg:h-custom-height-travel-summary">
                       <div className="bg-[#dbe7c9] shadow-lg shadow-black rounded-lg py-1">
                         <div className="bg-[#0d9276] shadow-inner shadow-black m-2 rounded-lg p-1">
                           <div
+                            className={`max-h-[75px] overflow-y-auto`}
                             style={{
-                              maxHeight: "225px",
-                              overflowY: "auto",
+                              // maxHeight: "225px",
+                              // overflowY: "auto",
                               scrollbarColor: "dark",
                             }}
                           >

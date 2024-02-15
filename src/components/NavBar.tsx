@@ -108,19 +108,19 @@ const Navbar = () => {
                 </Modal>
                 <div className="text-[#dbe7c9] font-bold">
                   <Dropdown
-                    className="animate__animated right-0 bg-[#dbe7c9] animate__fadeIn w-96 h-96"
+                    className="animate__animated right-0 bg-[#dbe7c9] animate__fadeIn w-40 h-auto"
                     label={<FaTrainSubway />}
-                    dismissOnClick={false}
+                    dismissOnClick={true}
                     inline
                   >
                     <Dropdown.Header className="text-[#0d9276]">
                       admin@gmail.com
                     </Dropdown.Header>
-                    <Dropdown.Item className="text-[#0d9276]">
+                    <Dropdown.Item
+                      className="text-[#0d9276]"
+                      onClick={() => navigate("/admin/dashboard")}
+                    >
                       Dashboard
-                    </Dropdown.Item>
-                    <Dropdown.Item className="bg-[#dbe7c9]">
-                      Setting
                     </Dropdown.Item>
                     <Dropdown.Item
                       className="text-[#0d9276]"
@@ -128,7 +128,7 @@ const Navbar = () => {
                     >
                       Sign out
                     </Dropdown.Item>
-                    <label className="m-2 bg-[#dbe7c9] ">
+                    {/* <label className="m-2 bg-[#dbe7c9] ">
                       <Switch
                         onChange={() => {
                           setIsToggle(!isToggle);
@@ -136,7 +136,7 @@ const Navbar = () => {
                         checked={isToggle}
                       />
                     </label>
-                    <span>Maintenace</span>
+                    <span>Maintenace</span> */}
                   </Dropdown>
                 </div>
                 <div>
