@@ -5,6 +5,7 @@ import { IoMdCloseCircle } from "react-icons/io";
 import { toast } from "react-toastify";
 import { GrStatusGoodSmall } from "react-icons/gr";
 import ProgressBar from "@ramonak/react-progress-bar";
+import { popup } from "leaflet";
 
 interface Card {
   _id: string;
@@ -35,8 +36,6 @@ const CardLanding: React.FC<CardLandingProps> = () => {
   const [onboardCount, setOnboardCount] = useState(0);
   const [offboardCount, setOffboardCount] = useState(0);
 
-  const [isToggle, setIsToggle] = useState(false);
-
   const [cardInfo, setCardInfo] = useState<Card | null>(null);
 
   const { user } = useAuthContext();
@@ -48,6 +47,18 @@ const CardLanding: React.FC<CardLandingProps> = () => {
     setisView(false);
     setisAdd(false);
     setisAddBalance(false);
+  };
+
+  const scrollToTarget = (target: string) => {
+    const targetElement = document.getElementById(target);
+
+    if (targetElement) {
+      if (target === "top") {
+        targetElement.scrollIntoView({ behavior: "smooth" });
+      } else {
+        targetElement.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }
   };
 
   const addBalance = async (balance: number) => {
@@ -76,6 +87,7 @@ const CardLanding: React.FC<CardLandingProps> = () => {
 
   const handleCreate = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     const card = { uid, balance };
 
     if (Number(card.balance) < 1) {
@@ -99,17 +111,15 @@ const CardLanding: React.FC<CardLandingProps> = () => {
       setEmptyFields(json.emptyFields);
     }
     if (postResponse.ok) {
+      scrollToTarget("top");
       setEmptyFields([]);
       setError(null);
       setUID(Math.floor(Math.random() * 1000000000000).toString());
       setBalance("");
       fetchCards();
       setisAdd(false);
+      toast.success("Card created successfully.");
     }
-  };
-
-  const handleClickToggle = () => {
-    console.log(isToggle);
   };
 
   const handleClickEdit = (card: Card) => {
@@ -176,13 +186,16 @@ const CardLanding: React.FC<CardLandingProps> = () => {
   }, [user, update]);
 
   return (
-    <div className="flex flex-col lg:flex-row lg:pb-[17px] bg-[#dbe7c9] h-full animate__animated animate__fadeIn">
+    <div
+      id="top"
+      className="flex flex-col lg:flex-row lg:pb-[17px] bg-[#dbe7c9] h-full animate__animated animate__fadeIn"
+    >
       <div className="w-full lg:w-2/3">
         <div className="flex flex-col lg:flex-row w-full">
           <div className="w-full lg:w-1/2">
             <div className="flex mx-3 mb-2 mt-24 p-2 bg-[#dbe7c9] shadow-lg shadow-black rounded-lg space-x-2">
               <button
-                onClick={(e) => {
+                onClick={() => {
                   setisAdd(true);
                   setisAddBalance(false);
                   setCardInfo(null);
@@ -199,6 +212,7 @@ const CardLanding: React.FC<CardLandingProps> = () => {
                   setisAddBalance(false);
                   setCardInfo(null);
                   setisView(false);
+                  scrollToTarget("generate");
                 }}
                 className="bg-[#0d9276] font-bold py-2 px-3 rounded-lg text-white shadow-lg hover:bg-[#0D423E] lg:hidden"
               >
@@ -290,7 +304,22 @@ const CardLanding: React.FC<CardLandingProps> = () => {
                   } items-center justify-center rounded-lg shadow-lg shadow-black`}
                 >
                   <div
-                    className={`flex flex-row w-full justify-between px-4 pt-2 lg:px-10 font-bold text-sm lg:text-xl ${
+                    className={`flex flex-row w-full justify-end px-4 pt-2 lg:px-10 font-bold text-sm lg:text-xl ${
+                      cardInfo ? "text-[#dbe7c9]" : "text-gray-400"
+                    }`}
+                  >
+                    <button
+                      onClick={() => {
+                        clearSearch();
+                        scrollToTarget("top");
+                      }}
+                      className="flex w-full justify-end text-[#dbe7c9] text-center lg:text-end lg:hidden"
+                    >
+                      <IoMdCloseCircle />
+                    </button>
+                  </div>
+                  <div
+                    className={`flex flex-row w-full justify-between px-4 lg:px-10 font-bold text-sm lg:text-xl ${
                       cardInfo ? "text-[#dbe7c9]" : "text-gray-400"
                     }`}
                   >
@@ -332,18 +361,26 @@ const CardLanding: React.FC<CardLandingProps> = () => {
                       )}
                     </span>
                   </div>
-                  <div className="flex flex-row justify-between w-full px-6 lg:px-10 ">
+                  <div className="flex flex-row justify-between w-full px-3 lg:px-8 pb-1">
                     <button
                       disabled={cardInfo ? false : true}
                       onClick={() => {
                         setisAddBalance(true);
                         setisAdd(false);
                       }}
-                      className="bg-[#dbe7c9] px-3 py-1 mb-4 lg:mb-0 text-sm lg:text-lg rounded-lg shadow-lg disabled:shadow-inner disabled:shadow-black font-bold shadow-black focus:shadow-none text-[#0d9276] disabled:text-gray-400"
+                      className="bg-[#dbe7c9] px-3  mb-4 lg:mb-0 text-sm lg:text-lg rounded-lg shadow-lg disabled:shadow-inner disabled:shadow-black font-bold shadow-black focus:shadow-none text-[#0d9276] disabled:text-gray-400"
                     >
                       Add
                     </button>
-
+                    <button
+                      disabled={cardInfo ? false : true}
+                      onClick={() => {
+                        scrollToTarget("transaction");
+                      }}
+                      className="bg-[#dbe7c9] px-3 mb-4 lg:mb-0 text-sm lg:text-lg rounded-lg shadow-lg disabled:shadow-inner disabled:shadow-black font-bold shadow-black focus:shadow-none text-[#0d9276] disabled:text-gray-400 lg:hidden"
+                    >
+                      See Transaction
+                    </button>
                     <button
                       disabled={cardInfo ? false : true}
                       onClick={() => {
@@ -425,7 +462,7 @@ const CardLanding: React.FC<CardLandingProps> = () => {
               </div>
             </div>
           </div>
-          <div className="w-full lg:w-1/2">
+          <div id="generate" className="w-full lg:w-1/2">
             <div
               className={`flex max-w-full mx-3 mb-5 p-2 justify-center shadow-lg shadow-black ${
                 isAdd || isAddBalance ? "bg-[#0d9276]" : "bg-[#dbe7c9]"
@@ -439,7 +476,10 @@ const CardLanding: React.FC<CardLandingProps> = () => {
                         Generate Card
                       </label>
                       <button
-                        onClick={() => setisAdd(false)}
+                        onClick={() => {
+                          setisAdd(false);
+                          scrollToTarget("top");
+                        }}
                         className="text-green-400 text-2xl"
                       >
                         <IoMdCloseCircle />
@@ -472,7 +512,7 @@ const CardLanding: React.FC<CardLandingProps> = () => {
                       value={balance}
                     />
                     <button className="mt-6 bg-[#0d9276] text-[#dbe7c9] font-bold mx-10 rounded-lg py-2 shadow-lg shadow-black focus:shadow-inner">
-                      generate
+                      Generate
                     </button>
                   </form>
                 </div>
@@ -487,6 +527,7 @@ const CardLanding: React.FC<CardLandingProps> = () => {
                       className="text-2xl text-[#0d9276]"
                       onClick={() => {
                         setisAddBalance(false);
+                        scrollToTarget("top");
                       }}
                     >
                       <IoMdCloseCircle />
@@ -605,7 +646,7 @@ const CardLanding: React.FC<CardLandingProps> = () => {
             cardInfo && "bg-[#0d9276]"
           } w-auto mx-4 h-auto mb-10 rounded-lg shadow-lg shadow-black`}
         >
-          <div className="p-4 text-center h-[620px]">
+          <div id="transaction" className="p-4 text-center h-[620px]">
             <div
               className={`flex font-bold text-xl w-full justify-between items-center mb-4 ${
                 cardInfo ? "text-[#dbe7c9]" : "text-gray-400"
@@ -613,7 +654,13 @@ const CardLanding: React.FC<CardLandingProps> = () => {
             >
               <label className="">Travel History:</label>
               {isView && (
-                <button onClick={clearSearch} className="text-2xl">
+                <button
+                  onClick={() => {
+                    clearSearch();
+                    scrollToTarget("top");
+                  }}
+                  className="text-2xl"
+                >
                   <IoMdCloseCircle />
                 </button>
               )}
