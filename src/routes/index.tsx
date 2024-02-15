@@ -60,8 +60,7 @@ const App = () => {
   return (
     <BrowserRouter>
       <div>
-        {!hideNavbar && <NavBar />}{" "}
-        {/* Render Navbar unless hideNavbar is true */}
+        {!hideNavbar && <NavBar />}
         <Routes>
           <Route path={"/"} element={<Root />} />
           <Route path={"/admin"} element={<Admin />} />

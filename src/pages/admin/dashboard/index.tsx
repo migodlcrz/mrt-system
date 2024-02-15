@@ -14,9 +14,12 @@ import { useAuthContext } from "../../../hooks/useAuthContext";
 import { FaCreditCard } from "react-icons/fa";
 import { FaTrainSubway } from "react-icons/fa6";
 import { FaMoneyBill } from "react-icons/fa";
-import { FaCoins } from "react-icons/fa";
+import { FaCoins, FaAddressCard, FaPlus } from "react-icons/fa";
 import { DivIcon } from "leaflet";
 import { renderToStaticMarkup } from "react-dom/server";
+import { GrStatusGoodSmall } from "react-icons/gr";
+import ProgressBar from "@ramonak/react-progress-bar";
+import Avatar from "react-avatar";
 
 interface Stations {
   _id: string;
@@ -34,10 +37,13 @@ interface Fare {
 
 const Dashboard = () => {
   const { user } = useAuthContext();
+  const { user_, jwt } = user;
   const [cardCount, setCardCount] = useState(0);
   const [stations, setStations] = useState<Stations[] | null>(null);
   const [fare, setFare] = useState<Fare | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [onboardCount, setOnboardCount] = useState(0);
+  const [offboardCount, setOffboardCount] = useState(0);
   const { logout } = useLogout();
   const navigate = useNavigate();
   const style = { "--value": 100 } as React.CSSProperties;
@@ -60,7 +66,6 @@ const Dashboard = () => {
     });
     const json = await getResponse.json();
     if (getResponse.ok) {
-      console.log("JSON", json);
       setFare(json);
     }
   };
@@ -75,6 +80,13 @@ const Dashboard = () => {
 
     if (getResponse.ok) {
       setCardCount(json.length);
+      const onboardCount = json.filter(
+        (card: { isTap: any }) => card.isTap
+      ).length;
+      const offboardCount = json.length - onboardCount;
+
+      setOnboardCount(onboardCount);
+      setOffboardCount(offboardCount);
     }
   };
 
@@ -99,73 +111,164 @@ const Dashboard = () => {
   const valueFormatter = (value: number) => `${value} cards`;
 
   useEffect(() => {
+    console.log("EMAIL", user);
     fetchCards();
     fetchStations();
     fetchFare();
   }, []);
 
   return (
-    <div className="h-screen w-full bg-[#dbe7c9] animate__animated animate__fadeIn">
+    <div className="h-scren w-full bg-[#dbe7c9] animate__animated animate__fadeIn">
       <div className="text-white min-h-screen bg-[#dbe7c9]">
         {/* upper right panel */}
-        <div className="flex flex-col lg:flex-row min-h-full justify-center items-start space-y-2 lg:space-y-0 pt-24 lg:pt-28 pb-4">
+        <div className="flex flex-col lg:flex-row h-screen justify-center items-start space-y-2 lg:space-y-0 pt-24 lg:pt-28 pb-4 ">
           <div className="flex justify-start w-full h-full">
             <div className="flex flex-col w-full h-full space-y-4">
               <div className="flex h-full items-center justify-center bg-[#dbe7c9] shadow-lg shadow-black mr-2 mx-2 rounded-lg">
-                <div className="text-2xl text-[#0d9276] font-bold py-4">
-                  Welcome<span className="text-[#0d9276]"> migo@gmail.com</span>
+                <div className="flex flex-row w-full text-2xl text-[#0d9276] font-bold py-4">
+                  <div className="px-4 w-full text-center">
+                    <div>Welcome</div>
+                    <div>
+                      <span className="text-[#0d9276]">{user_}</span>
+                    </div>
+                    <div className="py-10">
+                      <Avatar
+                        googleId="118096717852922241760"
+                        size="100"
+                        round={true}
+                      />
+                    </div>
+                  </div>
+                  <div className="flex flex-col bg-[#dbe7c9] px-4 rounded-md w-full">
+                    <div className="flex flex-col justify-start items-center w-full py-2">
+                      <label>Card</label>
+                      <div className="flex flex-row w-full items-center space-x-4 mb-4">
+                        <div className="text-[#0d9276]">
+                          <GrStatusGoodSmall />
+                        </div>
+                        <div className="text-[#0d9276] text-xl font-bold">
+                          Onboard
+                        </div>
+                      </div>
+                      <div className="w-full">
+                        <ProgressBar
+                          completed={Math.round(
+                            (onboardCount / (onboardCount + offboardCount)) *
+                              100
+                          )}
+                          bgColor="#0d9276"
+                          baseBgColor="#b3bdb6"
+                          labelColor="#dbe7c9"
+                          customLabel={onboardCount.toString()}
+                        />
+                      </div>
+                    </div>
+                    <div className="flex flex-col justify-start items-center w-full py-2">
+                      <div className="flex flex-row w-full items-center space-x-4 mb-4">
+                        <div className="text-red-800">
+                          <GrStatusGoodSmall />
+                        </div>
+                        <div className="text-[#0d9276] text-xl font-bold">
+                          Offboard
+                        </div>
+                      </div>
+                      <div className="w-full">
+                        <ProgressBar
+                          completed={Math.round(
+                            (offboardCount / (onboardCount + offboardCount)) *
+                              100
+                          )}
+                          bgColor="#0d9276"
+                          baseBgColor="#b3bdb6"
+                          labelColor="#dbe7c9"
+                          customLabel={offboardCount.toString()}
+                        />
+                      </div>
+                    </div>
+                    <div className="flex flex-col justify-start items-center w-full py-2">
+                      <div className="flex flex-row w-full items-center space-x-4 mb-4">
+                        <div className="flex flex-row items-center text-[#0d9276] font-bold">
+                          <div>
+                            <FaAddressCard />
+                          </div>
+                          <div className="ml-3 text-xl ">Total Cards</div>
+                        </div>
+                      </div>
+                      <div className="w-full">
+                        <ProgressBar
+                          completed={100}
+                          bgColor="#0d9276"
+                          baseBgColor="#b3bdb6"
+                          labelColor="#dbe7c9"
+                          customLabel={(
+                            onboardCount + offboardCount
+                          ).toString()}
+                        />
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
+
               <div className="flex flex-col lg:flex-row space-y-2 lg:space-y-0">
-                <div className="flex flex-row lg:flex-col h- lg:w-1/3 items-start bg-[#dbe7c9] shadow-lg shadow-black mr-2 mx-2 rounded-lg p-4 lg:space-y-4 font-bold py-6">
+                {/* QUICK INFO */}
+                <div className="flex flex-col lg:w-1/3 items-start bg-[#dbe7c9] shadow-lg shadow-black mr-2 mx-2 rounded-lg p-4 lg:space-y-4 font-bold py-6">
                   <div className="flex items-center">
-                    <div className="text-[#0d9276] text-xl">Quick Info:</div>
+                    <div className="text-[#0d9276] text-xl">Summary:</div>
                   </div>
-                  <div className="flex flex-col lg:flex-row items-center text-green-400 justify-between w-full border-b-2 border-b-[#0d9276]">
-                    <div className="hidden lg:block text-[#0d9276]">
-                      Beep Cards:{" "}
+                  <div className="flex flex-col space-y-10 w-full">
+                    <div className="flex flex-col lg:flex-row items-center text-green-400 justify-between w-full border-b-2 border-b-[#0d9276]">
+                      <div className="hidden lg:block text-[#0d9276]">
+                        Beep Cards:{" "}
+                      </div>
+                      <div className="lg:hidden">
+                        <FaCreditCard />-{" "}
+                      </div>
+                      <span className="text-[#0d9276]">{cardCount}</span>
                     </div>
-                    <div className="lg:hidden">
-                      <FaCreditCard />-{" "}
+                    <div className="flex flex-col lg:flex-row items-center text-green-400 justify-between w-full border-b-2 border-b-[#0d9276]">
+                      <div className="hidden lg:block text-[#0d9276]">
+                        Stations:{" "}
+                      </div>
+                      <div className="lg:hidden">
+                        <FaTrainSubway />-{" "}
+                      </div>
+                      <span className="text-[#0d9276]">
+                        {" "}
+                        {stations?.length}
+                      </span>
                     </div>
-                    <span className="text-[#0d9276]">{cardCount}</span>
-                  </div>
-                  <div className="flex flex-col lg:flex-row items-center text-green-400 justify-between w-full border-b-2 border-b-[#0d9276]">
-                    <div className="hidden lg:block text-[#0d9276]">
-                      Stations:{" "}
+                    <div className="flex flex-col lg:flex-row items-center text-green-400 justify-between w-full border-b-2 border-b-[#0d9276]">
+                      <div className="hidden lg:block text-[#0d9276]">
+                        Start Fare:
+                      </div>
+                      <div className="lg:hidden">
+                        <FaCoins />-{" "}
+                      </div>
+                      <span className="text-[#0d9276]">
+                        ₱{fare && fare.minimumAmount}
+                      </span>
                     </div>
-                    <div className="lg:hidden">
-                      <FaTrainSubway />-{" "}
+                    <div className="flex flex-col lg:flex-row items-center text-green-400 justify-between w-full border-b-2 border-b-[#0d9276]">
+                      <div className="hidden lg:block text-[#0d9276]">
+                        Fare/KM:{" "}
+                      </div>
+                      <div className="lg:hidden">
+                        <FaMoneyBill />-{" "}
+                      </div>
+                      <span className="text-[#0d9276]">
+                        ₱{fare && fare.perKM}
+                      </span>
                     </div>
-                    <span className="text-[#0d9276]"> {stations?.length}</span>
-                  </div>
-                  <div className="flex flex-col lg:flex-row items-center text-green-400 justify-between w-full border-b-2 border-b-[#0d9276]">
-                    <div className="hidden lg:block text-[#0d9276]">
-                      Minimum Fare:{" "}
-                    </div>
-                    <div className="lg:hidden">
-                      <FaCoins />-{" "}
-                    </div>
-                    <span className="text-[#0d9276]">
-                      ₱{fare && fare.minimumAmount}
-                    </span>
-                  </div>
-                  <div className="flex flex-col lg:flex-row items-center text-green-400 justify-between w-full border-b-2 border-b-[#0d9276]">
-                    <div className="hidden lg:block text-[#0d9276]">
-                      Fare/KM:{" "}
-                    </div>
-                    <div className="lg:hidden">
-                      <FaMoneyBill />-{" "}
-                    </div>
-                    <span className="text-[#0d9276]">
-                      ₱{fare && fare.perKM}
-                    </span>
                   </div>
                 </div>
-                <div className="flex flex-col lg:flex-row h-full bg-[#dbe7c9] shadow-lg shadow-black p-2 mx-2 rounded-lg w-auto lg:w-2/3 py-2 items-center">
-                  <div className="flex w-full items-start justify-start lg:w-3/5 text-[#0d9276] font-bold h-80">
+                {/* STATION LIST */}
+                <div className="flex flex-col lg:flex-row h-auto bg-[#dbe7c9] shadow-lg shadow-black p-2 mx-2 rounded-lg w-auto lg:w-2/3 py-2 items-center">
+                  <div className="flex items-start justify-start w-full text-[#0d9276] font-bold h-80">
                     <div className="px-2 w-full rounded-md">
-                      <div className="text-[#0d9276]">Search:</div>
+                      <div className="text-[#0d9276] w-full text-center">
+                        Stations
+                      </div>
                       <input
                         type="text"
                         className="w-full rounded-lg text-black font-normal my-2 shadow-inner shadow-black"
@@ -222,7 +325,7 @@ const Dashboard = () => {
                     </div>
                   </div>
 
-                  <div className="flex w-full items-start justify-start lg:w-2/5 text-green-400 font-bold h-auto lg:h-80">
+                  {/* <div className="flex w-full items-start justify-start lg:w-2/5 text-green-400 font-bold h-auto lg:h-80">
                     <div className="px-2 w-full rounded-md">
                       <div className="my-2 lg:my-0 text-[#0d9276]">
                         Cards Info:
@@ -251,7 +354,7 @@ const Dashboard = () => {
                         </div>
                       </div>
                     </div>
-                  </div>
+                  </div> */}
 
                   {/* <div className="flex flex-col w-2/5 mr-2 justify-start items-start">
                     <div>Card Data:</div>
@@ -284,7 +387,7 @@ const Dashboard = () => {
             </div>
           </div>
           <div className="flex flex-col w-full min-h-full z-0 space-y-2 lg:space-y-4">
-            <div className="flex h-full items-center justify-center bg-[#dbe7c9] shadow-lg shadow-black mr-2 mx-2 rounded-lg">
+            <div className="flex items-center justify-center bg-[#dbe7c9] shadow-lg shadow-black mr-2 mx-2 rounded-lg">
               <div className="text-2xl font-bold py-4 text-[#0d9276]">
                 Station Map
               </div>
