@@ -188,11 +188,11 @@ const CardLanding: React.FC<CardLandingProps> = () => {
   return (
     <div
       id="top"
-      className="flex flex-col lg:flex-row lg:pb-[17px] bg-[#dbe7c9] h-[735px] animate__animated animate__fadeIn"
+      className="flex flex-col xl:flex-row xl:pb-[17px] bg-[#dbe7c9] h-[735px] animate__animated animate__fadeIn"
     >
-      <div className="w-full lg:w-2/3">
-        <div className="flex flex-col lg:flex-row w-full">
-          <div className="w-full lg:w-1/2">
+      <div className="w-full xl:w-2/3">
+        <div className="flex flex-col xl:flex-row w-full">
+          <div className="w-full xl:w-1/2">
             <div className="flex mx-3 mb-2 mt-24 p-2 bg-[#dbe7c9] shadow-lg shadow-black rounded-lg space-x-2">
               <button
                 onClick={() => {
@@ -201,7 +201,7 @@ const CardLanding: React.FC<CardLandingProps> = () => {
                   setCardInfo(null);
                   setisView(false);
                 }}
-                className="bg-[#0d9276] font-bold py-2 px-3 rounded-lg w-1/3 text-white shadow-lg hover:bg-[#0D423E] hidden lg:block"
+                className="bg-[#0d9276] font-bold py-2 px-3 rounded-lg w-1/3 text-white shadow-lg hover:bg-[#0D423E] hidden xl:\block"
               >
                 Generate
               </button>
@@ -214,13 +214,13 @@ const CardLanding: React.FC<CardLandingProps> = () => {
                   setisView(false);
                   scrollToTarget("generate");
                 }}
-                className="bg-[#0d9276] font-bold py-2 px-3 rounded-lg text-white shadow-lg hover:bg-[#0D423E] lg:hidden"
+                className="bg-[#0d9276] font-bold py-2 px-3 rounded-lg text-white shadow-lg hover:bg-[#0D423E] xl:\hidden"
               >
                 <FaPlus />
               </button>
               <input
                 type="number"
-                className="w-full lg:w-2/3 rounded-lg text-black shadow-inner shadow-black"
+                className="w-full xl:\w-2/3 rounded-lg text-black shadow-inner shadow-black"
                 onChange={(e) => setSearchTerm(e.target.value)}
                 value={searchTerm}
                 onKeyPress={(e) => {
@@ -291,20 +291,20 @@ const CardLanding: React.FC<CardLandingProps> = () => {
               </div>
             </div>
           </div>
-          <div className="w-full lg:w-1/2">
+          <div className="w-full xl:w-1/2">
             <div
-              className={`flex max-w-full mx-3 lg:mr-3 mt-4 lg:mt-24 p-2 justify-center shadow-lg shadow-black ${
+              className={`flex max-w-full mx-3 xl:mr-3 mt-4 xl:mt-24 p-2 justify-center shadow-lg shadow-black ${
                 cardInfo ? "bg-[#0d9276]" : "bg-[#dbe7c9]"
               } rounded-lg space-x-2`}
             >
-              <div className="flex flex-col lg:flex-row bg-[#dbe7c9] shadow-inner p-4 lg:p-0 shadow-black rounded-md h-full lg:h-[305px] w-full">
+              <div className="flex flex-col xl:flex-row bg-[#dbe7c9] shadow-inner p-4 xl:p-0 shadow-black rounded-md h-full xl:h-[305px] w-full">
                 <div
-                  className={`flex flex-col space-y-6 w-full lg:m-4 bg-red-[#dbe7c9] ${
+                  className={`flex flex-col space-y-6 w-full xl:m-4 bg-red-[#dbe7c9] ${
                     cardInfo && "bg-[#0d9276]"
                   } items-center justify-center rounded-lg shadow-lg shadow-black`}
                 >
                   <div
-                    className={`flex flex-row w-full justify-end px-4 pt-2 lg:px-10 font-bold text-sm lg:text-xl ${
+                    className={`flex flex-row w-full justify-end px-4 pt-2 xl:px-10 font-bold text-sm xl:text-xl ${
                       cardInfo ? "text-[#dbe7c9]" : "text-gray-400"
                     }`}
                   >
@@ -313,47 +313,47 @@ const CardLanding: React.FC<CardLandingProps> = () => {
                         clearSearch();
                         scrollToTarget("top");
                       }}
-                      className="flex w-full justify-end text-[#dbe7c9] text-center lg:text-end lg:hidden"
+                      className="flex w-full justify-end text-[#dbe7c9] text-center xl:text-end xl:hidden"
                     >
                       <IoMdCloseCircle />
                     </button>
                   </div>
                   <div
-                    className={`flex flex-row w-full justify-between px-4 lg:px-10 font-bold text-sm lg:text-xl ${
+                    className={`flex flex-row w-full justify-between px-4 xl:px-10 font-bold text-sm xl:text-xl ${
                       cardInfo ? "text-[#dbe7c9]" : "text-gray-400"
                     }`}
                   >
-                    <label className="hidden lg:block">ID:</label>
-                    <span className="text-[#dbe7c9] text-center w-full lg:text-end">
+                    <label className="hidden xl:block">ID:</label>
+                    <span className="text-[#dbe7c9] text-center w-full xl:text-end">
                       {cardInfo && cardInfo.uid}
                     </span>
                   </div>
                   <div
-                    className={`flex flex-row space-x-2 text-sm lg:text-lg px-6 lg:px-10 w-full items-center justify-center lg:justify-between ${
+                    className={`flex flex-row space-x-2 text-sm xl:text-lg px-6 xl:px-10 w-full items-center justify-center xl:justify-between ${
                       cardInfo ? "text-[#dbe7c9]" : "text-gray-400"
                     }`}
                   >
                     <div className="flex flex-row">
-                      <div className="text-sm lg:text-2xl mr-2">
+                      <div className="text-sm xl:text-2xl mr-2">
                         <FaCoins />
                       </div>
-                      <label className="hidden lg:block">Balance:</label>
+                      <label className="hidden xl:block">Balance:</label>
                     </div>
                     <span className="text-white">
                       {cardInfo && <div>₱{cardInfo.balance}</div>}
                     </span>
                   </div>
                   <div
-                    className={`flex flex-row space-x-2 text-sm lg:text-lg px-6 lg:px-10 w-full items-center justify-center lg:justify-between ${
+                    className={`flex flex-row space-x-2 text-sm xl:text-lg px-6 xl:px-10 w-full items-center justify-center xl:justify-between ${
                       cardInfo ? "text-[#dbe7c9]" : "text-gray-400 "
                     }`}
                   >
                     <div className="flex flex-row">
                       {" "}
-                      <div className="text-sm lg:text-2xl mr-2">
+                      <div className="text-sm xl:text-2xl mr-2">
                         <FaAddressCard />
                       </div>
-                      <label className="hidden lg:block">Status:</label>
+                      <label className="hidden xl:block">Status:</label>
                     </div>
                     <span className="text-white ">
                       {cardInfo && (
@@ -361,14 +361,14 @@ const CardLanding: React.FC<CardLandingProps> = () => {
                       )}
                     </span>
                   </div>
-                  <div className="flex flex-row justify-between w-full px-3 lg:px-8 pb-1">
+                  <div className="flex flex-row justify-between w-full px-3 xl:px-8 pb-1">
                     <button
                       disabled={cardInfo ? false : true}
                       onClick={() => {
                         setisAddBalance(true);
                         setisAdd(false);
                       }}
-                      className="bg-[#dbe7c9] px-3  mb-4 lg:mb-0 text-sm lg:text-lg rounded-lg shadow-lg disabled:shadow-inner disabled:shadow-black font-bold shadow-black focus:shadow-none text-[#0d9276] disabled:text-gray-400"
+                      className="bg-[#dbe7c9] px-3  mb-4 xl:mb-0 text-sm xl:text-lg rounded-lg shadow-lg disabled:shadow-inner disabled:shadow-black font-bold shadow-black focus:shadow-none text-[#0d9276] disabled:text-gray-400"
                     >
                       Add
                     </button>
@@ -377,7 +377,7 @@ const CardLanding: React.FC<CardLandingProps> = () => {
                       onClick={() => {
                         scrollToTarget("transaction");
                       }}
-                      className="bg-[#dbe7c9] px-3 mb-4 lg:mb-0 text-sm lg:text-lg rounded-lg shadow-lg disabled:shadow-inner disabled:shadow-black font-bold shadow-black focus:shadow-none text-[#0d9276] disabled:text-gray-400 lg:hidden"
+                      className="bg-[#dbe7c9] px-3 mb-4 xl:mb-0 text-sm xl:text-lg rounded-lg shadow-lg disabled:shadow-inner disabled:shadow-black font-bold shadow-black focus:shadow-none text-[#0d9276] disabled:text-gray-400 xl:hidden"
                     >
                       See Transaction
                     </button>
@@ -386,7 +386,7 @@ const CardLanding: React.FC<CardLandingProps> = () => {
                       onClick={() => {
                         cardInfo && handleDelete(cardInfo._id);
                       }}
-                      className="bg-[#dbe7c9] px-3 py-2 mb-4 lg:mb-0 text-sm lg:text-lg rounded-lg shadow-lg disabled:shadow-inner disabled:shadow-black font-bold shadow-black focus:shadow-none text-[#0d9276] disabled:text-gray-400"
+                      className="bg-[#dbe7c9] px-3 py-2 mb-4 xl:mb-0 text-sm xl:text-lg rounded-lg shadow-lg disabled:shadow-inner disabled:shadow-black font-bold shadow-black focus:shadow-none text-[#0d9276] disabled:text-gray-400"
                     >
                       Delete
                     </button>
@@ -396,8 +396,8 @@ const CardLanding: React.FC<CardLandingProps> = () => {
             </div>
           </div>
         </div>
-        <div className="flex flex-col lg:flex-row w-full mt-6 space-y-5 lg:space-y-0">
-          <div className="w-full lg:w-1/2">
+        <div className="flex flex-col xl:flex-row w-full mt-6 space-y-5 xl:space-y-0">
+          <div className="w-full xl:w-1/2">
             <div className="flex max-w-full h-auto mr-3 p-2 justify-center bg-[#dbe7c9] rounded-lg shadow-lg shadow-black space-x-2 mx-3">
               <div className="flex flex-col bg-[#dbe7c9] shadow-inner shadow-black py-3 px-6 rounded-md w-full">
                 <div className="flex flex-col bg-[#dbe7c9] rounded-md w-auto">
@@ -462,7 +462,7 @@ const CardLanding: React.FC<CardLandingProps> = () => {
               </div>
             </div>
           </div>
-          <div id="generate" className="w-full lg:w-1/2">
+          <div id="generate" className="w-full xl:w-1/2">
             <div
               className={`flex max-w-full mx-3 mb-5 p-2 justify-center shadow-lg shadow-black ${
                 isAdd || isAddBalance ? "bg-[#0d9276]" : "bg-[#dbe7c9]"
@@ -640,7 +640,7 @@ const CardLanding: React.FC<CardLandingProps> = () => {
           </div>
         </div>
       </div>
-      <div className="w-full lg:w-1/3 mt-4 lg:mt-24">
+      <div className="w-full xl:w-1/3 mt-4 xl:mt-24">
         <div
           className={`bg-gray-[#dbe7c9] ${
             cardInfo && "bg-[#0d9276]"

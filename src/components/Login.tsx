@@ -1,22 +1,31 @@
-import React, { FC, useState, ChangeEvent, FormEvent, useEffect } from "react";
+import React, {
+  FC,
+  useState,
+  ChangeEvent,
+  FormEvent,
+  useEffect,
+  CSSProperties,
+} from "react";
 import { Label, TextInput } from "flowbite-react";
 import { useLogin } from "../hooks/useLogin";
 import { useAuthContext } from "../hooks/useAuthContext";
-import { useLogout } from "../hooks/useLogout";
 import { useNavigate } from "react-router-dom";
+import BounceLoader from "react-spinners/ClipLoader";
 
 interface LoginProps {}
 
 const Login: FC<LoginProps> = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const { login, error } = useLogin();
+  const { login } = useLogin();
   const { user } = useAuthContext();
-  const { logout } = useLogout();
+  const [loggingIn, setLoggingIn] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    logout();
+  const override: CSSProperties = {
+    display: "block",
+    margin: "0 auto",
+    borderColor: "#0d9276",
   };
 
   useEffect(() => {
@@ -67,9 +76,24 @@ const Login: FC<LoginProps> = () => {
               }
             />
 
-            <button className="bg-[#0d9276] text-gray-900 rounded-lg w-1/3 mt-7 px-4 py-1 text font-bold shadow-md shadow-black focus:shadow-sm">
-              Login
-            </button>
+            <div className="flex flex-row justify-between items-center mt-8">
+              <button className="bg-[#0d9276] text-gray-900 rounded-lg w-1/3  text font-bold shadow-md shadow-black focus:shadow-sm">
+                Login
+              </button>
+              {loggingIn && (
+                <div>
+                  {" "}
+                  <BounceLoader
+                    color={"#dbe7c9"}
+                    loading={true}
+                    cssOverride={override}
+                    size={20}
+                    aria-label="Loading Spinner"
+                    data-testid="loader"
+                  />
+                </div>
+              )}
+            </div>
           </form>
         </div>
       </div>
