@@ -1,6 +1,7 @@
 import React, { useState, useEffect, ChangeEvent, FormEvent } from "react";
 import { FaCheck } from "react-icons/fa";
 import { useAuthContext } from "../hooks/useAuthContext";
+import { toast } from "react-toastify";
 
 interface Fare {
   minimumAmount: number;
@@ -15,23 +16,23 @@ const ManageFare: React.FC<ManageFareProps> = () => {
     perKM: 0,
   });
 
-  const [message, setMessage] = useState<String | null>(null);
+  const [isEdit, setIsEdit] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const { user } = useAuthContext();
   const api = process.env.REACT_APP_API_KEY;
 
-  const handleFareSubmit = () => {
-    console.log(user);
-    if (!user) {
-      setMessage(error);
-    } else {
-      setMessage("Updated");
-    }
-    setTimeout(() => {
-      setMessage("");
-    }, 3000);
-  };
+  // const handleFareSubmit = () => {
+  //   console.log(user);
+  //   if (!user) {
+  //     setMessage(error);
+  //   } else {
+  //     setMessage("Updated");
+  //   }
+  //   setTimeout(() => {
+  //     setMessage("");
+  //   }, 3000);
+  // };
 
   useEffect(() => {
     const fetchFareData = async () => {
@@ -85,6 +86,11 @@ const ManageFare: React.FC<ManageFareProps> = () => {
 
       const json = await response.json();
 
+      if (response.ok) {
+        toast.success("Fare successfully updated.");
+        setIsEdit(false);
+      }
+
       if (!response.ok) {
         setError(json.error);
         throw new Error(`HTTP error! Status: ${response.status}`);
@@ -95,53 +101,101 @@ const ManageFare: React.FC<ManageFareProps> = () => {
   };
 
   return (
-    <div className="">
-      <div className="modal-overlay">
-        <div className="modal-content">
-          <form onSubmit={handleSubmit}>
-            <div className="flex flex-row space-x-2 mx-2 w-full items-center justify-center">
-              <div className="flex flex-row w-1/2 justify-between">
-                <div className="flex flex-col space-y-2">
-                  <label className="text-green-400 font-bold">
-                    Starting Fare:
-                  </label>
+    <div className="flex flex-col w-full h-full bg-[#0d9276]">
+      <div className="flex flex-row">
+        <div className="w-full justify-center bg-[#dbe7c9] shadow-inner shadow-black m-5 rounded-lg text-center p-4">
+          <div>Starting Fare:</div>
+          {formData.minimumAmount && !isNaN(formData.minimumAmount) ? (
+            <div className="text-[#0d9276] font-bold text-4xl">
+              ₱{formData.minimumAmount.toFixed(2)}
+            </div>
+          ) : null}
+        </div>
+
+        <div className="w-full justify-center bg-[#dbe7c9] shadow-inner shadow-black m-5 rounded-lg text-center p-4">
+          <div>Fare per/KM:</div>
+          <div className="text-[#0d9276] font-bold text-4xl">
+            ₱{formData.perKM.toFixed(2)}
+          </div>
+        </div>
+      </div>
+      <div className="flex justify-center my-4">
+        <button
+          className=" shadow-lg shadow-black bg-[#dbe7c9] focus:shadow-inner focus:shadow-black px-2 rounded-lg"
+          onClick={() => {
+            setIsEdit(!isEdit);
+          }}
+        >
+          Edit
+        </button>
+      </div>
+      {isEdit && (
+        <div className="flex w-full justify-center">
+          <form method="dialog" className="w-full" onSubmit={handleSubmit}>
+            <div className="flex flex-col w-full items-center justify-center px-20">
+              <div className="flex flex-row w-full justify-between space-x-10">
+                <div className="flex flex-col">
+                  <label htmlFor=""></label>
                   <input
                     type="number"
-                    min={0}
+                    min={1}
                     name="minimumAmount"
                     value={formData.minimumAmount}
                     onChange={handleChange}
-                    className="h-6 w-16 rounded-lg p-1 ml-3 text-black"
+                    required
+                    onKeyPress={(e) => {
+                      if (
+                        e.key === "e" ||
+                        e.key === "-" ||
+                        e.key === "+" ||
+                        e.key === "."
+                      ) {
+                        e.preventDefault();
+                      }
+                    }}
+                    className="h-6 w-full rounded-lg px-2 py-4 text-black shadow-inner shadow-black"
                   />
                 </div>
                 <div className="flex flex-col space-y-2">
-                  <label className="text-green-400 font-bold">
-                    Rate per/KM:
-                  </label>
                   <input
                     type="number"
-                    min={0}
+                    min={1}
                     name="perKM"
                     value={formData.perKM}
                     onChange={handleChange}
-                    className="h-6 w-16 rounded-lg p-1 ml-3 text-black"
+                    required
+                    onKeyPress={(e) => {
+                      if (
+                        e.key === "e" ||
+                        e.key === "-" ||
+                        e.key === "+" ||
+                        e.key === "."
+                      ) {
+                        e.preventDefault();
+                      }
+                    }}
+                    className="h-6 w-full rounded-lg px-2 py-4 text-black shadow-inner shadow-black"
                   />
                 </div>
               </div>
-              <button
-                type="submit"
-                className="text-green-400 bg-gray-700 rounded-lg px-2 h-6 mt-3"
-                onClick={() => {
-                  handleFareSubmit();
-                }}
-              >
-                <FaCheck />
-              </button>
-              <div className="text-green-400 mt-3">{message}</div>
+              <div>
+                <button
+                  type="submit"
+                  className="bg-[#dbe7c9] text-[#0d9276] px-2 rounded-lg shadow-lg shadow-black my-4"
+                >
+                  Update
+                </button>
+                {/* <button
+                  type="submit"
+                  className="btn text-[#0d9276] bg-[#dbe7c9] shadow-lg shadow-black rounded-lg px-2 h-6"
+                >
+                  Update
+                </button> */}
+              </div>
             </div>
           </form>
         </div>
-      </div>
+      )}
     </div>
   );
 };

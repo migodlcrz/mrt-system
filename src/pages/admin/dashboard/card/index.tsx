@@ -91,7 +91,7 @@ const CardLanding: React.FC<CardLandingProps> = () => {
     const card = { uid, balance };
 
     if (Number(card.balance) < 1) {
-      toast.error("Input cannot be negative.");
+      toast.error("Input Invalid.");
       return;
     }
 
@@ -188,7 +188,7 @@ const CardLanding: React.FC<CardLandingProps> = () => {
   return (
     <div
       id="top"
-      className="flex flex-col lg:flex-row lg:pb-[17px] bg-[#dbe7c9] h-full animate__animated animate__fadeIn"
+      className="flex flex-col lg:flex-row lg:pb-[17px] bg-[#dbe7c9] h-[735px] animate__animated animate__fadeIn"
     >
       <div className="w-full lg:w-2/3">
         <div className="flex flex-col lg:flex-row w-full">
@@ -203,7 +203,7 @@ const CardLanding: React.FC<CardLandingProps> = () => {
                 }}
                 className="bg-[#0d9276] font-bold py-2 px-3 rounded-lg w-1/3 text-white shadow-lg hover:bg-[#0D423E] hidden lg:block"
               >
-                Generate Card
+                Generate
               </button>
 
               <button
@@ -297,7 +297,7 @@ const CardLanding: React.FC<CardLandingProps> = () => {
                 cardInfo ? "bg-[#0d9276]" : "bg-[#dbe7c9]"
               } rounded-lg space-x-2`}
             >
-              <div className="flex flex-col lg:flex-row bg-[#dbe7c9] shadow-inner p-4 lg:p-0 shadow-black rounded-md h-auto lg:h-[305px] w-full">
+              <div className="flex flex-col lg:flex-row bg-[#dbe7c9] shadow-inner p-4 lg:p-0 shadow-black rounded-md h-full lg:h-[305px] w-full">
                 <div
                   className={`flex flex-col space-y-6 w-full lg:m-4 bg-red-[#dbe7c9] ${
                     cardInfo && "bg-[#0d9276]"
@@ -398,7 +398,7 @@ const CardLanding: React.FC<CardLandingProps> = () => {
         </div>
         <div className="flex flex-col lg:flex-row w-full mt-6 space-y-5 lg:space-y-0">
           <div className="w-full lg:w-1/2">
-            <div className="flex max-w-full h-full mr-3 p-2 justify-center bg-[#dbe7c9] rounded-lg shadow-lg shadow-black space-x-2 mx-3">
+            <div className="flex max-w-full h-auto mr-3 p-2 justify-center bg-[#dbe7c9] rounded-lg shadow-lg shadow-black space-x-2 mx-3">
               <div className="flex flex-col bg-[#dbe7c9] shadow-inner shadow-black py-3 px-6 rounded-md w-full">
                 <div className="flex flex-col bg-[#dbe7c9] rounded-md w-auto">
                   <div className="flex flex-col justify-start items-center w-full py-2">

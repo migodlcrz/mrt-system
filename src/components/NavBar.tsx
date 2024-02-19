@@ -14,6 +14,8 @@ import { useAuthContext } from "../hooks/useAuthContext";
 import MrtLogo from "./MrtLogo";
 import { Modal } from "flowbite-react";
 import { FaTrainSubway } from "react-icons/fa6";
+import { IoMdCloseCircle } from "react-icons/io";
+
 import {
   FiEdit,
   FiChevronDown,
@@ -37,6 +39,7 @@ interface Fare {
 
 const Navbar = () => {
   const { logout } = useLogout();
+  const [showModal, setShowModal] = useState(false);
   const { user } = useAuthContext();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isEditModalOpen, setEditModalOpen] = useState(false);
@@ -46,12 +49,17 @@ const Navbar = () => {
     minimumAmount: 0,
     perKM: 0,
   });
+  const [fare, setFare] = useState<Fare>({
+    minimumAmount: 0,
+    perKM: 0,
+  });
   const api = process.env.REACT_APP_API_KEY;
 
   const fetchFareData = async () => {
     try {
       const fareId = "65c28317dd50fe2e56d242c9";
       const response = await fetch(`${api}/api/fr/${fareId}`, {
+        method: "GET",
         headers: {
           Authorization: `Bearer ${user.jwt}`,
         },
@@ -63,7 +71,9 @@ const Navbar = () => {
 
       const responseData = await response.json();
 
-      setFormData({
+      console.log("MINIMUM:", responseData.minimumAmount);
+
+      setFare({
         minimumAmount: responseData.minimumAmount,
         perKM: responseData.perKM,
       });
@@ -199,66 +209,39 @@ const Navbar = () => {
                   </button>
                 </NavLink>
                 <button
-                  className="btn shadow-lg shadow-black bg-[#dbe7c9]"
-                  onClick={() => {
-                    const modal = document.getElementById(
-                      "fare"
-                    ) as HTMLDialogElement | null;
-                    modal?.showModal();
-                  }}
+                  className="bg-[#0d9276] text-[#dbe7c9] font-bold px-6 py-3 rounded outline-none focus:outline-none mr-1 mb-1"
+                  type="button"
+                  onClick={() => setShowModal(true)}
                 >
-                  <dialog id="fare" className="modal">
-                    <div className="modal-box bg-[#dbe7c9]">
-                      <h3 className="font-bold text-2xl text-[#0d9276]">
-                        Edit Fare
-                      </h3>
-                      <p className="py-4">
-                        <form method="dialog" onSubmit={handleSubmit}>
-                          <div className="flex flex-row space-x-2 mx-2 w-full items-center justify-center">
-                            <div className="flex flex-row w-1/2 justify-between">
-                              <div className="flex flex-col space-y-2">
-                                <label className="text-[#0d9276] font-bold">
-                                  Starting Fare:
-                                </label>
-                                <input
-                                  type="number"
-                                  min={1}
-                                  name="minimumAmount"
-                                  value={formData.minimumAmount}
-                                  onChange={handleChange}
-                                  className="h-6 w-16 rounded-lg px-2 py-4 ml-3 text-black shadow-inner shadow-black"
-                                />
-                              </div>
-                              <div className="flex flex-col space-y-2">
-                                <label className="text-[#0d9276] font-bold">
-                                  Rate per/KM:
-                                </label>
-                                <input
-                                  type="number"
-                                  min={1}
-                                  name="perKM"
-                                  value={formData.perKM}
-                                  onChange={handleChange}
-                                  className="h-6 w-16 rounded-lg px-2 py-4 ml-3 text-black shadow-inner shadow-black"
-                                />
-                              </div>
-                            </div>
+                  Fare
+                </button>
+                {showModal ? (
+                  <>
+                    <div className="flex justify-center items-center overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
+                      <div className="relative w-[500px] my-6 mx-auto max-w-3xl">
+                        <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-[#dbe7c9] outline-none focus:outline-none animate__animated animate__fadeInDown">
+                          <div className="flex items-start justify-between p-5 border-b border-solid rounded-t ">
+                            <h3 className="text-3xl font-bold text-[#0d9276]">
+                              Fare
+                            </h3>
                             <button
-                              type="submit"
-                              className="btn text-[#0d9276] bg-[#dbe7c9] shadow-lg shadow-black rounded-lg px-2 h-6 mt-3"
+                              className="bg-transparent border-0 text-black float-right"
+                              onClick={() => setShowModal(false)}
                             >
-                              Update
+                              <span className=" opacity-7 h-6 w-6 text-2xl block py-0 rounded-full text-[#0d9276]">
+                                <IoMdCloseCircle />
+                              </span>
                             </button>
                           </div>
-                        </form>
-                      </p>
-                      <div className="modal-action w-full"></div>
+                          <div>
+                            <ManageFare />
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                  </dialog>
-                  <label className="text-[#0d9276] font-bold">
-                    Manage Fare
-                  </label>
-                </button>
+                  </>
+                ) : null}
+
                 <div className="text-[#dbe7c9] font-bold">
                   <Dropdown
                     className="animate__animated right-0 bg-[#dbe7c9] animate__fadeIn w-40 h-auto"
@@ -297,9 +280,9 @@ const Navbar = () => {
                   >
                     <Modal.Body>
                       <div className="space-y-6 p-6">
-                        <p className="text-md font-bold leading-relaxed text-[#0d9276] w-full">
+                        <div className="text-md font-bold leading-relaxed text-[#0d9276] w-full">
                           Are you sure you want to logout?
-                        </p>
+                        </div>
                       </div>
                     </Modal.Body>
                     <Modal.Footer>
@@ -361,63 +344,40 @@ const Navbar = () => {
               Stations
             </button>
           </NavLink>
+
           <button
-            className="btn shadow-lg shadow-black bg-[#dbe7c9]"
-            onClick={() => {
-              const modal = document.getElementById(
-                "fare"
-              ) as HTMLDialogElement | null;
-              modal?.showModal();
-            }}
+            className="bg-[#dbe7c9] text-[#0d9276] font-bold px-6 rounded outline-none focus:outline-none mr-1 mb-1"
+            type="button"
+            onClick={() => setShowModal(true)}
           >
-            <dialog id="fare" className="modal">
-              <div className="modal-box bg-[#dbe7c9]">
-                <h3 className="font-bold text-2xl text-[#0d9276]">Edit Fare</h3>
-                <p className="py-4">
-                  <form method="dialog" onSubmit={handleSubmit}>
-                    <div className="flex flex-row space-x-2 mx-2 w-full items-center justify-center">
-                      <div className="flex flex-row w-1/2 justify-between">
-                        <div className="flex flex-col space-y-2">
-                          <label className="text-[#0d9276] font-bold">
-                            Starting Fare:
-                          </label>
-                          <input
-                            type="number"
-                            min={1}
-                            name="minimumAmount"
-                            value={formData.minimumAmount}
-                            onChange={handleChange}
-                            className="h-6 w-16 rounded-lg px-2 py-4 ml-3 text-black shadow-inner shadow-black"
-                          />
-                        </div>
-                        <div className="flex flex-col space-y-2">
-                          <label className="text-[#0d9276] font-bold">
-                            Rate per/KM:
-                          </label>
-                          <input
-                            type="number"
-                            min={1}
-                            name="perKM"
-                            value={formData.perKM}
-                            onChange={handleChange}
-                            className="h-6 w-16 rounded-lg px-2 py-4 ml-3 text-black shadow-inner shadow-black"
-                          />
-                        </div>
-                      </div>
+            Fare
+          </button>
+          {showModal ? (
+            <>
+              <div className="flex justify-center items-center overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
+                <div className="relative w-[500px] my-6 mx-auto max-w-3xl">
+                  <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-[#dbe7c9] outline-none focus:outline-none animate__animated animate__fadeInDown">
+                    <div className="flex items-start justify-between p-5 border-b border-solid rounded-t ">
+                      <h3 className="text-3xl font-bold text-[#0d9276]">
+                        Fare
+                      </h3>
                       <button
-                        type="submit"
-                        className="btn text-[#0d9276] bg-[#dbe7c9] shadow-lg shadow-black rounded-lg px-2 h-6 mt-3"
+                        className="bg-transparent border-0 text-black float-right"
+                        onClick={() => setShowModal(false)}
                       >
-                        Update
+                        <span className="text-black opacity-7 h-6 w-6 text-xl block py-0 rounded-full">
+                          <IoMdCloseCircle />
+                        </span>
                       </button>
                     </div>
-                  </form>
-                </p>
-                <div className="modal-action w-full"></div>
+                    <div>
+                      <ManageFare />
+                    </div>
+                  </div>
+                </div>
               </div>
-            </dialog>
-            <label className="text-[#0d9276] font-bold">Manage Fare</label>
-          </button>
+            </>
+          ) : null}
           <button
             className="text-[#0d9276] font-bold"
             onClick={() => setOpenModal(true)}

@@ -108,8 +108,6 @@ const Dashboard = () => {
     navigate("/admin");
   };
 
-  const valueFormatter = (value: number) => `${value} cards`;
-
   useEffect(() => {
     console.log("EMAIL", user);
     fetchCards();
@@ -118,10 +116,10 @@ const Dashboard = () => {
   }, []);
 
   return (
-    <div className="h-scren w-full bg-[#dbe7c9] animate__animated animate__fadeIn">
+    <div className="h-screen w-full bg-[#dbe7c9] animate__animated animate__fadeIn">
       <div className="text-white min-h-screen bg-[#dbe7c9]">
         {/* upper right panel */}
-        <div className="flex flex-col lg:flex-row h-screen justify-center items-start space-y-2 lg:space-y-0 pt-24 lg:pt-28 pb-4 ">
+        <div className="flex flex-col lg:flex-row h-screen justify-center items-start space-y-2 lg:space-y-0 pt-[390px] lg:pt-24 pb-4 ">
           <div className="flex justify-start w-full h-full">
             <div className="flex flex-col w-full h-full space-y-4">
               <div className="flex h-full items-center justify-center bg-[#dbe7c9] shadow-lg shadow-black mr-2 mx-2 rounded-lg">
@@ -212,7 +210,7 @@ const Dashboard = () => {
 
               <div className="flex flex-col lg:flex-row space-y-2 lg:space-y-0">
                 {/* QUICK INFO */}
-                <div className="flex flex-col lg:w-1/3 items-start bg-[#dbe7c9] shadow-lg shadow-black mr-2 mx-2 rounded-lg p-4 lg:space-y-4 font-bold py-6">
+                <div className="flex flex-col lg:w-1/3 items-start h-[305px] bg-[#dbe7c9] shadow-lg shadow-black mr-2 mx-2 rounded-lg p-4 lg:space-y-4 font-bold py-6">
                   <div className="flex items-center">
                     <div className="text-[#0d9276] text-xl">Summary:</div>
                   </div>
@@ -263,8 +261,8 @@ const Dashboard = () => {
                   </div>
                 </div>
                 {/* STATION LIST */}
-                <div className="flex flex-col lg:flex-row h-auto bg-[#dbe7c9] shadow-lg shadow-black p-2 mx-2 rounded-lg w-auto lg:w-2/3 py-2 items-center">
-                  <div className="flex items-start justify-start w-full text-[#0d9276] font-bold h-80">
+                <div className="flex flex-col lg:flex-row  bg-[#dbe7c9] shadow-lg h-[305px] shadow-black p-2 mx-2 rounded-lg w-auto lg:w-2/3 py-2 items-start">
+                  <div className="flex items-start justify-start w-full text-[#0d9276] font-bold ">
                     <div className="px-2 w-full rounded-md">
                       <div className="text-[#0d9276] w-full text-center">
                         Stations
@@ -280,7 +278,7 @@ const Dashboard = () => {
                       <div className="table-container w-auto shadow-lg shadow-black">
                         <div
                           style={{
-                            maxHeight: "230px",
+                            maxHeight: "200px",
                             overflowY: "auto",
                             scrollbarColor: "#0d9276 #dbe7c9",
                             scrollbarWidth: "thin",
@@ -437,53 +435,7 @@ const Dashboard = () => {
             </div>
           </div>
         </div>
-
-        {/* <div className="flex flex-col lg:flex-row items-center h-full justify-center space-y-2 lg:space-y-0 lg:space-x-4 overflow-y-auto py-4 px-2 border-t-8 border-gray-700">
-          <div>
-            <NavLink to="/admin/dashboard/card">
-              <DashboardCard
-                title="Manage Cards"
-                description={
-                  "Administrators will be able to manage the user beep cards with ease. With built in create, update, and delete functionalities."
-                }
-              />
-            </NavLink>
-          </div>
-          <div>
-            <NavLink to="/admin/dashboard/station">
-              <DashboardCard
-                title="Manage Stations"
-                description={
-                  "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. "
-                }
-              />
-            </NavLink>
-          </div>
-          <div>
-            {" "}
-            <NavLink to="/admin/dashboard/about">
-              <DashboardCard
-                title="About"
-                description={
-                  "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. "
-                }
-              />
-            </NavLink>
-          </div>
-          <div>
-            {" "}
-            <button onClick={handleClick}>
-              <DashboardCard
-                title="Logout"
-                description={
-                  "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. "
-                }
-              ></DashboardCard>
-            </button>
-          </div>
-        </div> */}
       </div>
-      {/* <div className="text-white h-96 bg-gray-800 lg:hidden"></div> */}
     </div>
   );
 };
