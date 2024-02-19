@@ -391,7 +391,7 @@ const StationLanding: React.FC<StationLandingProps> = () => {
   }, [isDeployed]);
 
   return (
-    <div className="CardLanding bg-[#dbe7c9] lg:pb-[18px] h-full animate__animated animate__fadeIn">
+    <div className="CardLanding bg-[#dbe7c9] h-screen animate__animated animate__fadeIn">
       <div className="flex flex-col lg:flex-row">
         {/* eLEFT PANEL */}
         <div className="w-full lg:w-1/2 z-0">
@@ -498,10 +498,10 @@ const StationLanding: React.FC<StationLandingProps> = () => {
           <div className="bg-[#dbe7c9] p-2 rounded-md mx-5 shadow-lg shadow-black">
             <div className="table-container lg:h-custom-max-height">
               <div
-                className="h-96 overflow-y-auto shadow-black shadow-inner"
+                className="h-[165px] overflow-y-auto shadow-black shadow-inner"
                 style={{
-                  maxHeight: "190px",
-                  overflowY: "auto",
+                  // maxHeight: "190px",
+                  // overflowY: "auto",
                   scrollbarColor: "#dbe7c9 #0d9276",
                   scrollbarWidth: "thin",
                 }}

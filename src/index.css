@@ -23,6 +23,6 @@
 }
 @layer utilities {
   .h-custom-max-height {
-    height: 25vh;
+    height: 165px;
   }
 }

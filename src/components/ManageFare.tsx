@@ -101,9 +101,9 @@ const ManageFare: React.FC<ManageFareProps> = () => {
   };
 
   return (
-    <div className="flex flex-col w-full h-full bg-[#0d9276]">
-      <div className="flex flex-row">
-        <div className="w-full justify-center bg-[#dbe7c9] shadow-inner shadow-black m-5 rounded-lg text-center p-4">
+    <div className="flex flex-col w-auto h-full bg-[#0d9276]">
+      <div className="flex flex-col lg:flex-row">
+        <div className="w-auto lg:w-full justify-center bg-[#dbe7c9] shadow-inner shadow-black m-5 rounded-lg text-center p-4">
           <div>Starting Fare:</div>
           {formData.minimumAmount && !isNaN(formData.minimumAmount) ? (
             <div className="text-[#0d9276] font-bold text-4xl">
@@ -112,7 +112,7 @@ const ManageFare: React.FC<ManageFareProps> = () => {
           ) : null}
         </div>
 
-        <div className="w-full justify-center bg-[#dbe7c9] shadow-inner shadow-black m-5 rounded-lg text-center p-4">
+        <div className="w-auto lg:w-full justify-center bg-[#dbe7c9] shadow-inner shadow-black m-5 rounded-lg text-center p-4">
           <div>Fare per/KM:</div>
           <div className="text-[#0d9276] font-bold text-4xl">
             ₱{formData.perKM.toFixed(2)}

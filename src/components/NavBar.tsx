@@ -348,7 +348,9 @@ const Navbar = () => {
           <button
             className="bg-[#dbe7c9] text-[#0d9276] font-bold px-6 rounded outline-none focus:outline-none mr-1 mb-1"
             type="button"
-            onClick={() => setShowModal(true)}
+            onClick={() => {
+              setShowModal(true);
+            }}
           >
             Fare
           </button>
@@ -363,9 +365,12 @@ const Navbar = () => {
                       </h3>
                       <button
                         className="bg-transparent border-0 text-black float-right"
-                        onClick={() => setShowModal(false)}
+                        onClick={() => {
+                          setShowModal(false);
+                          setIsMenuOpen(!isMenuOpen);
+                        }}
                       >
-                        <span className="text-black opacity-7 h-6 w-6 text-xl block py-0 rounded-full">
+                        <span className="opacity-7 h-6 w-6  block py-0 rounded-full text-[#0d9276] text-xl">
                           <IoMdCloseCircle />
                         </span>
                       </button>
