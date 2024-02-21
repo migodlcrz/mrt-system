@@ -446,15 +446,15 @@ const CardScan = () => {
   // }
 
   return (
-    <div className="h-screen flex flex-col lg:flex-row">
+    <div className="h-screen flex flex-col xl:flex-row">
       {/* left half - Form */}
       <div
         className={
-          "flex flex-col items-center lg:w-1/2 lg:h-full border border-gray-300 bg-[#0d9276] shadow-inner shadow-black"
+          "flex flex-col items-center xl:w-1/2 xl:h-full border border-gray-300 bg-[#0d9276] shadow-inner shadow-black"
         }
       >
         <div className="flex flex-col w-full p-8">
-          <div className="text-md lg:text-2xl font-bold border-b-2 border-[#dbe7c9] text-[#dbe7c9]">
+          <div className="text-md xl:text-2xl font-bold border-b-2 border-[#dbe7c9] text-[#dbe7c9]">
             <div className="mb-2 text-center w-full">
               {stationPage && (
                 <div>
@@ -489,7 +489,7 @@ const CardScan = () => {
           </div>
           {/* CARD INFO */}
           <div className="w-full">
-            <div className="bg-[#0d9276] shadow-lg shadow-black m-2 p-2 rounded-lg hidden lg:block">
+            <div className="bg-[#0d9276] shadow-lg shadow-black m-2 p-2 rounded-lg hidden xl:block">
               <div className="bg-[#dbe7c9] shadow-inner shadow-black px-2 rounded-lg">
                 <div className=" font-bold text-[#0d9276]">Card Info:</div>
                 <div className="flex flex-row space-x-3">
@@ -623,7 +623,7 @@ const CardScan = () => {
                       </span>
                     </div>
 
-                    <div className="w-full h-auto lg:h-custom-height-travel-summary">
+                    <div className="w-full h-auto xl:h-custom-height-travel-summary">
                       <div className="bg-[#dbe7c9] shadow-lg shadow-black rounded-lg py-1">
                         <div className="bg-[#0d9276] shadow-inner shadow-black m-2 rounded-lg p-1">
                           <div
@@ -677,7 +677,7 @@ const CardScan = () => {
       {stationStart && !isOut && (
         <MapContainer
           ref={mapRef}
-          className="h-1/2 w-full lg:w-1/2 lg:h-full"
+          className="h-1/2 w-full xl:w-1/2 xl:h-full"
           center={[stationStart.lat - 0.2, stationStart.long - 0.2]}
           zoom={10}
           zoomControl={false}
@@ -734,7 +734,7 @@ const CardScan = () => {
       {stationEnd && (
         <MapContainer
           ref={mapRef}
-          className="h-1/2 w-full lg:w-1/2 lg:h-full"
+          className="h-1/2 w-full xl:w-1/2 xl:h-full"
           center={[stationEnd.lat - 0.2, stationEnd.long - 0.2]}
           zoom={10}
           zoomControl={false}

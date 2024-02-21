@@ -291,6 +291,7 @@ const Navbar = () => {
                           className="bg-[#0d9276] shadow-lg shadow-black text-[#dbe7c9]"
                           onClick={() => {
                             setOpenModal(false);
+                            setIsMenuOpen(!isMenuOpen);
                             handleLogout();
                           }}
                         >

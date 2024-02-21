@@ -22,18 +22,6 @@ const ManageFare: React.FC<ManageFareProps> = () => {
   const { user } = useAuthContext();
   const api = process.env.REACT_APP_API_KEY;
 
-  // const handleFareSubmit = () => {
-  //   console.log(user);
-  //   if (!user) {
-  //     setMessage(error);
-  //   } else {
-  //     setMessage("Updated");
-  //   }
-  //   setTimeout(() => {
-  //     setMessage("");
-  //   }, 3000);
-  // };
-
   useEffect(() => {
     const fetchFareData = async () => {
       try {
@@ -115,7 +103,11 @@ const ManageFare: React.FC<ManageFareProps> = () => {
         <div className="w-auto lg:w-full justify-center bg-[#dbe7c9] shadow-inner shadow-black m-5 rounded-lg text-center p-4">
           <div>Fare per/KM:</div>
           <div className="text-[#0d9276] font-bold text-4xl">
-            ₱{formData.perKM.toFixed(2)}
+            {formData.perKM && !isNaN(formData.perKM) ? (
+              <div className="text-[#0d9276] font-bold text-4xl">
+                ₱{formData.perKM.toFixed(2)}
+              </div>
+            ) : null}
           </div>
         </div>
       </div>
@@ -144,11 +136,11 @@ const ManageFare: React.FC<ManageFareProps> = () => {
                     onChange={handleChange}
                     required
                     onKeyPress={(e) => {
-                      if (
-                        e.key === "e" ||
-                        e.key === "-" ||
-                        e.key === "+" ||
-                        e.key === "."
+                      if (e.key === "e" || e.key === "-" || e.key === "+") {
+                        e.preventDefault();
+                      } else if (
+                        (e.target as HTMLInputElement).value.length >= 5 &&
+                        e.key !== "Backspace"
                       ) {
                         e.preventDefault();
                       }
@@ -165,11 +157,11 @@ const ManageFare: React.FC<ManageFareProps> = () => {
                     onChange={handleChange}
                     required
                     onKeyPress={(e) => {
-                      if (
-                        e.key === "e" ||
-                        e.key === "-" ||
-                        e.key === "+" ||
-                        e.key === "."
+                      if (e.key === "e" || e.key === "-" || e.key === "+") {
+                        e.preventDefault();
+                      } else if (
+                        (e.target as HTMLInputElement).value.length >= 5 &&
+                        e.key !== "Backspace"
                       ) {
                         e.preventDefault();
                       }

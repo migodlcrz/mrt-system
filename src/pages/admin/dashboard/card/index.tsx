@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import { GrStatusGoodSmall } from "react-icons/gr";
 import ProgressBar from "@ramonak/react-progress-bar";
 import { popup } from "leaflet";
+import e from "cors";
 
 interface Card {
   _id: string;
@@ -16,13 +17,21 @@ interface Card {
   history: [{ in: string; out: string; date: Date }];
 }
 
+interface Fare {
+  _id: string;
+  minimumAmount: number;
+  perKM: number;
+}
+
 interface CardLandingProps {}
 
 const CardLanding: React.FC<CardLandingProps> = () => {
   const [cards, setCards] = useState<Card[] | null>(null);
+  const [fare, setFare] = useState<Fare | null>(null);
   const [uid, setUID] = useState<string>(
     Math.floor(Math.random() * 1000000000000).toString()
   );
+  const [addBalanceTerm, setAddBalanceTerm] = useState(0);
   const [balance, setBalance] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
   const [emptyFields, setEmptyFields] = useState<string[]>([]);
@@ -61,7 +70,24 @@ const CardLanding: React.FC<CardLandingProps> = () => {
     }
   };
 
-  const addBalance = async (balance: number) => {
+  const addBalance = async (
+    e: React.FormEvent<HTMLFormElement>,
+    balance: number
+  ) => {
+    e.preventDefault();
+
+    if (fare) {
+      if (balance === 0) {
+        toast.error("Cannot add zero value.");
+        setAddBalanceTerm(0);
+        return;
+      }
+      if (balance < fare.minimumAmount) {
+        toast.error("Cannot add balance below minimum.");
+        setAddBalanceTerm(0);
+        return;
+      }
+    }
     if (cardInfo) {
       const response = await fetch(`${api}/api/cards/add/${cardInfo?._id}`, {
         method: "PATCH",
@@ -78,10 +104,24 @@ const CardLanding: React.FC<CardLandingProps> = () => {
         toast.success("Balance added successfully");
         setUpdate(!update);
         setCardInfo(json);
+        setAddBalanceTerm(0);
       }
       if (!response.ok) {
         toast.error("Cannot exceed 10000");
       }
+    }
+  };
+
+  const fetchFare = async () => {
+    const fareId = "65c28317dd50fe2e56d242c9";
+    const getResponse = await fetch(`${api}/api/fr/${fareId}`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const json = await getResponse.json();
+    if (getResponse.ok) {
+      setFare(json);
     }
   };
 
@@ -181,9 +221,11 @@ const CardLanding: React.FC<CardLandingProps> = () => {
 
   useEffect(() => {
     if (user) {
+      fetchFare();
       fetchCards();
+      fetchFare();
     }
-  }, [user, update]);
+  }, [user, update, addBalanceTerm]);
 
   return (
     <div
@@ -526,6 +568,7 @@ const CardLanding: React.FC<CardLandingProps> = () => {
                     <button
                       className="text-2xl text-[#0d9276]"
                       onClick={() => {
+                        setAddBalanceTerm(0);
                         setisAddBalance(false);
                         scrollToTarget("top");
                       }}
@@ -533,53 +576,68 @@ const CardLanding: React.FC<CardLandingProps> = () => {
                       <IoMdCloseCircle />
                     </button>
                   </div>
-                  <div className="flex flex-col w-full justify-center">
-                    <div className="text-[#0d9276]">
-                      Card ID: {cardInfo && cardInfo.uid}
+                  <div className="flex flex-row w-full justify-between px-4">
+                    <div className="flex flex-col">
+                      <div className="text-[#0d9276]">
+                        Card ID: {cardInfo && cardInfo.uid}
+                      </div>
+                      <div className="text-[#0d9276]">
+                        Balance: ₱{cardInfo && cardInfo.balance}
+                      </div>
                     </div>
-                    <div className="text-[#0d9276]">
-                      Balance: ₱{cardInfo && cardInfo.balance}
-                    </div>
+                    <form
+                      onSubmit={(e) => addBalance(e, addBalanceTerm)}
+                      className="flex flex-col space-y-1"
+                    >
+                      <input
+                        className="rounded-lg shadow-inner shadow-black px-2 w-20"
+                        readOnly
+                        value={addBalanceTerm}
+                      />
+                      <button className="bg-[#0d9276] text-[#dbe7c9] font-bold rounded-lg shadow-lg shadow-black">
+                        Add
+                      </button>
+                    </form>
                   </div>
                   <div className="flex flex-col space-y-6 px-4">
                     <div className="grid grid-cols-5 space-x-2">
                       <button
                         onClick={() => {
-                          addBalance(1);
+                          setAddBalanceTerm(addBalanceTerm + 1);
                         }}
-                        className="bg-[#0d9276] shadow-lg shadow-black px-4 py-1 rounded-lg text-[#dbe7c9] font-bold focus:shadow-inner"
+                        className="bg-[#0d9276] shadow-lg shadow-black text-center py-1 rounded-lg text-[#dbe7c9] font-bold focus:shadow-inner"
                       >
                         1
                       </button>
                       <button
                         onClick={() => {
-                          addBalance(5);
+                          setAddBalanceTerm(addBalanceTerm + 5);
                         }}
-                        className="bg-[#0d9276] shadow-lg shadow-black px-4 py-1 rounded-lg text-[#dbe7c9] font-bold focus:shadow-inner"
+                        className="bg-[#0d9276] shadow-lg shadow-black text-center py-1 rounded-lg text-[#dbe7c9] font-bold focus:shadow-inner"
                       >
                         5
                       </button>
                       <button
                         onClick={() => {
-                          addBalance(10);
+                          setAddBalanceTerm(addBalanceTerm + 10);
                         }}
-                        className="bg-[#0d9276] shadow-lg shadow-black px-4 py-1 rounded-lg text-[#dbe7c9] font-bold focus:shadow-inner"
+                        className="bg-[#0d9276] shadow-lg shadow-black text-center py-1 rounded-lg text-[#dbe7c9] font-bold focus:shadow-inner"
                       >
                         10
                       </button>
                       <button
                         onClick={() => {
-                          addBalance(20);
+                          setAddBalanceTerm(addBalanceTerm + 20);
                         }}
-                        className="bg-[#0d9276] shadow-lg shadow-black px-4 py-1 rounded-lg text-[#dbe7c9] font-bold focus:shadow-inner"
+                        className="bg-[#0d9276] shadow-lg shadow-black text-center py-1 rounded-lg text-[#dbe7c9] font-bold focus:shadow-inner"
                       >
                         20
                       </button>
                       <button
                         onClick={() => {
-                          addBalance(50);
+                          setAddBalanceTerm(addBalanceTerm + 50);
                         }}
-                        className="bg-[#0d9276] shadow-lg shadow-black px-4 py-1 rounded-lg text-[#dbe7c9] font-bold focus:shadow-inner"
+                        className="bg-[#0d9276] shadow-lg shadow-black text-center py-1 rounded-lg text-[#dbe7c9] font-bold focus:shadow-inner"
                       >
                         50
                       </button>
@@ -587,43 +645,43 @@ const CardLanding: React.FC<CardLandingProps> = () => {
                     <div className="grid grid-cols-5 space-x-2">
                       <button
                         onClick={() => {
-                          addBalance(100);
+                          setAddBalanceTerm(addBalanceTerm + 100);
                         }}
-                        className="bg-[#0d9276] shadow-lg shadow-black px-4 py-1 rounded-lg text-[#dbe7c9] font-bold focus:shadow-inner"
+                        className="bg-[#0d9276] shadow-lg shadow-black text-center py-1 rounded-lg text-[#dbe7c9] font-bold focus:shadow-inner"
                       >
                         100
                       </button>
                       <button
                         onClick={() => {
-                          addBalance(200);
+                          setAddBalanceTerm(addBalanceTerm + 200);
                         }}
-                        className="bg-[#0d9276] shadow-lg shadow-black px-4 py-1 rounded-lg text-[#dbe7c9] font-bold focus:shadow-inner"
+                        className="bg-[#0d9276] shadow-lg shadow-black text-center py-1 rounded-lg text-[#dbe7c9] font-bold focus:shadow-inner"
                       >
                         200
                       </button>
                       <button
                         onClick={() => {
-                          addBalance(500);
+                          setAddBalanceTerm(addBalanceTerm + 500);
                         }}
-                        className="bg-[#0d9276] shadow-lg shadow-black px-4 py-1 rounded-lg text-[#dbe7c9] font-bold focus:shadow-inner"
+                        className="bg-[#0d9276] shadow-lg shadow-black text-center py-1 rounded-lg text-[#dbe7c9] font-bold focus:shadow-inner"
                       >
                         500
                       </button>
                       <button
                         onClick={() => {
-                          addBalance(1000);
+                          setAddBalanceTerm(addBalanceTerm + 1000);
                         }}
-                        className="bg-[#0d9276] shadow-lg shadow-black px-4 py-1 rounded-lg text-[#dbe7c9] font-bold focus:shadow-inner"
+                        className="bg-[#0d9276] shadow-lg shadow-black text-center py-1 rounded-lg text-[#dbe7c9] font-bold focus:shadow-inner"
                       >
-                        1000
+                        1K
                       </button>
                       <button
                         onClick={() => {
-                          addBalance(2000);
+                          setAddBalanceTerm(addBalanceTerm + 2000);
                         }}
-                        className="bg-[#0d9276] shadow-lg shadow-black px-4 py-1 rounded-lg text-[#dbe7c9] font-bold focus:shadow-inner"
+                        className="bg-[#0d9276] shadow-lg shadow-black text-center py-1 rounded-lg text-[#dbe7c9] font-bold focus:shadow-inner"
                       >
-                        2000
+                        2K
                       </button>
                     </div>
                   </div>

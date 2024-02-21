@@ -13,7 +13,7 @@ interface AuthState {
 
 interface AuthAction {
   type: string;
-  payload: any;
+  payload?: any; // Make the payload optional for LOGOUT action
 }
 
 interface AuthContextProps {
@@ -56,23 +56,32 @@ export const AuthContextProvider: FC<AuthContextProviderProps> = ({
   });
 
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("user") || "null");
-    // const token = localStorage.getItem("token");
+    const token = localStorage.getItem("token");
+    console.log("ORIGINAL", token);
 
-    // console.log("this user", user);
+    if (token) {
+      try {
+        const decodedToken: any = jwtDecode(token);
 
-    // if (token) {
-    //   dispatch({ type: "LOGIN", payload: token });
-    // }
+        if (decodedToken.exp * 1000 < Date.now()) {
+          // Token is expired, log the user out
+          localStorage.removeItem("token");
+          dispatch({ type: "LOGOUT" });
+        } else {
+          const storedToken = localStorage.getItem("token");
+          console.log("CHANGED", storedToken);
 
-    if (user) {
-      const decodedToken: any = jwtDecode(user.jwt);
+          if (storedToken !== token) {
+            dispatch({ type: "LOGOUT" });
+            return;
+          }
 
-      if (decodedToken.exp * 1000 < Date.now()) {
+          dispatch({ type: "LOGIN", payload: token });
+        }
+      } catch (error) {
+        // Invalid token, log the user out
         localStorage.removeItem("token");
-      } else {
-        dispatch({ type: "LOGIN", payload: user });
-        // dispatch({ type: "LOGIN", payload: user });
+        dispatch({ type: "LOGOUT" });
       }
     }
   }, []);

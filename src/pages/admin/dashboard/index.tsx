@@ -121,12 +121,12 @@ const Dashboard = () => {
     <div className="h-screen w-full bg-[#dbe7c9] animate__animated animate__fadeIn">
       <div className="text-white min-h-screen bg-[#dbe7c9]">
         {/* upper right panel */}
-        <div className="flex flex-col lg:flex-row h-screen justify-center items-start space-y-2 lg:space-y-0 pt-[100px] lg:pt-24 pb-4 ">
+        <div className="flex flex-col xl:flex-row h-screen justify-center items-start space-y-2 xl:space-y-0 pt-[100px] xl:pt-24 pb-4 ">
           <div className="flex justify-start w-full h-full">
             <div className="flex flex-col w-full h-full space-y-4">
               <div className="flex h-full items-center justify-center bg-[#dbe7c9] shadow-lg shadow-black mr-2 mx-2 rounded-lg">
-                <div className="flex flex-col lg:flex-row w-full text-2xl text-[#0d9276] font-bold py-4">
-                  <div className="px-4 w-full lg:w-1/2 text-center">
+                <div className="flex flex-col xl:flex-row w-full text-2xl text-[#0d9276] font-bold py-4">
+                  <div className="px-4 w-full xl:w-1/2 text-center">
                     <div>Welcome</div>
                     <div>
                       <span className="text-[#0d9276]">{user_}</span>
@@ -139,27 +139,27 @@ const Dashboard = () => {
                       />
                     </div>
                   </div>
-                  <div className="flex flex-col lg:w-1/2 items-start h-auto lg:h-[305px] bg-[#dbe7c9] shadow-lg shadow-black mr-2 mx-2 rounded-lg p-4 lg:space-y-4 font-bold py-6">
+                  <div className="flex flex-col xl:w-1/2 items-start h-auto xl:h-[305px] bg-[#dbe7c9] shadow-lg shadow-black mr-2 mx-2 rounded-lg p-4 xl:space-y-4 font-bold py-6">
                     <div className="flex items-center">
                       <div className="text-[#0d9276] text-xl">Summary:</div>
                     </div>
                     <div className="flex flex-col space-y-8 w-full">
-                      <div className="flex flex-col lg:flex-row items-center text-green-400 justify-between w-full border-b-2 border-b-[#0d9276]">
-                        <div className="hidden lg:block text-xl text-[#0d9276]">
+                      <div className="flex flex-col xl:flex-row items-center text-green-400 justify-between w-full border-b-2 border-b-[#0d9276]">
+                        <div className="hidden xl:block text-xl text-[#0d9276]">
                           Beep Cards:{" "}
                         </div>
-                        <div className="lg:hidden">
+                        <div className="xl:hidden">
                           <FaCreditCard />
                         </div>
                         <span className="text-[#0d9276] text-xl">
                           {cardCount} cards
                         </span>
                       </div>
-                      <div className="flex flex-col lg:flex-row items-center text-green-400 justify-between w-full border-b-2 border-b-[#0d9276]">
-                        <div className="hidden lg:block text-xl text-[#0d9276]">
+                      <div className="flex flex-col xl:flex-row items-center text-green-400 justify-between w-full border-b-2 border-b-[#0d9276]">
+                        <div className="hidden xl:block text-xl text-[#0d9276]">
                           Stations:{" "}
                         </div>
-                        <div className="lg:hidden">
+                        <div className="xl:hidden">
                           <FaTrainSubway />
                         </div>
                         <span className="text-[#0d9276] text-xl">
@@ -167,22 +167,22 @@ const Dashboard = () => {
                           {stations?.length} stations
                         </span>
                       </div>
-                      <div className="flex flex-col lg:flex-row items-center text-green-400 justify-between w-full border-b-2 border-b-[#0d9276]">
-                        <div className="hidden lg:block text-[#0d9276] text-xl">
+                      <div className="flex flex-col xl:flex-row items-center text-green-400 justify-between w-full border-b-2 border-b-[#0d9276]">
+                        <div className="hidden xl:block text-[#0d9276] text-xl">
                           Start Fare:
                         </div>
-                        <div className="lg:hidden">
+                        <div className="xl:hidden">
                           <FaCoins />
                         </div>
                         <span className="text-[#0d9276] text-xl">
                           ₱{fare && fare.minimumAmount.toFixed(2)}
                         </span>
                       </div>
-                      <div className="flex flex-col lg:flex-row items-center text-green-400 justify-between w-full border-b-2 border-b-[#0d9276]">
-                        <div className="hidden lg:block text-[#0d9276] text-xl">
+                      <div className="flex flex-col xl:flex-row items-center text-green-400 justify-between w-full border-b-2 border-b-[#0d9276]">
+                        <div className="hidden xl:block text-[#0d9276] text-xl">
                           Fare/KM:{" "}
                         </div>
-                        <div className="lg:hidden">
+                        <div className="xl:hidden">
                           <FaMoneyBill />
                         </div>
                         <span className="text-[#0d9276] text-xl">
@@ -194,9 +194,9 @@ const Dashboard = () => {
                 </div>
               </div>
 
-              <div className="flex flex-col lg:flex-row space-y-2 lg:space-y-0">
+              <div className="flex flex-col xl:flex-row space-y-2 xl:space-y-0">
                 {/* CARD INFO */}
-                <div className="flex flex-col bg-[#dbe7c9] px-4 rounded-md w-auto lg:w-full mx-3 lg:mx-0 shadow-lg shadow-black">
+                <div className="flex flex-col bg-[#dbe7c9] px-4 rounded-md w-auto xl:w-full mx-3 xl:mx-0 shadow-lg shadow-black">
                   <div className="flex flex-col justify-start w-full py-2 text-[#0d9276] font-bold mt-1">
                     <div className="flex flex-row items-center">
                       <label>Card</label>
@@ -269,7 +269,7 @@ const Dashboard = () => {
                   </div>
                 </div>
                 {/* STATION LIST */}
-                <div className="flex flex-col lg:flex-row  bg-[#dbe7c9] shadow-lg h-[305px] shadow-black p-2 mx-2 rounded-lg w-auto lg:w-2/3 py-2 items-start">
+                <div className="flex flex-col xl:flex-row  bg-[#dbe7c9] shadow-lg h-[305px] shadow-black p-2 mx-2 rounded-lg w-auto xl:w-2/3 py-2 items-start">
                   <div className="flex items-start justify-start w-full text-[#0d9276] font-bold ">
                     <div className="px-2 w-full rounded-md">
                       <div className="text-[#0d9276] w-full text-center">
@@ -343,7 +343,7 @@ const Dashboard = () => {
             </div>
           </div>
           {/* STATION MAP */}
-          <div className="flex flex-col w-full min-h-full z-0 space-y-2 lg:space-y-4 hidden lg:block">
+          <div className="flex flex-col w-full min-h-full z-0 space-y-2 xl:space-y-4 hidden xl:block">
             <div className="flex items-center justify-center bg-[#dbe7c9] shadow-lg shadow-black mr-2 mx-2 rounded-lg">
               <div className="text-2xl font-bold py-4 text-[#0d9276]">
                 <div className="flex flex-row items-center">
