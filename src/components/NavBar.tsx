@@ -44,7 +44,7 @@ const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isEditModalOpen, setEditModalOpen] = useState(false);
   const [openModal, setOpenModal] = useState(false);
-  const [currentPage, setCurrentPage] = useState<string>("station");
+  const [currentPage, setCurrentPage] = useState<string>("dashboard");
   const [formData, setFormData] = useState<Fare>({
     minimumAmount: 0,
     perKM: 0,

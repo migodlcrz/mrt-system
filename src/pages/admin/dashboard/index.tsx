@@ -139,7 +139,7 @@ const Dashboard = () => {
                       />
                     </div>
                   </div>
-                  <div className="flex flex-col xl:w-1/2 items-start h-auto xl:h-[305px] bg-[#dbe7c9] shadow-lg shadow-black mr-2 mx-2 rounded-lg p-4 xl:space-y-4 font-bold py-6">
+                  <div className="flex flex-col xl:w-1/2 items-start h-auto xl:h-[305px] bg-[#dbe7c9] shadow-inner shadow-black mr-2 mx-2 rounded-lg p-4 xl:space-y-4 font-bold py-6">
                     <div className="flex items-center">
                       <div className="text-[#0d9276] text-xl">Summary:</div>
                     </div>
@@ -301,7 +301,7 @@ const Dashboard = () => {
                           }}
                         >
                           <table className=" w-full bg-gray-500">
-                            <thead className="bg-[#dbe7c9] sticky top-0 w-full shadow-md shadow-black">
+                            <thead className="bg-[#dbe7c9] sticky top-0 w-full">
                               <tr className="w-full">
                                 <th className="py-2 px-4 sticky top-0 text-[#0d9276] w-full">
                                   Station Name
