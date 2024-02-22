@@ -189,6 +189,14 @@ const CardScan = () => {
 
   const handleTapIn = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (card && fare) {
+      setenteredUID("");
+      console.log("PASOK CARD FARE");
+      if (card?.balance < fare?.minimumAmount) {
+        toast.error("Balance is less than minimum fare.");
+        return;
+      }
+    }
     try {
       const getResponse = await fetch(`${api}/api/cards/one/${card?._id}`, {
         method: "GET",
@@ -230,6 +238,7 @@ const CardScan = () => {
 
   const handleTapOut = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     try {
       const getResponse = await fetch(`${api}/api/cards/one/${card?._id}`, {
         method: "GET",
@@ -255,12 +264,15 @@ const CardScan = () => {
         body: JSON.stringify({ isTap: false, in: null }),
       });
 
+      console.log("TAPOUT");
+
       if (response.ok) {
         getStartStation();
+        setenteredUID("");
 
         setTimeout(() => {
           setPath([]);
-          setenteredUID("");
+
           setStationStart(null);
           setCard(null);
           setIsCardFound(false);
@@ -508,11 +520,11 @@ const CardScan = () => {
                     <label>
                       {" "}
                       {isCardFound ? (
-                        <label className="text-[#dbe7c9] z-50">
+                        <label className="text-[#0d9276] z-50">
                           {card?.balance}
                         </label>
                       ) : (
-                        <label className="text-[#dbe7c9]">N/A</label>
+                        <label className="text-[#0d9276]">N/A</label>
                       )}
                     </label>
                   </div>
