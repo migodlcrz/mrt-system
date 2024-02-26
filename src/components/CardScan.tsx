@@ -1,4 +1,10 @@
-import React, { ChangeEvent, useEffect, useState, useRef } from "react";
+import React, {
+  ChangeEvent,
+  useEffect,
+  useState,
+  useRef,
+  startTransition,
+} from "react";
 // import Leaflet from "leaflet";
 import {
   MapContainer,
@@ -50,6 +56,7 @@ const CardScan = () => {
   const [isDeployed, setIsDeployed] = useState<boolean>(false);
   const [distance, setDistance] = useState<number | null>(null);
   const [fare, setFare] = useState<Fare | null>(null);
+  const [totalFare, setTotalFare] = useState(0);
   const [enteredUID, setenteredUID] = useState("");
   const [cardBalance, setCardBalance] = useState(0);
   const [card, setCard] = useState<Card | null>(null);
@@ -263,11 +270,11 @@ const CardScan = () => {
 
       if (response.ok) {
         getStartStation();
-        setenteredUID("");
+        // setenteredUID("");
 
         setTimeout(() => {
           setPath([]);
-
+          setenteredUID("");
           setStationStart(null);
           setCard(null);
           setIsCardFound(false);
@@ -286,7 +293,34 @@ const CardScan = () => {
   };
 
   const handleBalance = async () => {
+    if (stationStart && stationEnd) {
+      if (stationStart.name === stationEnd?.name) {
+        console.log("START == END");
+        if (fare) {
+          console.log("FARE EXIST");
+          const response = await fetch(`${api}/api/cards/out/${card?._id}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              balance: cardBalance - fare?.minimumAmount,
+              history: {
+                in: stationStart?.name,
+                out: stationEnd?.name,
+                fare: fare.minimumAmount,
+              },
+            }),
+          });
+
+          if (response.ok) {
+            toast.success("Tapped Out!");
+          } else {
+            toast.error("Server Error!");
+          }
+        }
+      }
+    }
     if (distance && fare) {
+      console.log("PUMASOK SA DISTANCE TSAKA FARE");
       if (
         cardBalance < Math.round(distance * fare?.perKM + fare?.minimumAmount)
       ) {
@@ -449,6 +483,7 @@ const CardScan = () => {
       }
     }
     handleBalance();
+    // }, [station, stationStart, stationEnd, isOut, distance]);
   }, [station, stationStart, stationEnd, isOut, distance]);
   // }
 
@@ -503,23 +538,18 @@ const CardScan = () => {
                   <div className="flex flex-row space-x-2 w-1/2">
                     <div className="text-[#0d9276]">Card ID:</div>
                     <label>
-                      {isCardFound ? (
+                      {isCardFound && (
                         <label className="text-[#0d9276]"> {card?.uid}</label>
-                      ) : (
-                        <label className="text-[#0d9276]">N/A</label>
                       )}
                     </label>
                   </div>
                   <div className="flex flex-row space-x-2 w-1/2">
-                    <div className="text-[#0d9276]">Balance:</div>{" "}
+                    <div className="text-[#0d9276]">Balance:</div>
                     <label>
-                      {" "}
-                      {isCardFound ? (
+                      {isCardFound && (
                         <label className="text-[#0d9276] z-50">
-                          {card?.balance}
+                          ₱{card?.balance}
                         </label>
-                      ) : (
-                        <label className="text-[#0d9276]">N/A</label>
                       )}
                     </label>
                   </div>
@@ -542,17 +572,13 @@ const CardScan = () => {
                       <div className="flex flex-row space-x-2 text-[#0d9276] w-1/2">
                         <div className="text-[#0d9276]">Minimum:</div>
                         <label className="text-[#0d9276]">
-                          ₱{fare ? fare.minimumAmount : "N/A"}
+                          ₱{fare && fare.minimumAmount}
                         </label>
                       </div>
                       <div className="flex flex-row space-x-2 text-white w-1/2">
                         <div className="text-[#0d9276]">Per KM:</div>
                         <label className="text-[#0d9276]">
-                          {fare ? (
-                            <div>₱{fare.perKM}</div>
-                          ) : (
-                            <div className="text-[#0d9276]">N/A</div>
-                          )}
+                          {fare && <div>₱{fare.perKM}</div>}
                         </label>
                       </div>
                     </div>
@@ -560,32 +586,44 @@ const CardScan = () => {
                       <div className="flex flex-row space-x-2 text-[#0d9276] w-1/2">
                         <div className="text-[#0d9276]">Total Fare:</div>
                         <label className="text-[#0d9276]">
-                          {fare && distance ? (
-                            <div>
-                              ₱
-                              {Math.round(
-                                fare.minimumAmount + fare.perKM * distance
-                              )}
-                            </div>
-                          ) : (
-                            <label className="text-[#0d9276]">N/A</label>
+                          {stationStart?.name !== stationEnd?.name &&
+                            fare &&
+                            distance && (
+                              <div>
+                                ₱
+                                {Math.round(
+                                  fare.minimumAmount + fare.perKM * distance
+                                )}
+                              </div>
+                            )}
+                          {stationStart?.name === stationEnd?.name && fare && (
+                            <div>₱{Math.round(fare.minimumAmount)}</div>
                           )}
                         </label>
                       </div>
                       <div className="flex flex-row space-x-2 text-white w-1/2">
                         <div className="text-[#0d9276]">New Balance:</div>
                         <label className="text-[#0d9276]">
-                          {fare && distance && card ? (
-                            <div>
-                              ₱
-                              {card?.balance -
-                                Math.round(
-                                  fare.minimumAmount + fare.perKM * distance
-                                )}
-                            </div>
-                          ) : (
-                            <label className="text-g[#0d9276]">N/A</label>
-                          )}
+                          {stationStart?.name !== stationEnd?.name &&
+                            fare &&
+                            distance &&
+                            card && (
+                              <div>
+                                ₱
+                                {card?.balance -
+                                  Math.round(
+                                    fare.minimumAmount + fare.perKM * distance
+                                  )}
+                              </div>
+                            )}
+                          {stationStart?.name === stationEnd?.name &&
+                            fare &&
+                            card && (
+                              <div>
+                                ₱
+                                {card?.balance - Math.round(fare.minimumAmount)}
+                              </div>
+                            )}
                         </label>
                       </div>
                     </div>
@@ -604,29 +642,23 @@ const CardScan = () => {
                       <div className="flex flex-row space-x-2 w-1/2">
                         <div className="text-[#0d9276]">Start:</div>
 
-                        {stationStart ? (
+                        {stationStart && (
                           <label className="text-[#0d9276]">
                             {stationStart.name}
                           </label>
-                        ) : (
-                          <label className="text-[#0d9276]">N/A</label>
                         )}
                       </div>
                       <div className="flex flex-row space-x-2 w-1/2">
                         <div className="text-[#0d9276]">End:</div>{" "}
                         <label className="text-[#0d9276]">
-                          {stationEnd ? stationEnd.name : "N/A"}
+                          {stationEnd && stationEnd.name}
                         </label>
                       </div>
                     </div>
                     <div className="flex flex-row space-x-2 text-white w-full">
                       <div className="text-[#0d9276]">Distance:</div>
                       <span className="text-[#0d9276] font-normal">
-                        {distance ? (
-                          <div className="">{distance} km</div>
-                        ) : (
-                          <label className="text-[#0d9276]">N/A</label>
-                        )}
+                        {distance && <div className="">{distance} km</div>}
                       </span>
                     </div>
 
