@@ -230,7 +230,7 @@ const CardLanding: React.FC<CardLandingProps> = () => {
   return (
     <div
       id="top"
-      className="flex flex-col xl:flex-row xl:pb-[17px] bg-[#dbe7c9] h-[735px] animate__animated animate__fadeIn"
+      className="flex flex-col xl:flex-row xl:pb-[17px] bg-[#dbe7c9] h-auto xl:h-screen animate__animated animate__fadeIn"
     >
       <div className="w-full xl:w-2/3">
         <div className="flex flex-col xl:flex-row w-full">

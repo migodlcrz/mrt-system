@@ -18,6 +18,7 @@ import NavBar from "../components/NavBar";
 import StationList from "../components/StationList";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import ProtectedRoute from "../components/ProtectedRoute";
 
 interface Status {
   isDeployed: boolean;
@@ -25,7 +26,6 @@ interface Status {
 
 const App = () => {
   const { user } = useAuthContext();
-  const [hideNavbar, setHideNavbar] = useState(false);
   const [isDeployed, setisDeployed] = useState(false);
   const api = process.env.REACT_APP_API_KEY;
 
@@ -51,24 +51,38 @@ const App = () => {
   };
 
   useEffect(() => {
-    console.log();
-
-    setHideNavbar(window.location.pathname.startsWith("/station"));
     fetchStatus();
   }, []);
 
   return (
     <BrowserRouter>
       <div>
-        {!hideNavbar && <NavBar />}
         <Routes>
-          <Route path={"/"} element={<Root />} />
-          <Route path={"/admin"} element={<Admin />} />
+          <Route
+            path={"/"}
+            element={
+              <>
+                <Root />
+              </>
+            }
+          />
+          <Route
+            path={"/admin"}
+            element={
+              <>
+                <NavBar />
+                <Admin />
+              </>
+            }
+          />
           <Route
             path={"/admin/dashboard"}
             element={
               user ? (
-                <Dashboard />
+                <ProtectedRoute>
+                  <NavBar />
+                  <Dashboard />
+                </ProtectedRoute>
               ) : (
                 <NotLogin
                   error="Not Logged in!"
@@ -81,7 +95,10 @@ const App = () => {
             path={"/admin/dashboard/card"}
             element={
               user ? (
-                <CardLanding />
+                <ProtectedRoute>
+                  <NavBar />
+                  <CardLanding />
+                </ProtectedRoute>
               ) : (
                 <NotLogin
                   error="Not Logged in!"
@@ -95,7 +112,10 @@ const App = () => {
             path={"/admin/dashboard/station"}
             element={
               user ? (
-                <StationLanding />
+                <ProtectedRoute>
+                  <NavBar />
+                  <StationLanding />
+                </ProtectedRoute>
               ) : (
                 <NotLogin
                   error="Not Logged in!"
@@ -129,6 +149,15 @@ const App = () => {
                   />
                 </div>
               )
+            }
+          />
+          <Route
+            path={"/logout"}
+            element={
+              <NotLogin
+                error="Not logged in."
+                message="Go back to login page"
+              />
             }
           />
         </Routes>

@@ -56,30 +56,37 @@ export const AuthContextProvider: FC<AuthContextProviderProps> = ({
   });
 
   useEffect(() => {
+    const api = process.env.REACT_APP_API_KEY;
     const token = localStorage.getItem("token");
-    console.log("ORIGINAL", token);
+
+    const checkToken = async () => {
+      console.log("TOKEN: ", token);
+      console.log("PUMASOK SIYA SA CHECKER");
+      const response = await fetch(`${api}/api/cards/checkToken`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // Remove the double quotes here
+        },
+      });
+      if (!response.ok) {
+        dispatch({ type: "LOGOUT" });
+      }
+    };
 
     if (token) {
       try {
-        const decodedToken: any = jwtDecode(token);
+        const decodedToken: any = jwtDecode(token); // No need for : any
 
+        // checkToken();
         if (decodedToken.exp * 1000 < Date.now()) {
           // Token is expired, log the user out
           localStorage.removeItem("token");
           dispatch({ type: "LOGOUT" });
         } else {
-          const storedToken = localStorage.getItem("token");
-          console.log("CHANGED", storedToken);
-
-          if (storedToken !== token) {
-            dispatch({ type: "LOGOUT" });
-            return;
-          }
-
           dispatch({ type: "LOGIN", payload: token });
         }
       } catch (error) {
-        // Invalid token, log the user out
         localStorage.removeItem("token");
         dispatch({ type: "LOGOUT" });
       }

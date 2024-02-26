@@ -111,14 +111,13 @@ const Dashboard = () => {
   // };
 
   useEffect(() => {
-    console.log("EMAIL", user);
     fetchCards();
     fetchStations();
     fetchFare();
   }, []);
 
   return (
-    <div className="h-screen w-full bg-[#dbe7c9] animate__animated animate__fadeIn">
+    <div className="h-full w-full bg-[#dbe7c9] animate__animated animate__fadeIn">
       <div className="text-white min-h-screen bg-[#dbe7c9]">
         {/* upper right panel */}
         <div className="flex flex-col xl:flex-row h-screen justify-center items-start space-y-2 xl:space-y-0 pt-[100px] xl:pt-24 pb-4 ">
@@ -339,6 +338,67 @@ const Dashboard = () => {
                     </div>
                   </div>
                 </div>
+                <div className="flex flex-col w-full z-0 space-y-2 xl:space-y-4 xl:hidden">
+                  <div className="flex items-center justify-center bg-[#dbe7c9] shadow-lg shadow-black mr-2 mx-2 rounded-lg">
+                    <div className="text-2xl font-bold py-4 text-[#0d9276]">
+                      <div className="flex flex-row items-center">
+                        <label>Station Map</label>
+                        <button
+                          className="text-3xl"
+                          onClick={() => navigate("/admin/dashboard/station")}
+                        >
+                          <GrFormNextLink />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex h-[420px] items-center justify-center bg-[#dbe7c9] shadow-lg shadow-black p-2 rounded-lg mx-2 ">
+                    <MapContainer
+                      center={[14.65216, 121.03225]}
+                      zoom={12}
+                      zoomControl={false}
+                      className="h-[100%] w-[100%]"
+                    >
+                      <TileLayer
+                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                      />
+                      {stations &&
+                        stations.map((station: Stations) => (
+                          <div key={station._id}>
+                            <Marker
+                              position={[station.lat, station.long]}
+                              icon={StationIcon}
+                            >
+                              <Popup>{station.name}</Popup>
+                            </Marker>
+
+                            {station.connection.map((connectedId: string) => {
+                              const connectedStation = stations.find(
+                                (s) => s._id === connectedId
+                              );
+                              if (connectedStation) {
+                                return (
+                                  <Polyline
+                                    key={`${station._id}-${connectedId}`}
+                                    positions={[
+                                      [station.lat, station.long],
+                                      [
+                                        connectedStation.lat,
+                                        connectedStation.long,
+                                      ],
+                                    ]}
+                                    color="#0d9276"
+                                  />
+                                );
+                              }
+                              return null;
+                            })}
+                          </div>
+                        ))}
+                    </MapContainer>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -362,7 +422,7 @@ const Dashboard = () => {
                 center={[14.65216, 121.03225]}
                 zoom={12}
                 zoomControl={false}
-                style={{ height: "100%", width: "100%" }}
+                className="h-[100%] w-[100%]"
               >
                 <TileLayer
                   attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -403,6 +463,7 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
+      <div className="flex h-screen bg-[#dbe7c9] xl:hidden"></div>
     </div>
   );
 };

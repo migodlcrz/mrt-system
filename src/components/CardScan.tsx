@@ -60,13 +60,6 @@ const CardScan = () => {
   const api = process.env.REACT_APP_API_KEY;
   const navigate = useNavigate();
 
-  // const customIcon = new Icon({
-  //   iconSize: [30, 30],
-  //   iconAnchor: [15, 15],
-  //   popupAnchor: [0, -15],
-  //   html: renderToString(<FaTrainSubway size={30} />),
-  // });
-
   const CustomIcon = new DivIcon({
     className: "custom-icon",
     html: renderToStaticMarkup(
@@ -140,6 +133,8 @@ const CardScan = () => {
         } else {
           navigate("/");
         }
+      } else {
+        navigate("/");
       }
     }
   };
@@ -501,7 +496,7 @@ const CardScan = () => {
           </div>
           {/* CARD INFO */}
           <div className="w-full">
-            <div className="bg-[#0d9276] shadow-lg shadow-black m-2 p-2 rounded-lg hidden xl:block">
+            <div className="bg-[#0d9276] shadow-lg shadow-black m-2 p-2 rounded-lg">
               <div className="bg-[#dbe7c9] shadow-inner shadow-black px-2 rounded-lg">
                 <div className=" font-bold text-[#0d9276]">Card Info:</div>
                 <div className="flex flex-row space-x-3">

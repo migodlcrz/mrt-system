@@ -70,9 +70,6 @@ const Navbar = () => {
       }
 
       const responseData = await response.json();
-
-      console.log("MINIMUM:", responseData.minimumAmount);
-
       setFare({
         minimumAmount: responseData.minimumAmount,
         perKM: responseData.perKM,
@@ -81,53 +78,6 @@ const Navbar = () => {
       console.error("Error fetching fare data:", error);
     }
   };
-
-  // const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-  //   const { name, value } = e.target;
-  //   setFormData((prevData) => ({
-  //     ...prevData,
-  //     [name]: parseFloat(value),
-  //   }));
-  // };
-
-  // const handleSubmit = async (e: FormEvent) => {
-  //   e.preventDefault();
-
-  //   try {
-  //     const fareId = "65c28317dd50fe2e56d242c9";
-  //     const response = await fetch(`${api}/api/fr/${fareId}`, {
-  //       method: "PATCH",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //         Authorization: `Bearer ${user.jwt}`,
-  //       },
-  //       body: JSON.stringify(formData),
-  //     });
-
-  //     const json = await response.json();
-
-  //     if (response.ok) {
-  //       toast.success("Fare updated successfully!");
-  //       console.log("DATA", json);
-
-  //       const modal = document.getElementById(
-  //         "fare"
-  //       ) as HTMLDialogElement | null;
-  //       modal?.close();
-  //     }
-
-  //     if (!response.ok) {
-  //       toast.error("Server Error");
-  //       throw new Error(`HTTP error! Status: ${response.status}`);
-  //     }
-  //   } catch (error) {
-  //     toast.error("Error updating fare");
-  //   }
-  // };
-
-  // const handleEditModal = () => {
-  //   isEditModalOpen ? setEditModalOpen(false) : setEditModalOpen(true);
-  // };
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);

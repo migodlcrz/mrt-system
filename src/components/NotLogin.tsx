@@ -19,7 +19,7 @@ const NotLogin: React.FC<NotLoginProps> = ({ error, message }) => {
               </div>
               <div className="text-xl text-black font-medium">{message}</div>
               <NavLink
-                to="/admin"
+                to="/"
                 className="bg-[#0d9276] px-4 py-2 rounded-lg text-xl font-bold text-[#dbe7c9] shadow-lg shadow-black w-auto"
               >
                 Ok

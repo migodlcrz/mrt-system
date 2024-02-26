@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 
 interface LoginResponse {
   error: string | null;
-  user: object | null;
+  user_: string | null;
   jwt: string | null;
 }
 
@@ -33,8 +33,7 @@ export const useLogin = () => {
     if (response.ok) {
       if (json.jwt) {
         toast.success("Login successful");
-        // localStorage.setItem("user", JSON.stringify(json));
-        localStorage.setItem("token", JSON.stringify(json.jwt));
+        localStorage.setItem("token", json.jwt);
       }
 
       dispatch({ type: "LOGIN", payload: json });
