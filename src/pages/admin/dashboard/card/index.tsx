@@ -7,6 +7,8 @@ import { GrStatusGoodSmall } from "react-icons/gr";
 import ProgressBar from "@ramonak/react-progress-bar";
 import { popup } from "leaflet";
 import e from "cors";
+import ReactDOM from "react-dom";
+import QRCode from "react-qr-code";
 
 interface Card {
   _id: string;
@@ -441,6 +443,26 @@ const CardLanding: React.FC<CardLandingProps> = () => {
                     >
                       See Transaction
                     </button>
+                    <div
+                      style={{
+                        height: "auto",
+                        margin: "0 auto",
+                        maxWidth: 64,
+                        width: "100%",
+                      }}
+                    >
+                      <QRCode
+                        size={256}
+                        style={{
+                          height: "auto",
+                          maxWidth: "100%",
+                          width: "100%",
+                        }}
+                        value={String(cardInfo?.uid)}
+                        // value={"TEST"}
+                        viewBox={`0 0 256 256`}
+                      />
+                    </div>
                     <button
                       disabled={cardInfo ? false : true}
                       onClick={() => {
@@ -547,9 +569,8 @@ const CardLanding: React.FC<CardLandingProps> = () => {
                     </div>
                   </div>
                   <form onSubmit={handleCreate} className="flex flex-col">
-                    {" "}
                     <label className="text-green-400 font-bold">
-                      Random generated UID:{" "}
+                      Random generated UID:
                       <span className="text-gray-400">{uid}</span>
                     </label>
                     <label className="font-bold">Balance:</label>
