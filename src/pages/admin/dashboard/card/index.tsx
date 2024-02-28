@@ -13,6 +13,7 @@ interface Card {
   uid: string;
   balance: number;
   isTap: boolean;
+  mounted: boolean;
   in: string;
   history: [{ in: string; out: string; date: Date }];
 }
@@ -174,7 +175,24 @@ const CardLanding: React.FC<CardLandingProps> = () => {
       );
 
       if (isConfirmed) {
-        const deleteResponse = await fetch(`${api}/api/cards/` + card_id, {
+        console.log("CARD ID", card_id);
+
+        const response = await fetch(`${api}/api/cards/one/${card_id}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${user.jwt}`,
+          },
+        });
+
+        const card: Card = await response.json();
+
+        if (card.mounted) {
+          toast.error("Cannot delete, card is linked to a phone.");
+          return;
+        }
+
+        const deleteResponse = await fetch(`${api}/api/cards/${card_id}`, {
           method: "DELETE",
           headers: {
             "Content-Type": "application/json",
