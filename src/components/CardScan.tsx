@@ -20,6 +20,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { DivIcon } from "leaflet";
 import { FaTrainSubway } from "react-icons/fa6";
 import { renderToStaticMarkup } from "react-dom/server";
+import { get } from "http";
 
 interface Station {
   _id: string;
@@ -45,6 +46,11 @@ interface Status {
 interface Fare {
   minimumAmount: number;
   perKM: number;
+}
+
+interface Path {
+  path: string[];
+  distance: number;
 }
 
 const CardScan = () => {
@@ -466,24 +472,39 @@ const CardScan = () => {
     }
   };
 
+  const getPath = async () => {
+    try {
+      const response = await fetch(`${api}/api/path`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          startStation: stationStart,
+          endStation: stationEnd,
+        }),
+      });
+
+      if (response.ok) {
+        console.log("OK");
+        const path: Path = await response.json();
+        console.log("DISTANCE", path.distance);
+        console.log("PATH", path.path);
+        setPath(path.path);
+        setDistance(path.distance);
+      }
+    } catch (error) {
+      console.error("Fetch error:", error);
+    }
+  };
+
   useEffect(() => {
     if (station && stationStart && stationEnd && isOut) {
-      const startStation = stationStart;
-      const endStation = stationEnd;
-
-      const result = findPath(startStation, endStation, station);
-      if (result) {
-        const stationNames = result.stations.map((station) => station.name);
-        setPath(stationNames);
-
-        setDistance(Number((result.distance / 1000).toFixed()));
-        // setDistance(result.distance / 1000);
-      } else {
-        toast.error("No path found!");
-      }
+      console.log("START", stationStart);
+      console.log("END", stationEnd);
+      getPath();
+      handleBalance();
     }
-    handleBalance();
-    // }, [station, stationStart, stationEnd, isOut, distance]);
   }, [station, stationStart, stationEnd, isOut, distance]);
   // }
 
