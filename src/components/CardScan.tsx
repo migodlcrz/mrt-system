@@ -49,13 +49,8 @@ interface Fare {
   perKM: number;
 }
 
-interface Path {
-  path: string[];
-  distance: number;
-}
-
 interface QR {
-  uid: string;
+  name: string;
   method: string;
 }
 
@@ -64,26 +59,27 @@ const CardScan = () => {
   const [stationPage, setStationPage] = useState<Station | null>(null);
   const [stationStart, setStationStart] = useState<Station | null>(null);
   const [stationEnd, setStationEnd] = useState<Station | null>(null);
-  const [path, setPath] = useState<string[]>([]);
+  const [path, setPath] = useState<string[]>();
   const [isDeployed, setIsDeployed] = useState<boolean>(false);
   const [distance, setDistance] = useState<number | null>(null);
   const [fare, setFare] = useState<Fare | null>(null);
   const [enteredUID, setenteredUID] = useState("");
-  const [cardBalance, setCardBalance] = useState(0);
+  const [newBalance, setNewBalance] = useState<number | null>(0);
   const [card, setCard] = useState<Card | null>(null);
   const [isCardFound, setIsCardFound] = useState(true);
   const [isOut, setIsOut] = useState(false);
-  const [qrValueIn, setQRValueIn] = useState<QR | null>(null);
-  const [qrValueOut, setQRValueOut] = useState<QR | null>(null);
+  const [start, setStart] = useState<string | null>(null);
+  const [totalFare, setTotalFare] = useState<number | null>(null);
+
   const { stn, status } = useParams();
 
   const tapQRIn: QR = {
-    uid: stn || "",
+    name: stn || "",
     method: "in",
   };
 
   const tapQROut: QR = {
-    uid: stn || "",
+    name: stn || "",
     method: "out",
   };
 
@@ -214,167 +210,76 @@ const CardScan = () => {
   };
 
   const handleTapIn = async (e: React.FormEvent<HTMLFormElement>) => {
+    console.log("START", stationStart?.name);
     e.preventDefault();
-    if (card && fare) {
-      setenteredUID("");
-      console.log("PASOK CARD FARE");
-      if (card?.balance < fare?.minimumAmount) {
-        toast.error("Balance is less than minimum fare.");
-        return;
-      }
-    }
     try {
-      const getResponse = await fetch(`${api}/api/cards/one/${card?._id}`, {
-        method: "GET",
+      const response = await fetch(`${api}/api/cards/in`, {
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
+        body: JSON.stringify({
+          enteredUID: enteredUID,
+          stationStart: stationStart?.name,
+        }),
       });
-      const getCard: Card = await getResponse.json();
-
-      if (getCard.isTap === true) {
-        toast.error("Already Tapped In!");
-        setenteredUID("");
-        return;
-      }
-
-      const response = await fetch(`${api}/api/cards/in/${card?._id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ isTap: true, in: stationStart?._id }),
-      });
+      const message = await response.json();
       if (response.ok) {
+        toast.success("Tapped in");
         setenteredUID("");
-        setCard(null);
-        setIsCardFound(false);
-        toast.success("Tapped In!");
       }
+
       if (!response.ok) {
-        setenteredUID("");
-        setCard(null);
-        setIsCardFound(false);
-        toast.error("Incorrect UID!");
+        toast.error(message.error);
       }
     } catch (error) {
-      toast.error("Server Error!");
+      console.log("ERROR: ", error);
     }
   };
 
   const handleTapOut = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    const response = await fetch(`${api}/api/cards/out`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        enteredUID: enteredUID,
+        stationEnd: stationEnd?.name,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      setDistance(data.distance);
+      setTotalFare(data.totalFare);
+      setNewBalance(data.newBalance);
+      setStart(data.start);
+      setPath(data.path);
+      toast.success("Tapped out");
+      setTimeout(() => {
+        setenteredUID("");
+        setDistance(null);
+        setTotalFare(null);
+        setNewBalance(null);
+        setStart(null);
+        setPath([]);
+      }, 10000);
+    }
+
+    if (!response.ok) {
+      toast.error(data.error);
+    }
     try {
-      const getResponse = await fetch(`${api}/api/cards/one/${card?._id}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      const getCard: Card = await getResponse.json();
-
-      if (getCard.isTap === false) {
-        toast.error("Not Tapped In!");
-        setenteredUID("");
-        return;
-      }
-
-      setCardBalance(getCard.balance);
-
-      const response = await fetch(`${api}/api/cards/in/${card?._id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ isTap: false, in: null }),
-      });
-
-      if (response.ok) {
-        getStartStation();
-
-        setTimeout(() => {
-          setPath([]);
-          setenteredUID("");
-          setStationStart(null);
-          setCard(null);
-          setIsCardFound(false);
-          setDistance(null);
-        }, 20000);
-      }
-      if (!response.ok) {
-        setenteredUID("");
-        setCard(null);
-        setIsCardFound(false);
-        toast.error("Incorrect UID!");
-      }
     } catch (error) {
-      toast.error("Server Error!");
-    }
-  };
-
-  const handleBalance = async () => {
-    if (stationStart && stationEnd) {
-      if (stationStart.name === stationEnd?.name) {
-        console.log("START == END");
-        if (fare) {
-          console.log("FARE EXIST");
-          const response = await fetch(`${api}/api/cards/out/${card?._id}`, {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              balance: cardBalance - fare?.minimumAmount,
-              history: {
-                in: stationStart?.name,
-                out: stationEnd?.name,
-                fare: fare.minimumAmount,
-              },
-            }),
-          });
-
-          if (response.ok) {
-            toast.success("Tapped Out!");
-          } else {
-            toast.error("Server Error!");
-          }
-        }
-      }
-    }
-    if (distance && fare) {
-      console.log("PUMASOK SA DISTANCE TSAKA FARE");
-      if (
-        cardBalance < Math.round(distance * fare?.perKM + fare?.minimumAmount)
-      ) {
-        toast.error("Insufficient Balance");
-        return;
-      }
-
-      console.log("BALANCE", cardBalance);
-      const response = await fetch(`${api}/api/cards/out/${card?._id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          balance:
-            cardBalance -
-            Math.round(distance * fare?.perKM + fare?.minimumAmount),
-          history: {
-            in: stationStart?.name,
-            out: stationEnd?.name,
-            fare: Math.round(distance * fare?.perKM + fare?.minimumAmount),
-          },
-        }),
-      });
-
-      if (response.ok) {
-        toast.success("Tapped Out!");
-      } else {
-        toast.error("Server Error!");
-      }
+      toast.error("Internal error");
     }
   };
 
   useEffect(() => {
-    fetchData();
     fetchFare();
     fetchStatus();
   }, []);
@@ -410,127 +315,6 @@ const CardScan = () => {
       setIsCardFound(false);
     }
   }, [station]);
-
-  //===================================================
-  function calculateDistance(
-    lat1: number,
-    lon1: number,
-    lat2: number,
-    lon2: number
-  ): number {
-    const R = 6371e3;
-    const φ1 = (lat1 * Math.PI) / 180;
-    const φ2 = (lat2 * Math.PI) / 180;
-    const Δφ = ((lat2 - lat1) * Math.PI) / 180;
-    const Δλ = ((lon2 - lon1) * Math.PI) / 180;
-
-    const a =
-      Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-      Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-    return R * c;
-  }
-
-  function findPath(
-    start: Station,
-    end: Station,
-    stations: Station[]
-  ): { stations: Station[]; distance: number } | null {
-    const visited: Set<string> = new Set();
-    const queue: { station: Station; path: Station[] }[] = [
-      { station: start, path: [] },
-    ];
-
-    while (queue.length > 0) {
-      const { station, path } = queue.shift()!;
-      visited.add(station._id);
-
-      if (station._id === end._id) {
-        return {
-          stations: path.concat(station),
-          distance: calculatePathDistance(path.concat(station)),
-        };
-      }
-
-      for (const connectionId of station.connection) {
-        const connection = stations.find((s) => s._id === connectionId);
-        if (connection && !visited.has(connection._id)) {
-          queue.push({ station: connection, path: path.concat(station) });
-        }
-      }
-    }
-
-    return null;
-  }
-
-  function calculatePathDistance(path: Station[]): number {
-    let totalDistance = 0;
-    for (let i = 0; i < path.length - 1; i++) {
-      const { lat: lat1, long: lon1 } = path[i];
-      const { lat: lat2, long: lon2 } = path[i + 1];
-      totalDistance += calculateDistance(lat1, lon1, lat2, lon2);
-    }
-    return totalDistance;
-  }
-
-  const getStartStation = async () => {
-    const response = await fetch(`${api}/api/stations/${card?.in}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    const data = await response.json();
-    if (response.ok) {
-      setStationStart(data);
-    }
-  };
-
-  const getPath = async () => {
-    try {
-      const response = await fetch(`${api}/api/path`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          startStation: stationStart,
-          endStation: stationEnd,
-        }),
-      });
-
-      if (response.ok) {
-        console.log("OK");
-        const path: Path = await response.json();
-        console.log("DISTANCE", path.distance);
-        console.log("PATH", path.path);
-        setPath(path.path);
-        setDistance(path.distance);
-      }
-    } catch (error) {
-      console.error("Fetch error:", error);
-    }
-  };
-
-  // useEffect(() => {
-  //   const cardQR: QR = {
-  //     uid: cardInfo?.uid || "",
-  //     method: "add",
-  //   };
-
-  //   setQRValue(cardQR);
-  // }, [cardInfo]);
-
-  useEffect(() => {
-    if (station && stationStart && stationEnd && isOut) {
-      console.log("START", stationStart);
-      console.log("END", stationEnd);
-      getPath();
-      handleBalance();
-    }
-  }, [station, stationStart, stationEnd, isOut, distance]);
-  // }
 
   return (
     <div className="h-screen flex flex-col xl:flex-row">
@@ -593,7 +377,6 @@ const CardScan = () => {
                   maxWidth: "100%",
                   width: "100%",
                 }}
-                // value={String(cardInfo?.uid)}
                 value={JSON.stringify(tapQROut)}
                 viewBox={`0 0 256 256`}
               />
@@ -668,16 +451,7 @@ const CardScan = () => {
                       <div className="flex flex-row space-x-2 text-[#0d9276] w-1/2">
                         <div className="text-[#0d9276]">Total Fare:</div>
                         <label className="text-[#0d9276]">
-                          {stationStart?.name !== stationEnd?.name &&
-                            fare &&
-                            distance && (
-                              <div>
-                                ₱
-                                {Math.round(
-                                  fare.minimumAmount + fare.perKM * distance
-                                )}
-                              </div>
-                            )}
+                          {totalFare && <div>₱{totalFare}</div>}
                           {stationStart?.name === stationEnd?.name && fare && (
                             <div>₱{Math.round(fare.minimumAmount)}</div>
                           )}
@@ -686,26 +460,7 @@ const CardScan = () => {
                       <div className="flex flex-row space-x-2 text-white w-1/2">
                         <div className="text-[#0d9276]">New Balance:</div>
                         <label className="text-[#0d9276]">
-                          {stationStart?.name !== stationEnd?.name &&
-                            fare &&
-                            distance &&
-                            card && (
-                              <div>
-                                ₱
-                                {card?.balance -
-                                  Math.round(
-                                    fare.minimumAmount + fare.perKM * distance
-                                  )}
-                              </div>
-                            )}
-                          {stationStart?.name === stationEnd?.name &&
-                            fare &&
-                            card && (
-                              <div>
-                                ₱
-                                {card?.balance - Math.round(fare.minimumAmount)}
-                              </div>
-                            )}
+                          {newBalance && <div>₱{newBalance}</div>}
                         </label>
                       </div>
                     </div>
@@ -724,11 +479,7 @@ const CardScan = () => {
                       <div className="flex flex-row space-x-2 w-1/2">
                         <div className="text-[#0d9276]">Start:</div>
 
-                        {stationStart && (
-                          <label className="text-[#0d9276]">
-                            {stationStart.name}
-                          </label>
-                        )}
+                        <label className="text-[#0d9276]"> {start}</label>
                       </div>
                       <div className="flex flex-row space-x-2 w-1/2">
                         <div className="text-[#0d9276]">End:</div>{" "}
@@ -740,7 +491,7 @@ const CardScan = () => {
                     <div className="flex flex-row space-x-2 text-white w-full">
                       <div className="text-[#0d9276]">Distance:</div>
                       <span className="text-[#0d9276] font-normal">
-                        {distance && <div className="">{distance} km</div>}
+                        {distance && <div>{distance} KM</div>}
                       </span>
                     </div>
 
@@ -766,20 +517,21 @@ const CardScan = () => {
                                 </tr>
                               </thead>
                               <tbody>
-                                {path.map((station, index) => (
-                                  <tr
-                                    key={index}
-                                    className={`hover:bg-gray-500 animate__animated animate__fadeIn z-0 ${
-                                      index % 2 === 0
-                                        ? "bg-gray-400"
-                                        : "bg-gray-300"
-                                    }`}
-                                  >
-                                    <td className="text-black font-bold">
-                                      {station}
-                                    </td>
-                                  </tr>
-                                ))}
+                                {path &&
+                                  path.map((station, index) => (
+                                    <tr
+                                      key={index}
+                                      className={`hover:bg-gray-500 animate__animated animate__fadeIn z-0 ${
+                                        index % 2 === 0
+                                          ? "bg-gray-400"
+                                          : "bg-gray-300"
+                                      }`}
+                                    >
+                                      <td className="text-black font-bold">
+                                        {station}
+                                      </td>
+                                    </tr>
+                                  ))}
                               </tbody>
                             </table>
                           </div>
