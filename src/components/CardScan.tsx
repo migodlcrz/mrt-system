@@ -21,6 +21,7 @@ import { DivIcon } from "leaflet";
 import { FaTrainSubway } from "react-icons/fa6";
 import { renderToStaticMarkup } from "react-dom/server";
 import { get } from "http";
+import QRCode from "react-qr-code";
 
 interface Station {
   _id: string;
@@ -53,6 +54,11 @@ interface Path {
   distance: number;
 }
 
+interface QR {
+  uid: string;
+  method: string;
+}
+
 const CardScan = () => {
   const [station, setStation] = useState<Station[] | null>(null);
   const [stationPage, setStationPage] = useState<Station | null>(null);
@@ -62,14 +68,26 @@ const CardScan = () => {
   const [isDeployed, setIsDeployed] = useState<boolean>(false);
   const [distance, setDistance] = useState<number | null>(null);
   const [fare, setFare] = useState<Fare | null>(null);
-  const [totalFare, setTotalFare] = useState(0);
   const [enteredUID, setenteredUID] = useState("");
   const [cardBalance, setCardBalance] = useState(0);
   const [card, setCard] = useState<Card | null>(null);
   const [isCardFound, setIsCardFound] = useState(true);
   const [isOut, setIsOut] = useState(false);
-  const mapRef = useRef<L.Map>(null);
+  const [qrValueIn, setQRValueIn] = useState<QR | null>(null);
+  const [qrValueOut, setQRValueOut] = useState<QR | null>(null);
   const { stn, status } = useParams();
+
+  const tapQRIn: QR = {
+    uid: stn || "",
+    method: "in",
+  };
+
+  const tapQROut: QR = {
+    uid: stn || "",
+    method: "out",
+  };
+
+  const mapRef = useRef<L.Map>(null);
   const api = process.env.REACT_APP_API_KEY;
   const navigate = useNavigate();
 
@@ -272,11 +290,8 @@ const CardScan = () => {
         body: JSON.stringify({ isTap: false, in: null }),
       });
 
-      console.log("TAPOUT");
-
       if (response.ok) {
         getStartStation();
-        // setenteredUID("");
 
         setTimeout(() => {
           setPath([]);
@@ -498,6 +513,15 @@ const CardScan = () => {
     }
   };
 
+  // useEffect(() => {
+  //   const cardQR: QR = {
+  //     uid: cardInfo?.uid || "",
+  //     method: "add",
+  //   };
+
+  //   setQRValue(cardQR);
+  // }, [cardInfo]);
+
   useEffect(() => {
     if (station && stationStart && stationEnd && isOut) {
       console.log("START", stationStart);
@@ -549,6 +573,43 @@ const CardScan = () => {
                 <FaCheck />
               </button>
             </form>
+          </div>
+          <div
+            className="rounded-xl"
+            style={{
+              backgroundColor: "white",
+              height: "auto",
+              margin: "0 auto",
+              maxWidth: 100,
+              width: "100%",
+              padding: "10px",
+            }}
+          >
+            {isOut ? (
+              <QRCode
+                size={256}
+                style={{
+                  height: "auto",
+                  maxWidth: "100%",
+                  width: "100%",
+                }}
+                // value={String(cardInfo?.uid)}
+                value={JSON.stringify(tapQROut)}
+                viewBox={`0 0 256 256`}
+              />
+            ) : (
+              <QRCode
+                size={256}
+                style={{
+                  height: "auto",
+                  maxWidth: "100%",
+                  width: "100%",
+                }}
+                // value={String(cardInfo?.uid)}
+                value={JSON.stringify(tapQRIn)}
+                viewBox={`0 0 256 256`}
+              />
+            )}
           </div>
           {/* CARD INFO */}
           <div className="w-full">

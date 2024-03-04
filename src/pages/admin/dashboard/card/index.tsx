@@ -26,6 +26,11 @@ interface Fare {
   perKM: number;
 }
 
+interface QR {
+  uid: string;
+  method: string;
+}
+
 interface CardLandingProps {}
 
 const CardLanding: React.FC<CardLandingProps> = () => {
@@ -45,10 +50,14 @@ const CardLanding: React.FC<CardLandingProps> = () => {
   const [isAdd, setisAdd] = useState(false);
   const [isAddBalance, setisAddBalance] = useState(false);
 
+  const [qrValue, setQRValue] = useState<QR | null>(null);
+
   const [onboardCount, setOnboardCount] = useState(0);
   const [offboardCount, setOffboardCount] = useState(0);
 
   const [cardInfo, setCardInfo] = useState<Card | null>(null);
+
+  const [showQR, setShowQR] = useState(false);
 
   const { user } = useAuthContext();
 
@@ -247,6 +256,15 @@ const CardLanding: React.FC<CardLandingProps> = () => {
     }
   }, [user, update, addBalanceTerm]);
 
+  useEffect(() => {
+    const cardQR: QR = {
+      uid: cardInfo?.uid || "",
+      method: "add",
+    };
+
+    setQRValue(cardQR);
+  }, [cardInfo]);
+
   return (
     <div
       id="top"
@@ -365,65 +383,92 @@ const CardLanding: React.FC<CardLandingProps> = () => {
                     cardInfo && "bg-[#0d9276]"
                   } items-center justify-center rounded-lg shadow-lg shadow-black`}
                 >
-                  <div
-                    className={`flex flex-row w-full justify-end px-4 pt-2 xl:px-10 font-bold text-sm xl:text-xl ${
-                      cardInfo ? "text-[#dbe7c9]" : "text-gray-400"
-                    }`}
-                  >
-                    <button
-                      onClick={() => {
-                        clearSearch();
-                        scrollToTarget("top");
-                      }}
-                      className="flex w-full justify-end text-[#dbe7c9] text-center xl:text-end xl:hidden"
-                    >
-                      <IoMdCloseCircle />
-                    </button>
-                  </div>
-                  <div
-                    className={`flex flex-row w-full justify-between px-4 xl:px-10 font-bold text-sm xl:text-xl ${
-                      cardInfo ? "text-[#dbe7c9]" : "text-gray-400"
-                    }`}
-                  >
-                    <label className="hidden xl:block">ID:</label>
-                    <span className="text-[#dbe7c9] text-center w-full xl:text-end">
-                      {cardInfo && cardInfo.uid}
-                    </span>
-                  </div>
-                  <div
-                    className={`flex flex-row space-x-2 text-sm xl:text-lg px-6 xl:px-10 w-full items-center justify-center xl:justify-between ${
-                      cardInfo ? "text-[#dbe7c9]" : "text-gray-400"
-                    }`}
-                  >
-                    <div className="flex flex-row">
-                      <div className="text-sm xl:text-2xl mr-2">
-                        <FaCoins />
+                  {!showQR ? (
+                    <div className="flex flex-col space-y-6 w-full h-full ">
+                      <div
+                        className={`flex flex-row w-full justify-end px-4 pt-2 xl:px-10 font-bold text-sm xl:text-xl ${
+                          cardInfo ? "text-[#dbe7c9]" : "text-gray-400"
+                        }`}
+                      >
+                        <button
+                          onClick={() => {
+                            clearSearch();
+                            scrollToTarget("top");
+                          }}
+                          className="flex w-full justify-end text-[#dbe7c9] text-center xl:text-end xl:hidden"
+                        >
+                          <IoMdCloseCircle />
+                        </button>
                       </div>
-                      <label className="hidden xl:block">Balance:</label>
-                    </div>
-                    <span className="text-white">
-                      {cardInfo && <div>₱{cardInfo.balance}</div>}
-                    </span>
-                  </div>
-                  <div
-                    className={`flex flex-row space-x-2 text-sm xl:text-lg px-6 xl:px-10 w-full items-center justify-center xl:justify-between ${
-                      cardInfo ? "text-[#dbe7c9]" : "text-gray-400 "
-                    }`}
-                  >
-                    <div className="flex flex-row">
-                      {" "}
-                      <div className="text-sm xl:text-2xl mr-2">
-                        <FaAddressCard />
+                      <div
+                        className={`flex flex-row w-full justify-between px-4 xl:px-10 font-bold text-sm xl:text-xl ${
+                          cardInfo ? "text-[#dbe7c9]" : "text-gray-400"
+                        }`}
+                      >
+                        <label className="hidden xl:block">ID:</label>
+                        <span className="text-[#dbe7c9] text-center w-full xl:text-end">
+                          {cardInfo && cardInfo.uid}
+                        </span>
                       </div>
-                      <label className="hidden xl:block">Status:</label>
+                      <div
+                        className={`flex flex-row space-x-2 text-sm xl:text-lg px-6 xl:px-10 w-full items-center justify-center xl:justify-between ${
+                          cardInfo ? "text-[#dbe7c9]" : "text-gray-400"
+                        }`}
+                      >
+                        <div className="flex flex-row">
+                          <div className="text-sm xl:text-2xl mr-2">
+                            <FaCoins />
+                          </div>
+                          <label className="hidden xl:block">Balance:</label>
+                        </div>
+                        <span className="text-white">
+                          {cardInfo && <div>₱{cardInfo.balance}</div>}
+                        </span>
+                      </div>
+                      <div
+                        className={`flex flex-row space-x-2 text-sm xl:text-lg px-6 xl:px-10 w-full items-center justify-center xl:justify-between ${
+                          cardInfo ? "text-[#dbe7c9]" : "text-gray-400 "
+                        }`}
+                      >
+                        <div className="flex flex-row">
+                          <div className="text-sm xl:text-2xl mr-2">
+                            <FaAddressCard />
+                          </div>
+                          <label className="hidden xl:block">Status:</label>
+                        </div>
+                        <span className="text-white ">
+                          {cardInfo && (
+                            <div>
+                              {cardInfo.isTap ? "Tapped In" : "Tapped Off"}
+                            </div>
+                          )}
+                        </span>
+                      </div>
                     </div>
-                    <span className="text-white ">
-                      {cardInfo && (
-                        <div>{cardInfo.isTap ? "Tapped In" : "Tapped Off"}</div>
-                      )}
-                    </span>
-                  </div>
-                  <div className="flex flex-row justify-between w-full px-3 xl:px-8 pb-1">
+                  ) : (
+                    <div className="flex flex-col space-y-2 w-full h-full items-center justify-center">
+                      <div className="rounded-lg bg-white h-auto m-0-auto w-[100%] p-[10px] max-w-24">
+                        <QRCode
+                          size={256}
+                          style={{
+                            height: "auto",
+                            maxWidth: "100%",
+                            width: "100%",
+                          }}
+                          // value={String(cardInfo?.uid)}
+                          value={JSON.stringify(qrValue)}
+                          viewBox={`0 0 256 256`}
+                        />
+                      </div>
+                      <div className="font-bold text-[#dbe7c9]">
+                        QR Code:{" "}
+                        <span className="text-black font-normal">
+                          {cardInfo && cardInfo?.uid}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                  <div className="flex flex-row justify-between w-full px-3 xl:px-8 pb-6">
                     <button
                       disabled={cardInfo ? false : true}
                       onClick={() => {
@@ -434,7 +479,7 @@ const CardLanding: React.FC<CardLandingProps> = () => {
                     >
                       Add
                     </button>
-                    <button
+                    {/* <button
                       disabled={cardInfo ? false : true}
                       onClick={() => {
                         scrollToTarget("transaction");
@@ -442,27 +487,16 @@ const CardLanding: React.FC<CardLandingProps> = () => {
                       className="bg-[#dbe7c9] px-3 mb-4 xl:mb-0 text-sm xl:text-lg rounded-lg shadow-lg disabled:shadow-inner disabled:shadow-black font-bold shadow-black focus:shadow-none text-[#0d9276] disabled:text-gray-400 xl:hidden"
                     >
                       See Transaction
-                    </button>
-                    <div
-                      style={{
-                        height: "auto",
-                        margin: "0 auto",
-                        maxWidth: 64,
-                        width: "100%",
+                    </button> */}
+                    <button
+                      disabled={cardInfo ? false : true}
+                      onClick={() => {
+                        setShowQR(!showQR);
                       }}
+                      className="bg-[#dbe7c9] px-3 py-2 mb-4 xl:mb-0 text-sm xl:text-lg rounded-lg shadow-lg disabled:shadow-inner disabled:shadow-black font-bold shadow-black focus:shadow-none text-[#0d9276] disabled:text-gray-400"
                     >
-                      <QRCode
-                        size={256}
-                        style={{
-                          height: "auto",
-                          maxWidth: "100%",
-                          width: "100%",
-                        }}
-                        value={String(cardInfo?.uid)}
-                        // value={"TEST"}
-                        viewBox={`0 0 256 256`}
-                      />
-                    </div>
+                      QR
+                    </button>
                     <button
                       disabled={cardInfo ? false : true}
                       onClick={() => {
@@ -754,6 +788,7 @@ const CardLanding: React.FC<CardLandingProps> = () => {
                 <button
                   onClick={() => {
                     clearSearch();
+                    setShowQR(false);
                     scrollToTarget("top");
                   }}
                   className="text-2xl"
