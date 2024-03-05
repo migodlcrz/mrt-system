@@ -240,46 +240,48 @@ const CardScan = () => {
   const handleTapOut = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const response = await fetch(`${api}/api/cards/out`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        enteredUID: enteredUID,
-        stationEnd: stationEnd?.name,
-      }),
-    });
-
-    const data = await response.json();
-
-    if (response.ok) {
-      setDistance(data.distance);
-      setTotalFare(data.totalFare);
-      setNewBalance(data.newBalance);
-      setStart(data.start);
-      setPath(data.path);
-      toast.success("Tapped out");
-      setTimeout(() => {
-        setenteredUID("");
-        setDistance(null);
-        setTotalFare(null);
-        setNewBalance(null);
-        setStart(null);
-        setPath([]);
-      }, 10000);
-    }
-
-    if (!response.ok) {
-      toast.error(data.error);
-    }
     try {
+      const response = await fetch(`${api}/api/cards/out`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          enteredUID: enteredUID,
+          stationEnd: stationEnd?.name,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setDistance(data.distance);
+        setTotalFare(data.totalFare);
+        setNewBalance(data.newBalance);
+        setStart(data.start);
+        setPath(data.path);
+        toast.success("Tapped out");
+        setTimeout(() => {
+          setenteredUID("");
+          setDistance(null);
+          setTotalFare(null);
+          setNewBalance(null);
+          setStart(null);
+          setPath([]);
+        }, 10000);
+      }
+
+      if (!response.ok) {
+        toast.error(data.error);
+      }
     } catch (error) {
       toast.error("Internal error");
     }
   };
 
   useEffect(() => {
+    console.log("STATION: ", stn);
+
     fetchFare();
     fetchStatus();
   }, []);
