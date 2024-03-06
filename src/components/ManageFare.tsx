@@ -8,6 +8,10 @@ interface Fare {
   perKM: number;
 }
 
+interface Status {
+  isDeployed: boolean;
+}
+
 interface ManageFareProps {}
 
 const ManageFare: React.FC<ManageFareProps> = () => {
@@ -17,38 +21,60 @@ const ManageFare: React.FC<ManageFareProps> = () => {
   });
 
   const [isEdit, setIsEdit] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [isDeployed, setisDeployed] = useState(false);
 
   const { user } = useAuthContext();
   const api = process.env.REACT_APP_API_KEY;
 
   useEffect(() => {
-    const fetchFareData = async () => {
-      try {
-        const fareId = "65c28317dd50fe2e56d242c9";
-        const response = await fetch(`${api}/api/fr/${fareId}`, {
-          headers: {
-            Authorization: `Bearer ${user.jwt}`,
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-
-        const responseData = await response.json();
-
-        setFormData({
-          minimumAmount: responseData.minimumAmount,
-          perKM: responseData.perKM,
-        });
-      } catch (error) {
-        console.error("Error fetching fare data:", error);
-      }
-    };
-
     fetchFareData();
+    fetchStatus();
   }, []);
+
+  const fetchFareData = async () => {
+    try {
+      const fareId = "65c28317dd50fe2e56d242c9";
+      const response = await fetch(`${api}/api/fr/${fareId}`, {
+        headers: {
+          Authorization: `Bearer ${user.jwt}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const responseData = await response.json();
+
+      setFormData({
+        minimumAmount: responseData.minimumAmount,
+        perKM: responseData.perKM,
+      });
+    } catch (error) {
+      console.error("Error fetching fare data:", error);
+    }
+  };
+
+  const fetchStatus = async () => {
+    const status_id = "65cb78bfe51a352d5ae51dd1";
+    const response = await fetch(`${api}/api/status/${status_id}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        // Authorization: `Bearer ${user.jwt}`,
+      },
+    });
+
+    const json: Status = await response.json();
+
+    if (response.ok) {
+      setisDeployed(json.isDeployed);
+    }
+
+    if (!response.ok) {
+      toast.error("Cannot retrieve data");
+    }
+  };
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -80,7 +106,6 @@ const ManageFare: React.FC<ManageFareProps> = () => {
       }
 
       if (!response.ok) {
-        setError(json.error);
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
     } catch (error) {
@@ -113,12 +138,12 @@ const ManageFare: React.FC<ManageFareProps> = () => {
       </div>
       <div className="flex justify-center my-4">
         <button
-          className=" shadow-lg shadow-black bg-[#dbe7c9] focus:shadow-inner focus:shadow-black px-2 rounded-lg"
+          className=" shadow-lg shadow-black bg-[#dbe7c9] focus:shadow-inner focus:shadow-black px-2 rounded-lg font-bold text-[#0d9276]"
           onClick={() => {
             setIsEdit(!isEdit);
           }}
         >
-          Edit
+          {!isDeployed && "Edit"}
         </button>
       </div>
       {isEdit && (

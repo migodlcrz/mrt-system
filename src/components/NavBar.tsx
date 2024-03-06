@@ -42,7 +42,6 @@ const Navbar = () => {
   const [showModal, setShowModal] = useState(false);
   const { user } = useAuthContext();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isEditModalOpen, setEditModalOpen] = useState(false);
   const [openModal, setOpenModal] = useState(false);
   const [currentPage, setCurrentPage] = useState<string>("dashboard");
   const [formData, setFormData] = useState<Fare>({

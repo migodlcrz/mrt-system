@@ -255,11 +255,18 @@ const CardScan = () => {
       const data = await response.json();
 
       if (response.ok) {
+        setStationStart(data.start);
         setDistance(data.distance);
         setTotalFare(data.totalFare);
         setNewBalance(data.newBalance);
         setStart(data.start);
         setPath(data.path);
+        console.log("START", stationStart);
+        console.log("END", stationEnd);
+        // if (stationStart && stationEnd) {
+        //   console.log("PUMASOK SA PANNING");
+        //   handleStartEndPan(stationStart, stationEnd);
+        // }
         toast.success("Tapped out");
         setTimeout(() => {
           setenteredUID("");
@@ -497,7 +504,7 @@ const CardScan = () => {
                       </span>
                     </div>
 
-                    <div className="w-full h-auto xl:h-custom-height-travel-summary">
+                    <div className="w-full h-auto xl:h-[160px]">
                       <div className="bg-[#dbe7c9] shadow-lg shadow-black rounded-lg py-1">
                         <div className="bg-[#0d9276] shadow-inner shadow-black m-2 rounded-lg p-1">
                           <div
