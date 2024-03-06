@@ -17,7 +17,7 @@ interface Card {
   isTap: boolean;
   mounted: boolean;
   in: string;
-  history: [{ in: string; out: string; date: Date }];
+  history: [{ in: string; out: string; fare: number; date: Date }];
 }
 
 interface Fare {
@@ -27,7 +27,7 @@ interface Fare {
 }
 
 interface QR {
-  uid: string;
+  name: string;
   method: string;
 }
 
@@ -258,7 +258,7 @@ const CardLanding: React.FC<CardLandingProps> = () => {
 
   useEffect(() => {
     const cardQR: QR = {
-      uid: cardInfo?.uid || "",
+      name: cardInfo?.uid || "",
       method: "add",
     };
 
@@ -817,6 +817,9 @@ const CardLanding: React.FC<CardLandingProps> = () => {
                           To
                         </th>
                         <th className=" py-1 px-4 sticky top-0 text-[#0d9276] shadow-lg">
+                          Fare
+                        </th>
+                        <th className=" py-1 px-4 sticky top-0 text-[#0d9276] shadow-lg">
                           Date
                         </th>
                       </tr>
@@ -837,6 +840,9 @@ const CardLanding: React.FC<CardLandingProps> = () => {
                               {transaction.out}
                             </td>
                             <td className="p-2 text-black">
+                              {transaction.fare}
+                            </td>
+                            <td className="p-2 text-black">
                               {transaction.date.toString().split("T")[0]}
                             </td>
                           </tr>
@@ -844,7 +850,7 @@ const CardLanding: React.FC<CardLandingProps> = () => {
                       ) : (
                         <tr>
                           <td
-                            colSpan={3}
+                            colSpan={4}
                             className="p-2 bg-gray-400 text-[#0d9276] font-bold h-[500px]"
                           >
                             No travel history yet.
