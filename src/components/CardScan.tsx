@@ -172,17 +172,17 @@ const CardScan = () => {
     }
   };
 
-  const handleStartEndPan = (start: Station, end: Station) => {
-    if (mapRef.current) {
-      mapRef.current.flyToBounds(
-        [
-          [start.lat, start.long],
-          [end.lat, end.long],
-        ],
-        { padding: [50, 50] }
-      );
-    }
-  };
+  // const handleStartEndPan = (start: Station, end: Station) => {
+  //   if (mapRef.current) {
+  //     mapRef.current.flyToBounds(
+  //       [
+  //         [start.lat, start.long],
+  //         [end.lat, end.long],
+  //       ],
+  //       { padding: [50, 50] }
+  //     );
+  //   }
+  // };
 
   const checkCardExistence = async () => {
     try {
@@ -240,6 +240,8 @@ const CardScan = () => {
   const handleTapOut = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    // console.log("START STATION: ", stationStart);
+    // console.log("STATION END: ", stationEnd);
     try {
       const response = await fetch(`${api}/api/cards/out`, {
         method: "POST",
@@ -302,11 +304,11 @@ const CardScan = () => {
     fetchData();
   }, [isOut]);
 
-  useEffect(() => {
-    if (stationStart && stationEnd) {
-      handleStartEndPan(stationStart, stationEnd);
-    }
-  }, [stationStart]);
+  // useEffect(() => {
+  //   if (stationStart && stationEnd) {
+  //     handleStartEndPan(stationStart, stationEnd);
+  //   }
+  // }, [stationStart]);
 
   useEffect(() => {
     handleFlyTo(stationPage?.lat ?? 0, stationPage?.long ?? 0);

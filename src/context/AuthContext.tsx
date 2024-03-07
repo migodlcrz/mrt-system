@@ -56,23 +56,23 @@ export const AuthContextProvider: FC<AuthContextProviderProps> = ({
   });
 
   useEffect(() => {
-    const api = process.env.REACT_APP_API_KEY;
+    // const api = process.env.REACT_APP_API_KEY;
     const token = localStorage.getItem("token");
 
-    const checkToken = async () => {
-      console.log("TOKEN: ", token);
-      console.log("PUMASOK SIYA SA CHECKER");
-      const response = await fetch(`${api}/api/cards/checkToken`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`, // Remove the double quotes here
-        },
-      });
-      if (!response.ok) {
-        dispatch({ type: "LOGOUT" });
-      }
-    };
+    // const checkToken = async () => {
+    //   console.log("TOKEN: ", token);
+    //   console.log("PUMASOK SIYA SA CHECKER");
+    //   const response = await fetch(`${api}/api/cards/checkToken`, {
+    //     method: "GET",
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //       Authorization: `Bearer ${token}`,
+    //     },
+    //   });
+    //   if (!response.ok) {
+    //     dispatch({ type: "LOGOUT" });
+    //   }
+    // };
 
     if (token) {
       try {

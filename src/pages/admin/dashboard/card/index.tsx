@@ -129,6 +129,7 @@ const CardLanding: React.FC<CardLandingProps> = () => {
     const getResponse = await fetch(`${api}/api/fr/${fareId}`, {
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${user.jwt}`,
       },
     });
     const json = await getResponse.json();
@@ -231,6 +232,7 @@ const CardLanding: React.FC<CardLandingProps> = () => {
   const fetchCards = async () => {
     const response = await fetch(`${api}/api/cards`, {
       headers: {
+        "Content-Type": "application/json",
         Authorization: `Bearer ${user.jwt}`,
       },
     });

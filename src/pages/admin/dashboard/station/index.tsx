@@ -80,7 +80,7 @@ const StationLanding: React.FC<StationLandingProps> = () => {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        // Authorization: `Bearer ${user.jwt}`,
+        Authorization: `Bearer ${user.jwt}`,
       },
     });
 
@@ -96,6 +96,7 @@ const StationLanding: React.FC<StationLandingProps> = () => {
   };
 
   const handleMaintenance = async () => {
+    // console.log("IS DEPLOYED? ", isDeployed);
     const status_id = "65cb78bfe51a352d5ae51dd1";
     const response = await fetch(`${api}/api/status/${status_id}`, {
       method: "PATCH",
@@ -103,17 +104,17 @@ const StationLanding: React.FC<StationLandingProps> = () => {
         "Content-Type": "application/json",
         Authorization: `Bearer ${user.jwt}`,
       },
-      body: JSON.stringify({ isDeployed: isDeployed }),
+      body: JSON.stringify({ isDeployed: !isDeployed }),
     });
 
-    const json = await response.json();
+    const status = await response.json();
 
     if (response.ok) {
-      console.log("Changed");
+      setisDeployed(!isDeployed);
     }
 
     if (!response.ok) {
-      console.log("NOT CHANGED");
+      return toast.error(status.error);
     }
   };
 
@@ -368,6 +369,7 @@ const StationLanding: React.FC<StationLandingProps> = () => {
   const fetchStations = async () => {
     const response = await fetch(`${api}/api/stations`, {
       headers: {
+        "Content-Type": "application/json",
         Authorization: `Bearer ${user.jwt}`,
       },
     });
@@ -380,15 +382,8 @@ const StationLanding: React.FC<StationLandingProps> = () => {
 
   useEffect(() => {
     fetchStatus();
-  }, []);
-
-  useEffect(() => {
     fetchStations();
   }, []);
-
-  useEffect(() => {
-    handleMaintenance();
-  }, [isDeployed]);
 
   return (
     <div className="CardLanding bg-[#dbe7c9] h-auto px-2 lg:px-0 xl:h-screen animate__animated animate__fadeIn">
@@ -572,7 +567,8 @@ const StationLanding: React.FC<StationLandingProps> = () => {
                     <div>
                       <Switch
                         onChange={() => {
-                          setisDeployed(!isDeployed);
+                          handleMaintenance();
+                          // setisDeployed(!isDeployed);
                           clearSearch();
                           setIsEdit(false);
                           setIsDelete(false);
