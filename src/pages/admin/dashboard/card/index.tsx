@@ -160,6 +160,7 @@ const CardLanding: React.FC<CardLandingProps> = () => {
     const json = await postResponse.json();
 
     if (!postResponse.ok) {
+      toast.error(`Error: ${json.message}`);
       setError(json.error);
       setEmptyFields(json.emptyFields);
     }
