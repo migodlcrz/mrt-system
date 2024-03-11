@@ -55,23 +55,25 @@ const Navbar = () => {
 
   const fetchFareData = async () => {
     try {
-      const fareId = "65c28317dd50fe2e56d242c9";
-      const response = await fetch(`${api}/api/fr/${fareId}`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${user.jwt}`,
-        },
-      });
+      if (api) {
+        const fareId = "65c28317dd50fe2e56d242c9";
+        const response = await fetch(`${api}/api/fr/${fareId}`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${user.jwt}`,
+          },
+        });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const responseData = await response.json();
+        setFare({
+          minimumAmount: responseData.minimumAmount,
+          perKM: responseData.perKM,
+        });
       }
-
-      const responseData = await response.json();
-      setFare({
-        minimumAmount: responseData.minimumAmount,
-        perKM: responseData.perKM,
-      });
     } catch (error) {
       console.error("Error fetching fare data:", error);
     }

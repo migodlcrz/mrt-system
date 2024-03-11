@@ -13,10 +13,6 @@ const ProtectedRoute = ({ children }: { children: any }) => {
     const checkTokenValidity = async () => {
       const token = localStorage.getItem("token");
 
-      //   if (!token || !user || !user.user_) {
-      //     setIsValidToken(false);
-      //     return;
-      //   }
       if (!token) {
         setIsValidToken(false);
         return;
@@ -26,28 +22,20 @@ const ProtectedRoute = ({ children }: { children: any }) => {
         const currentTime = Date.now() / 1000;
 
         if (decodedToken.exp < currentTime) {
-          console.log("PUMASOK SA EXPIRY");
           setIsValidToken(false);
           return;
         }
 
         const response = await fetch(`${api}/api/cards/checkToken`, {
           headers: {
-            Authorization: `Bearer ${token}`, // Remove the double quotes here
+            Authorization: `Bearer ${token}`,
           },
         });
 
-        if (response.status === 200) {
-          console.log("RESPONSE 200");
-        }
-
         if (response.status !== 200) {
-          console.log("PUMASOK SA GOODS");
           setIsValidToken(false);
         }
-        console.log("LUMAGPAS SA FETCH AND 200");
       } catch (error) {
-        console.log("PUMASOK SA ERROR");
         setIsValidToken(false);
       }
     };

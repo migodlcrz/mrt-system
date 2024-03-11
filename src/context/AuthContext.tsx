@@ -58,37 +58,28 @@ export const AuthContextProvider: FC<AuthContextProviderProps> = ({
   useEffect(() => {
     // const api = process.env.REACT_APP_API_KEY;
     const token = localStorage.getItem("token");
+    const userString = localStorage.getItem("user");
 
-    // const checkToken = async () => {
-    //   console.log("TOKEN: ", token);
-    //   console.log("PUMASOK SIYA SA CHECKER");
-    //   const response = await fetch(`${api}/api/cards/checkToken`, {
-    //     method: "GET",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //       Authorization: `Bearer ${token}`,
-    //     },
-    //   });
-    //   if (!response.ok) {
-    //     dispatch({ type: "LOGOUT" });
-    //   }
-    // };
+    if (userString) {
+      const userJson = JSON.parse(userString);
 
-    if (token) {
-      try {
-        const decodedToken: any = jwtDecode(token); // No need for : any
+      if (token) {
+        try {
+          const decodedToken: any = jwtDecode(token); // No need for : any
 
-        // checkToken();
-        if (decodedToken.exp * 1000 < Date.now()) {
-          // Token is expired, log the user out
+          // checkToken();
+          if (decodedToken.exp * 1000 < Date.now()) {
+            // Token is expired, log the user out
+            localStorage.removeItem("token");
+            dispatch({ type: "LOGOUT" });
+          } else {
+            console.log("PAYLOAD: ", userJson);
+            dispatch({ type: "LOGIN", payload: userJson });
+          }
+        } catch (error) {
           localStorage.removeItem("token");
           dispatch({ type: "LOGOUT" });
-        } else {
-          dispatch({ type: "LOGIN", payload: token });
         }
-      } catch (error) {
-        localStorage.removeItem("token");
-        dispatch({ type: "LOGOUT" });
       }
     }
   }, []);

@@ -34,6 +34,9 @@ interface QR {
 interface CardLandingProps {}
 
 const CardLanding: React.FC<CardLandingProps> = () => {
+  const { user } = useAuthContext();
+  const api = process.env.REACT_APP_API_KEY;
+
   const [cards, setCards] = useState<Card[] | null>(null);
   const [fare, setFare] = useState<Fare | null>(null);
   const [uid, setUID] = useState<string>(
@@ -41,8 +44,6 @@ const CardLanding: React.FC<CardLandingProps> = () => {
   );
   const [addBalanceTerm, setAddBalanceTerm] = useState(0);
   const [balance, setBalance] = useState<string>("");
-  const [error, setError] = useState<string | null>(null);
-  const [emptyFields, setEmptyFields] = useState<string[]>([]);
   const [update, setUpdate] = useState(false);
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -51,36 +52,12 @@ const CardLanding: React.FC<CardLandingProps> = () => {
   const [isAddBalance, setisAddBalance] = useState(false);
 
   const [qrValue, setQRValue] = useState<QR | null>(null);
+  const [showQR, setShowQR] = useState(false);
 
   const [onboardCount, setOnboardCount] = useState(0);
   const [offboardCount, setOffboardCount] = useState(0);
 
   const [cardInfo, setCardInfo] = useState<Card | null>(null);
-
-  const [showQR, setShowQR] = useState(false);
-
-  const { user } = useAuthContext();
-
-  const api = process.env.REACT_APP_API_KEY;
-
-  const clearSearch = () => {
-    setCardInfo(null);
-    setisView(false);
-    setisAdd(false);
-    setisAddBalance(false);
-  };
-
-  const scrollToTarget = (target: string) => {
-    const targetElement = document.getElementById(target);
-
-    if (targetElement) {
-      if (target === "top") {
-        targetElement.scrollIntoView({ behavior: "smooth" });
-      } else {
-        targetElement.scrollIntoView({ behavior: "smooth", block: "center" });
-      }
-    }
-  };
 
   const addBalance = async (
     e: React.FormEvent<HTMLFormElement>,
@@ -124,6 +101,25 @@ const CardLanding: React.FC<CardLandingProps> = () => {
     }
   };
 
+  const clearSearch = () => {
+    setCardInfo(null);
+    setisView(false);
+    setisAdd(false);
+    setisAddBalance(false);
+  };
+
+  const scrollToTarget = (target: string) => {
+    const targetElement = document.getElementById(target);
+
+    if (targetElement) {
+      if (target === "top") {
+        targetElement.scrollIntoView({ behavior: "smooth" });
+      } else {
+        targetElement.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }
+  };
+
   const fetchFare = async () => {
     const fareId = "65c28317dd50fe2e56d242c9";
     const getResponse = await fetch(`${api}/api/fr/${fareId}`, {
@@ -161,13 +157,9 @@ const CardLanding: React.FC<CardLandingProps> = () => {
 
     if (!postResponse.ok) {
       toast.error(`Error: ${json.message}`);
-      setError(json.error);
-      setEmptyFields(json.emptyFields);
     }
     if (postResponse.ok) {
       scrollToTarget("top");
-      setEmptyFields([]);
-      setError(null);
       setUID(Math.floor(Math.random() * 1000000000000).toString());
       setBalance("");
       fetchCards();
@@ -188,8 +180,6 @@ const CardLanding: React.FC<CardLandingProps> = () => {
       );
 
       if (isConfirmed) {
-        console.log("CARD ID", card_id);
-
         const response = await fetch(`${api}/api/cards/one/${card_id}`, {
           method: "GET",
           headers: {
@@ -214,13 +204,11 @@ const CardLanding: React.FC<CardLandingProps> = () => {
         });
 
         if (!deleteResponse.ok) {
-          setError("Error!");
+          toast.error("Error deleting card.");
         }
 
         if (deleteResponse.ok) {
           toast.success("Card deleted successfully");
-          setEmptyFields([]);
-          setError(null);
           setUID(Math.floor(Math.random() * 1000000000000).toString());
           setBalance("");
           fetchCards();

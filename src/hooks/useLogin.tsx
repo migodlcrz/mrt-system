@@ -34,6 +34,7 @@ export const useLogin = () => {
       if (json.jwt) {
         toast.success("Login successful");
         localStorage.setItem("token", json.jwt);
+        localStorage.setItem("user", JSON.stringify(json));
       }
 
       dispatch({ type: "LOGIN", payload: json });
