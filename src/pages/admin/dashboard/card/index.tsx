@@ -151,7 +151,7 @@ const CardLanding: React.FC<CardLandingProps> = () => {
     if (response.ok) {
       const json = await response.json();
       const onboardCount = json.filter(
-        (card: { isTap: any }) => card.isTap
+        (card: { isTap: boolean }) => card.isTap
       ).length;
       const offboardCount = json.length - onboardCount;
 

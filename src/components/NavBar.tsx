@@ -1,11 +1,4 @@
-import React, {
-  useState,
-  Dispatch,
-  SetStateAction,
-  useEffect,
-  ChangeEvent,
-  FormEvent,
-} from "react";
+import React, { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import ManageFare from "./ManageFare";
@@ -14,23 +7,9 @@ import { useAuthContext } from "../hooks/useAuthContext";
 import { Modal } from "flowbite-react";
 import { FaTrainSubway } from "react-icons/fa6";
 import { IoMdCloseCircle } from "react-icons/io";
-
-import {
-  FiEdit,
-  FiChevronDown,
-  FiTrash,
-  FiShare,
-  FiPlusSquare,
-} from "react-icons/fi";
-import { motion } from "framer-motion";
-import { IconType } from "react-icons";
 import { Dropdown } from "flowbite-react";
 import { Button } from "flowbite-react";
 import { RxHamburgerMenu } from "react-icons/rx";
-import Switch from "react-switch";
-import { toast } from "react-toastify";
-import { error } from "console";
-
 interface Fare {
   minimumAmount: number;
   perKM: number;
@@ -40,13 +19,10 @@ const Navbar = () => {
   const { logout } = useLogout();
   const [showModal, setShowModal] = useState(false);
   const { user } = useAuthContext();
+  const { user_, jwt } = user;
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [openModal, setOpenModal] = useState(false);
   const [currentPage, setCurrentPage] = useState<string>("dashboard");
-  const [formData, setFormData] = useState<Fare>({
-    minimumAmount: 0,
-    perKM: 0,
-  });
   const [fare, setFare] = useState<Fare>({
     minimumAmount: 0,
     perKM: 0,
@@ -200,7 +176,7 @@ const Navbar = () => {
                     inline
                   >
                     <Dropdown.Header className="text-[#0d9276]">
-                      admin@gmail.com
+                      {user && user_}
                     </Dropdown.Header>
                     <Dropdown.Item
                       className="text-[#0d9276]"

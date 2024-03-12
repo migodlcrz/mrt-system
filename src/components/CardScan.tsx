@@ -1,11 +1,4 @@
-import React, {
-  ChangeEvent,
-  useEffect,
-  useState,
-  useRef,
-  startTransition,
-} from "react";
-// import Leaflet from "leaflet";
+import React, { ChangeEvent, useEffect, useState, useRef } from "react";
 import {
   MapContainer,
   Marker,
@@ -20,7 +13,6 @@ import "react-toastify/dist/ReactToastify.css";
 import { DivIcon } from "leaflet";
 import { FaTrainSubway } from "react-icons/fa6";
 import { renderToStaticMarkup } from "react-dom/server";
-import { get } from "http";
 import QRCode from "react-qr-code";
 
 interface Station {

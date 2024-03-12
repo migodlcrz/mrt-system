@@ -1,12 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { useAuthContext } from "../hooks/useAuthContext";
-import { stat } from "fs";
-import { FaSearch } from "react-icons/fa";
 import {
   MapContainer,
   Marker,
   Polyline,
-  Popup,
   TileLayer,
   Tooltip,
 } from "react-leaflet";

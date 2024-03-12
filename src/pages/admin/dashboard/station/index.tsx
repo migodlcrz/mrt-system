@@ -58,14 +58,6 @@ const StationLanding: React.FC<StationLandingProps> = () => {
   const [isDelete, setIsDelete] = useState<boolean>(false);
   const [isDeployed, setisDeployed] = useState<boolean>(false);
 
-  const StationIcon = new DivIcon({
-    className: "custom-icon",
-    html: renderToStaticMarkup(<FaTrainSubway size={30} color="black" />),
-    iconSize: [30, 30],
-    iconAnchor: [15, 15],
-    popupAnchor: [0, -15],
-  });
-
   const PinIcon = new DivIcon({
     className: "custom-icon",
     html: renderToStaticMarkup(<FaMapMarkerAlt size={30} color="#0d9276" />),
@@ -73,50 +65,6 @@ const StationLanding: React.FC<StationLandingProps> = () => {
     iconAnchor: [15, 30],
     popupAnchor: [0, -15],
   });
-
-  const fetchStatus = async () => {
-    const status_id = "65cb78bfe51a352d5ae51dd1";
-    const response = await fetch(`${api}/api/status/${status_id}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${user.jwt}`,
-      },
-    });
-
-    const json: Status = await response.json();
-
-    if (response.ok) {
-      setisDeployed(json.isDeployed);
-    }
-
-    if (!response.ok) {
-      toast.error("Cannot retrieve data");
-    }
-  };
-
-  const handleMaintenance = async () => {
-    // console.log("IS DEPLOYED? ", isDeployed);
-    const status_id = "65cb78bfe51a352d5ae51dd1";
-    const response = await fetch(`${api}/api/status/${status_id}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${user.jwt}`,
-      },
-      body: JSON.stringify({ isDeployed: !isDeployed }),
-    });
-
-    const status = await response.json();
-
-    if (response.ok) {
-      setisDeployed(!isDeployed);
-    }
-
-    if (!response.ok) {
-      return toast.error(status.error);
-    }
-  };
 
   const handleCreate = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -168,7 +116,6 @@ const StationLanding: React.FC<StationLandingProps> = () => {
           setSearchConnectedTerm("");
           fetchStations();
 
-          console.log("DISTANCE", distance);
           return;
         }
       }
@@ -185,7 +132,6 @@ const StationLanding: React.FC<StationLandingProps> = () => {
 
     if (!postResponse.ok) {
       setError("ERROR");
-      console.log("ERROR", error);
       return;
     }
 
@@ -197,27 +143,42 @@ const StationLanding: React.FC<StationLandingProps> = () => {
     fetchStations();
   };
 
-  const handleFlyTo = (station: Station) => {
-    mapRef.current!.flyTo([station.lat, station.long], 14, {
-      duration: 1,
-    });
-  };
+  const handleDelete = async (station: String): Promise<void> => {
+    if (isDeployed) {
+      toast.error("Server deployed. Cannot delete station.");
+      setIsDelete(false);
+      clearSearch();
 
-  // Function to calculate distance between two points (using Haversine formula)
-  function calculateDistance(point1: LatLng, point2: LatLng) {
-    const R = 6371; // Radius of the Earth in km
-    const dLat = (point2.lat - point1.lat) * (Math.PI / 180);
-    const dLon = (point2.lng - point1.lng) * (Math.PI / 180);
-    const a =
-      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos((point1.lat * Math.PI) / 180) *
-        Math.cos((point2.lat * Math.PI) / 180) *
-        Math.sin(dLon / 2) *
-        Math.sin(dLon / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    const distance = R * c * 1000;
-    return distance.toFixed(2); // Return distance rounded to 2 decimal places
-  }
+      return;
+    }
+    const isConfirmed = window.confirm("Are you sure you want to delete this?");
+
+    if (isConfirmed) {
+      const deleteResponse = await fetch(`${api}/api/stations/` + station, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user.jwt}`,
+        },
+      });
+
+      if (!deleteResponse.ok) {
+        toast.error("Failed to delete station");
+      }
+
+      if (deleteResponse.ok) {
+        toast.success("Station deleted successfully");
+        setSearchTerm("");
+        setStationName("");
+        setLngClick(0);
+        setLatClick(0);
+        setIsEdit(false);
+        setConnections([]);
+        fetchStations();
+        setEditStruct(null);
+      }
+    }
+  };
 
   const handleEdit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -299,6 +260,29 @@ const StationLanding: React.FC<StationLandingProps> = () => {
     setEditStruct(null);
   };
 
+  const handleMaintenance = async () => {
+    // console.log("IS DEPLOYED? ", isDeployed);
+    const status_id = "65cb78bfe51a352d5ae51dd1";
+    const response = await fetch(`${api}/api/status/${status_id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${user.jwt}`,
+      },
+      body: JSON.stringify({ isDeployed: !isDeployed }),
+    });
+
+    const status = await response.json();
+
+    if (response.ok) {
+      setisDeployed(!isDeployed);
+    }
+
+    if (!response.ok) {
+      return toast.error(status.error);
+    }
+  };
+
   const handleConnectionClick = (station: Station) => {
     const index = connections.indexOf(station._id);
     if (index === -1) {
@@ -308,15 +292,6 @@ const StationLanding: React.FC<StationLandingProps> = () => {
       newConnections.splice(index, 1);
       setConnections(newConnections);
     }
-  };
-
-  const clearSearch = () => {
-    setSearchTerm("");
-    setStationName("");
-    setSearchConnectedTerm("");
-    setLngClick(0);
-    setLatClick(0);
-    setConnections([]);
   };
 
   const handleClickEdit = (station: Station) => {
@@ -329,41 +304,40 @@ const StationLanding: React.FC<StationLandingProps> = () => {
     setEditStruct(station);
   };
 
-  const handleDelete = async (station: String): Promise<void> => {
-    if (isDeployed) {
-      toast.error("Server deployed. Cannot delete station.");
-      setIsDelete(false);
-      clearSearch();
+  const fetchStatus = async () => {
+    const status_id = "65cb78bfe51a352d5ae51dd1";
+    const response = await fetch(`${api}/api/status/${status_id}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${user.jwt}`,
+      },
+    });
 
-      return;
+    const json: Status = await response.json();
+
+    if (response.ok) {
+      setisDeployed(json.isDeployed);
     }
-    const isConfirmed = window.confirm("Are you sure you want to delete this?");
 
-    if (isConfirmed) {
-      const deleteResponse = await fetch(`${api}/api/stations/` + station, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${user.jwt}`,
-        },
-      });
-
-      if (!deleteResponse.ok) {
-        toast.error("Failed to delete station");
-      }
-
-      if (deleteResponse.ok) {
-        toast.success("Station deleted successfully");
-        setSearchTerm("");
-        setStationName("");
-        setLngClick(0);
-        setLatClick(0);
-        setIsEdit(false);
-        setConnections([]);
-        fetchStations();
-        setEditStruct(null);
-      }
+    if (!response.ok) {
+      toast.error("Cannot retrieve data");
     }
+  };
+
+  const handleFlyTo = (station: Station) => {
+    mapRef.current!.flyTo([station.lat, station.long], 14, {
+      duration: 1,
+    });
+  };
+
+  const clearSearch = () => {
+    setSearchTerm("");
+    setStationName("");
+    setSearchConnectedTerm("");
+    setLngClick(0);
+    setLatClick(0);
+    setConnections([]);
   };
 
   const fetchStations = async () => {
@@ -379,6 +353,21 @@ const StationLanding: React.FC<StationLandingProps> = () => {
       setStations(json);
     }
   };
+
+  function calculateDistance(point1: LatLng, point2: LatLng) {
+    const R = 6371; // Radius of the Earth in km
+    const dLat = (point2.lat - point1.lat) * (Math.PI / 180);
+    const dLon = (point2.lng - point1.lng) * (Math.PI / 180);
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos((point1.lat * Math.PI) / 180) *
+        Math.cos((point2.lat * Math.PI) / 180) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const distance = R * c * 1000;
+    return distance.toFixed(2); // Return distance rounded to 2 decimal places
+  }
 
   useEffect(() => {
     fetchStatus();

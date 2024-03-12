@@ -1,5 +1,4 @@
 import React, { useState, useEffect, ChangeEvent, FormEvent } from "react";
-import { FaCheck } from "react-icons/fa";
 import { useAuthContext } from "../hooks/useAuthContext";
 import { toast } from "react-toastify";
 
@@ -98,8 +97,6 @@ const ManageFare: React.FC<ManageFareProps> = () => {
         body: JSON.stringify(formData),
       });
 
-      const json = await response.json();
-
       if (response.ok) {
         toast.success("Fare successfully updated.");
         setIsEdit(false);
@@ -164,7 +161,7 @@ const ManageFare: React.FC<ManageFareProps> = () => {
                       if (e.key === "e" || e.key === "-" || e.key === "+") {
                         e.preventDefault();
                       } else if (
-                        (e.target as HTMLInputElement).value.length >= 5 &&
+                        (e.target as HTMLInputElement).value.length >= 4 &&
                         e.key !== "Backspace"
                       ) {
                         e.preventDefault();
@@ -185,7 +182,7 @@ const ManageFare: React.FC<ManageFareProps> = () => {
                       if (e.key === "e" || e.key === "-" || e.key === "+") {
                         e.preventDefault();
                       } else if (
-                        (e.target as HTMLInputElement).value.length >= 5 &&
+                        (e.target as HTMLInputElement).value.length >= 3 &&
                         e.key !== "Backspace"
                       ) {
                         e.preventDefault();

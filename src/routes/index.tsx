@@ -62,7 +62,7 @@ const App = () => {
             path={"/admin"}
             element={
               <>
-                <NavBar />
+                {/* <NavBar /> */}
                 <Admin />
               </>
             }

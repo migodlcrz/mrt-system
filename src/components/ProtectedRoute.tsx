@@ -8,7 +8,7 @@ const ProtectedRoute = ({ children }: { children: any }) => {
   const api = process.env.REACT_APP_API_KEY;
   const { user } = useAuthContext();
   const { logout } = useLogout();
-  const [isValidToken, setIsValidToken] = useState(true); // State to track token validity
+  const [isValidToken, setIsValidToken] = useState(true);
   useEffect(() => {
     const checkTokenValidity = async () => {
       const token = localStorage.getItem("token");
