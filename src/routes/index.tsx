@@ -1,16 +1,9 @@
 import Dashboard from "../pages/admin/dashboard";
-import Navbar from "../components/NavBar";
 import StationLanding from "../pages/admin/dashboard/station";
 import CardLanding from "../pages/admin/dashboard/card";
 import Admin from "../pages/admin";
 import { useAuthContext } from "../hooks/useAuthContext";
-import {
-  BrowserRouter,
-  Routes,
-  Route,
-  useLocation,
-  useNavigate,
-} from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import NotLogin from "../components/NotLogin";
 import CardScan from "../components/CardScan";
 import Root from "../components/Root";
@@ -35,7 +28,6 @@ const App = () => {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        // Authorization: `Bearer ${user.jwt}`,
       },
     });
 

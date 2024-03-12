@@ -6,8 +6,6 @@ import React, {
   useEffect,
   CSSProperties,
 } from "react";
-import { Label, TextInput } from "flowbite-react";
-// import { useLogin } from "../hooks/useLogin";
 import { useLogin } from "../../hooks/useLogin";
 import { useAuthContext } from "../../hooks/useAuthContext";
 import { useNavigate } from "react-router-dom";

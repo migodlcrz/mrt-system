@@ -5,9 +5,6 @@ import { IoMdCloseCircle } from "react-icons/io";
 import { toast } from "react-toastify";
 import { GrStatusGoodSmall } from "react-icons/gr";
 import ProgressBar from "@ramonak/react-progress-bar";
-import { popup } from "leaflet";
-import e from "cors";
-import ReactDOM from "react-dom";
 import QRCode from "react-qr-code";
 
 interface Card {
@@ -59,6 +56,125 @@ const CardLanding: React.FC<CardLandingProps> = () => {
 
   const [cardInfo, setCardInfo] = useState<Card | null>(null);
 
+  const handleCreate = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const card = { uid, balance };
+
+    if (Number(card.balance) < 1) {
+      toast.error("Input Invalid.");
+      return;
+    }
+
+    const postResponse = await fetch(`${api}/api/cards`, {
+      method: "POST",
+      body: JSON.stringify(card),
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${user.jwt}`,
+      },
+    });
+
+    const json = await postResponse.json();
+
+    if (!postResponse.ok) {
+      toast.error(`Error: ${json.message}`);
+    }
+    if (postResponse.ok) {
+      scrollToTarget("top");
+      setUID(Math.floor(Math.random() * 1000000000000).toString());
+      setBalance("");
+      fetchCards();
+      setisAdd(false);
+      toast.success("Card created successfully.");
+    }
+  };
+
+  const handleDelete = async (card_id: String): Promise<void> => {
+    if (user) {
+      const isConfirmed = window.confirm(
+        "Are you sure you want to delete this?"
+      );
+
+      if (isConfirmed) {
+        const response = await fetch(`${api}/api/cards/one/${card_id}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${user.jwt}`,
+          },
+        });
+
+        const card: Card = await response.json();
+
+        if (card.mounted) {
+          toast.error("Cannot delete, card is linked to a phone.");
+          return;
+        }
+
+        const deleteResponse = await fetch(`${api}/api/cards/${card_id}`, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${user.jwt}`,
+          },
+        });
+
+        if (!deleteResponse.ok) {
+          toast.error("Error deleting card.");
+        }
+
+        if (deleteResponse.ok) {
+          toast.success("Card deleted successfully");
+          setUID(Math.floor(Math.random() * 1000000000000).toString());
+          setBalance("");
+          fetchCards();
+          setCardInfo(null);
+        }
+      }
+    }
+  };
+
+  const handleClickEdit = (card: Card) => {
+    setCardInfo(card);
+    setisView(true);
+  };
+
+  const fetchCards = async () => {
+    const response = await fetch(`${api}/api/cards`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${user.jwt}`,
+      },
+    });
+
+    if (response.ok) {
+      const json = await response.json();
+      const onboardCount = json.filter(
+        (card: { isTap: any }) => card.isTap
+      ).length;
+      const offboardCount = json.length - onboardCount;
+
+      setOnboardCount(onboardCount);
+      setOffboardCount(offboardCount);
+      setCards(json);
+    }
+  };
+
+  const fetchFare = async () => {
+    const fareId = "65c28317dd50fe2e56d242c9";
+    const getResponse = await fetch(`${api}/api/fr/${fareId}`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${user.jwt}`,
+      },
+    });
+    const json = await getResponse.json();
+    if (getResponse.ok) {
+      setFare(json);
+    }
+  };
+
   const addBalance = async (
     e: React.FormEvent<HTMLFormElement>,
     balance: number
@@ -68,7 +184,6 @@ const CardLanding: React.FC<CardLandingProps> = () => {
     if (fare) {
       if (balance === 0) {
         toast.error("Cannot add zero value.");
-        setAddBalanceTerm(0);
         return;
       }
       if (balance < fare.minimumAmount) {
@@ -117,125 +232,6 @@ const CardLanding: React.FC<CardLandingProps> = () => {
       } else {
         targetElement.scrollIntoView({ behavior: "smooth", block: "center" });
       }
-    }
-  };
-
-  const fetchFare = async () => {
-    const fareId = "65c28317dd50fe2e56d242c9";
-    const getResponse = await fetch(`${api}/api/fr/${fareId}`, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${user.jwt}`,
-      },
-    });
-    const json = await getResponse.json();
-    if (getResponse.ok) {
-      setFare(json);
-    }
-  };
-
-  const handleCreate = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    const card = { uid, balance };
-
-    if (Number(card.balance) < 1) {
-      toast.error("Input Invalid.");
-      return;
-    }
-
-    const postResponse = await fetch(`${api}/api/cards`, {
-      method: "POST",
-      body: JSON.stringify(card),
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${user.jwt}`,
-      },
-    });
-
-    const json = await postResponse.json();
-
-    if (!postResponse.ok) {
-      toast.error(`Error: ${json.message}`);
-    }
-    if (postResponse.ok) {
-      scrollToTarget("top");
-      setUID(Math.floor(Math.random() * 1000000000000).toString());
-      setBalance("");
-      fetchCards();
-      setisAdd(false);
-      toast.success("Card created successfully.");
-    }
-  };
-
-  const handleClickEdit = (card: Card) => {
-    setCardInfo(card);
-    setisView(true);
-  };
-
-  const handleDelete = async (card_id: String): Promise<void> => {
-    if (user) {
-      const isConfirmed = window.confirm(
-        "Are you sure you want to delete this?"
-      );
-
-      if (isConfirmed) {
-        const response = await fetch(`${api}/api/cards/one/${card_id}`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${user.jwt}`,
-          },
-        });
-
-        const card: Card = await response.json();
-
-        if (card.mounted) {
-          toast.error("Cannot delete, card is linked to a phone.");
-          return;
-        }
-
-        const deleteResponse = await fetch(`${api}/api/cards/${card_id}`, {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${user.jwt}`,
-          },
-        });
-
-        if (!deleteResponse.ok) {
-          toast.error("Error deleting card.");
-        }
-
-        if (deleteResponse.ok) {
-          toast.success("Card deleted successfully");
-          setUID(Math.floor(Math.random() * 1000000000000).toString());
-          setBalance("");
-          fetchCards();
-          setCardInfo(null);
-        }
-      }
-    }
-  };
-
-  const fetchCards = async () => {
-    const response = await fetch(`${api}/api/cards`, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${user.jwt}`,
-      },
-    });
-
-    if (response.ok) {
-      const json = await response.json();
-      const onboardCount = json.filter(
-        (card: { isTap: any }) => card.isTap
-      ).length;
-      const offboardCount = json.length - onboardCount;
-
-      setOnboardCount(onboardCount);
-      setOffboardCount(offboardCount);
-      setCards(json);
     }
   };
 
@@ -658,7 +654,10 @@ const CardLanding: React.FC<CardLandingProps> = () => {
                         readOnly
                         value={addBalanceTerm}
                       />
-                      <button className="bg-[#0d9276] text-[#dbe7c9] font-bold rounded-lg shadow-lg shadow-black">
+                      <button
+                        className="bg-[#0d9276] text-[#dbe7c9] font-bold rounded-lg shadow-lg shadow-black"
+                        style={{ background: "#0d9276", font: "#dbe7c9" }}
+                      >
                         Add
                       </button>
                     </form>
