@@ -13,7 +13,7 @@ interface AuthState {
 
 interface AuthAction {
   type: string;
-  payload?: any; // Make the payload optional for LOGOUT action
+  payload?: any;
 }
 
 interface AuthContextProps {
@@ -65,11 +65,10 @@ export const AuthContextProvider: FC<AuthContextProviderProps> = ({
 
       if (token) {
         try {
-          const decodedToken: any = jwtDecode(token); // No need for : any
+          const decodedToken: any = jwtDecode(token);
 
           // checkToken();
           if (decodedToken.exp * 1000 < Date.now()) {
-            // Token is expired, log the user out
             localStorage.removeItem("token");
             dispatch({ type: "LOGOUT" });
           } else {

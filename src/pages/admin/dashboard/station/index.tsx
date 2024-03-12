@@ -15,7 +15,6 @@ import { FaSearch } from "react-icons/fa";
 import "animate.css";
 import L, { DivIcon } from "leaflet";
 import { renderToStaticMarkup } from "react-dom/server";
-import { FaTrainSubway } from "react-icons/fa6";
 import { FaMapMarkerAlt } from "react-icons/fa";
 import Switch from "react-switch";
 

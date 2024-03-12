@@ -37,16 +37,14 @@ interface Fare {
 
 const Dashboard = () => {
   const { user } = useAuthContext();
-  const { user_, jwt } = user;
+  const { user_ } = user;
   const [cardCount, setCardCount] = useState(0);
   const [stations, setStations] = useState<Stations[] | null>(null);
   const [fare, setFare] = useState<Fare | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [onboardCount, setOnboardCount] = useState(0);
   const [offboardCount, setOffboardCount] = useState(0);
-  const { logout } = useLogout();
   const navigate = useNavigate();
-  const style = { "--value": 100 } as React.CSSProperties;
   const api = process.env.REACT_APP_API_KEY;
 
   const StationIcon = new DivIcon({
